@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python API summary · BBR Button Board</title>
+<meta name="description" content="Python API summary Everything here is a method on Board. Each one sends a command and returns the board’s reply as a dictionary, or raises. Connecting Call What it does Board.open(">
+<link rel="canonical" href="https://buttonboard.buildingblockrobotics.com/driver-station/api.html">
+<link rel="stylesheet" href="../style.css">
+<script>
+  // Set the theme before first paint so the page never flashes the wrong one.
+  try {
+    var t = localStorage.getItem('bbr-theme');
+    if (t) document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+</script>
+</head>
+<body class="page">
+
+<a class="skip" href="#content">Skip to content</a>
+
+<header class="topbar">
+  <button class="menu-btn" aria-label="Toggle navigation" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+  <a class="brand" href="../index.html">
+    <span class="brand-name">BBR Button Board</span>
+    <span class="brand-tagline">Documentation</span>
+  </a>
+  <div class="search" role="search">
+    <input type="search" id="search-input" placeholder="Search"
+           autocomplete="off" spellcheck="false" aria-label="Search the documentation">
+    <kbd class="search-key">/</kbd>
+    <div id="search-results" class="search-results" hidden></div>
+  </div>
+  <button class="theme-btn" aria-label="Toggle dark mode" title="Toggle dark mode">
+    <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <circle cx="12" cy="12" r="4.5"/>
+      <g class="rays"><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.4 4.4l2.1 2.1M17.5 17.5l2.1 2.1M19.6 4.4l-2.1 2.1M6.5 17.5l-2.1 2.1"/></g>
+    </svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/>
+    </svg>
+  </button>
+</header>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <nav aria-label="Documentation">
+      <ul class="nav-list">
+<li><a href="../index.html">BBR Button Board</a></li>
+</ul>
+<p class="nav-group">Getting started</p>
+<ul class="nav-list">
+<li><a href="../getting-started/hardware.html">What you have</a></li>
+<li><a href="../getting-started/wiring.html">Plugging it together</a></li>
+<li><a href="../getting-started/first-run.html">First run</a></li>
+<li><a href="../getting-started/firmware.html">Updating the firmware</a></li>
+</ul>
+<p class="nav-group">Configuring</p>
+<ul class="nav-list">
+<li><a href="../configuring/config-app.html">The config app</a></li>
+<li><a href="../configuring/binding.html">Binding buttons</a></li>
+<li><a href="../configuring/leds.html">LED colours</a></li>
+<li><a href="../configuring/encoders.html">Rotary encoders</a></li>
+</ul>
+<p class="nav-group">Driver Station app</p>
+<ul class="nav-list">
+<li><a href="../driver-station/install.html">Install the library</a></li>
+<li><a href="../driver-station/first-script.html">Your first script</a></li>
+<li><a href="../driver-station/api.html" class="active">Python API summary</a></li>
+</ul>
+<p class="nav-group">Reference</p>
+<ul class="nav-list">
+<li><a href="../reference/commands.html">Serial command reference</a></li>
+<li><a href="../reference/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+    </nav>
+  </aside>
+
+  <main id="content" class="content">
+    <article class="prose">
+      <h1 id="python-api-summary">Python API summary<a class="headerlink" href="#python-api-summary" title="Permanent link">#</a></h1>
+<p>Everything here is a method on <code>Board</code>. Each one sends a command and returns the board&rsquo;s reply as a dictionary, or raises.</p>
+<h2 id="connecting">Connecting<a class="headerlink" href="#connecting" title="Permanent link">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>Call</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Board.open(port=None)</code></td>
+<td>Open the board, auto-detecting the port</td>
+</tr>
+<tr>
+<td><code>board.close()</code></td>
+<td>Close it. Also happens on leaving a <code>with</code> block</td>
+</tr>
+<tr>
+<td><code>MockBoard()</code></td>
+<td>An in-process board, no hardware</td>
+</tr>
+</tbody>
+</table>
+<h2 id="identity-and-state">Identity and state<a class="headerlink" href="#identity-and-state" title="Permanent link">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>Call</th>
+<th>Returns</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>board.hello()</code></td>
+<td>Product, firmware version, serial, tile count, USB personality</td>
+</tr>
+<tr>
+<td><code>board.tiles()</code></td>
+<td>A list, one entry per tile: kind, firmware, state, keys currently down</td>
+</tr>
+<tr>
+<td><code>board.tile(addr)</code></td>
+<td>One tile&rsquo;s entry, or <code>None</code></td>
+</tr>
+<tr>
+<td><code>board.stats()</code></td>
+<td>Uptime, poll cycle time, fault state, LED power budget</td>
+</tr>
+</tbody>
+</table>
+<h2 id="leds">LEDs<a class="headerlink" href="#leds" title="Permanent link">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>Call</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>board.led(btn, colour, fx=None, press=None)</code></td>
+<td>Set a logical button&rsquo;s colour</td>
+</tr>
+<tr>
+<td><code>board.led_tile(addr, index, colour, fx=None)</code></td>
+<td>Set one LED by tile and position</td>
+</tr>
+<tr>
+<td><code>board.led_all(colour)</code></td>
+<td>Every LED on every tile</td>
+</tr>
+<tr>
+<td><code>board.led_reset()</code></td>
+<td>Back to the saved defaults</td>
+</tr>
+<tr>
+<td><code>board.led_layer()</code></td>
+<td>A diffing writer — see <a href="first-script.html">Your first script</a></td>
+</tr>
+</tbody>
+</table>
+<p><code>colour</code> takes a name, <code>"#RRGGBB"</code>, <code>"RRGGBB"</code>, an <code>(r, g, b)</code> triple, an int, or <code>None</code> for off. <code>fx</code> is <code>"solid"</code>, <code>"blink"</code>, <code>"fast"</code> or <code>"breathe"</code>. <code>press</code> turns the white press-flash on or off for that button.</p>
+<h3 id="ledlayer">LedLayer<a class="headerlink" href="#ledlayer" title="Permanent link">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>Call</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>layer.set(btn, colour, fx, press)</code></td>
+<td>Stage a colour</td>
+</tr>
+<tr>
+<td><code>layer.set_tile(addr, index, colour, fx)</code></td>
+<td>Stage a colour by tile and position</td>
+</tr>
+<tr>
+<td><code>layer.flush()</code></td>
+<td>Send what changed; returns how many commands went out</td>
+</tr>
+<tr>
+<td><code>layer.all(colour)</code> / <code>layer.reset()</code></td>
+<td>Send immediately and reset the diff</td>
+</tr>
+<tr>
+<td><code>layer.forget()</code></td>
+<td>Force the next <code>flush()</code> to resend everything</td>
+</tr>
+</tbody>
+</table>
+<h2 id="bindings">Bindings<a class="headerlink" href="#bindings" title="Permanent link">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>Call</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>board.bind(btn, add=False)</code></td>
+<td>Wait for a key press and bind it. <code>add=True</code> joins a group</td>
+</tr>
+<tr>
+<td><code>board.bind_cancel()</code></td>
+<td>Stop waiting</td>
+</tr>
+<tr>
+<td><code>board.unbind(btn)</code></td>
+<td>Remove every key from a button</td>
+</tr>
+<tr>
+<td><code>board.unbind(btn, addr, key)</code></td>
+<td>Remove one key from a group</td>
+</tr>
+<tr>
+<td><code>board.map_get()</code> / <code>board.map_set(m)</code></td>
+<td>The whole configuration as a dictionary</td>
+</tr>
+<tr>
+<td><code>board.save()</code></td>
+<td>Write it to flash</td>
+</tr>
+</tbody>
+</table>
+<p><code>bind()</code> blocks until someone presses a key, up to 30 seconds.</p>
+<h2 id="encoders">Encoders<a class="headerlink" href="#encoders" title="Permanent link">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>Call</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>board.bind_axis(n)</code></td>
+<td>Bind axis 1–4 to the next encoder turned</td>
+</tr>
+<tr>
+<td><code>board.unbind_axis(n)</code></td>
+<td>Remove it</td>
+</tr>
+<tr>
+<td><code>board.enc_zero(n=None)</code></td>
+<td>Zero one axis, or all of them</td>
+</tr>
+</tbody>
+</table>
+<h2 id="display-tiles">Display tiles<a class="headerlink" href="#display-tiles" title="Permanent link">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>Call</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>board.screen(addr)</code></td>
+<td>A row-diffing writer for a display tile</td>
+</tr>
+<tr>
+<td><code>screen.text(row, s)</code> / <code>screen.bar(row, col, width, value)</code></td>
+<td>Stage a row</td>
+</tr>
+<tr>
+<td><code>screen.flush()</code></td>
+<td>Send changed rows and commit them together</td>
+</tr>
+<tr>
+<td><code>screen.clear()</code></td>
+<td>Blank the panel</td>
+</tr>
+</tbody>
+</table>
+<div class="hint hint-warning">
+<p>Display tiles are <strong>reserved</strong>: the protocol defines them and the library implements them, but no tile exists yet and the board answers <code>unknown</code>. Develop against <code>MockBoard()</code>; <code>MockBoard(display=False)</code> reproduces the board as it is today.</p>
+</div>
+<h2 id="the-board-itself">The board itself<a class="headerlink" href="#the-board-itself" title="Permanent link">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>Call</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>board.usb("frc")</code> / <code>board.usb("xinput")</code></td>
+<td>Set the USB personality; takes effect at the next reset</td>
+</tr>
+<tr>
+<td><code>board.power_budget(mA)</code></td>
+<td>Set the LED power budget</td>
+</tr>
+<tr>
+<td><code>board.test("walk", 250)</code> / <code>board.test("off")</code></td>
+<td>Report button presses with no tile involved</td>
+</tr>
+<tr>
+<td><code>board.reset()</code> / <code>board.reset(factory=True)</code></td>
+<td>Reboot, optionally erasing the configuration</td>
+</tr>
+</tbody>
+</table>
+<h2 id="events">Events<a class="headerlink" href="#events" title="Permanent link">#</a></h2>
+<p>The board reports things that happen on its own — a tile lost, a fault raised, a key pressed during binding.</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">on_tile</span><span class="p">(</span><span class="n">ev</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">ev</span><span class="p">[</span><span class="s2">"addr"</span><span class="p">],</span> <span class="n">ev</span><span class="p">[</span><span class="s2">"state"</span><span class="p">])</span>      <span class="c1"># 3 lost</span>
+
+<span class="n">unsubscribe</span> <span class="o">=</span> <span class="n">board</span><span class="o">.</span><span class="n">on</span><span class="p">(</span><span class="s2">"tile"</span><span class="p">,</span> <span class="n">on_tile</span><span class="p">)</span>
+</code></pre></div>
+
+<p>Names are <code>tile</code>, <code>fault</code>, <code>key</code>, <code>enc</code>, <code>progress</code> and <code>player</code>; <code>"*"</code> receives all of them.</p>
+<div class="hint hint-warning">
+<p>Callbacks run on the library&rsquo;s reader thread. Do not call <code>board</code> methods from inside one — the reader is what completes them, so the call blocks until it times out. Put the event on a queue and handle it in your loop.</p>
+</div>
+<h2 id="errors">Errors<a class="headerlink" href="#errors" title="Permanent link">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>Exception</th>
+<th>When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CommandError</code></td>
+<td>The board refused the command. <code>.err</code> is the reason code</td>
+</tr>
+<tr>
+<td><code>Timeout</code></td>
+<td>No reply in time</td>
+</tr>
+<tr>
+<td><code>NotConnected</code></td>
+<td>The port is closed or the cable went away</td>
+</tr>
+<tr>
+<td><code>NoBoardFound</code></td>
+<td>Auto-detection could not identify a board</td>
+</tr>
+<tr>
+<td><code>BoardError</code></td>
+<td>Base class for all of the above</td>
+</tr>
+</tbody>
+</table>
+    </article>
+    <nav class="pager-row"><a class="pager prev" href="../driver-station/first-script.html"><span class="pager-label">Previous</span><span class="pager-title">Your first script</span></a><a class="pager next" href="../reference/commands.html"><span class="pager-label">Next</span><span class="pager-title">Serial command reference</span></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/LearnWeaver/BBRControlBoard/edit/main/docs/gitbook/driver-station/api.md" rel="noopener">Edit this page on GitHub</a>
+    </footer>
+  </main>
+
+  <aside class="onpage" aria-label="On this page">
+    <p class="toc-title">On this page</p>
+<ul class="toc-list">
+<li><a href="#connecting">Connecting</a>
+</li>
+<li><a href="#identity-and-state">Identity and state</a>
+</li>
+<li><a href="#leds">LEDs</a>
+<ul class="toc-sub">
+<li><a href="#ledlayer">LedLayer</a></li>
+</ul>
+</li>
+<li><a href="#bindings">Bindings</a>
+</li>
+<li><a href="#encoders">Encoders</a>
+</li>
+<li><a href="#display-tiles">Display tiles</a>
+</li>
+<li><a href="#the-board-itself">The board itself</a>
+</li>
+<li><a href="#events">Events</a>
+</li>
+<li><a href="#errors">Errors</a>
+</li>
+</ul>
+  </aside>
+</div>
+
+<div class="scrim" hidden></div>
+<script src="../app.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LED colours · BBR Button Board</title>
+<meta name="description" content="LED colours Tiles with RGB keys — mx9rgb today — have one addressable LED under every key. There are two independent ways to drive them, and understanding which is which saves a lo">
+<link rel="canonical" href="https://buttonboard.buildingblockrobotics.com/configuring/leds.html">
+<link rel="stylesheet" href="../style.css">
+<script>
+  // Set the theme before first paint so the page never flashes the wrong one.
+  try {
+    var t = localStorage.getItem('bbr-theme');
+    if (t) document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+</script>
+</head>
+<body class="page">
+
+<a class="skip" href="#content">Skip to content</a>
+
+<header class="topbar">
+  <button class="menu-btn" aria-label="Toggle navigation" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+  <a class="brand" href="../index.html">
+    <span class="brand-name">BBR Button Board</span>
+    <span class="brand-tagline">Documentation</span>
+  </a>
+  <div class="search" role="search">
+    <input type="search" id="search-input" placeholder="Search"
+           autocomplete="off" spellcheck="false" aria-label="Search the documentation">
+    <kbd class="search-key">/</kbd>
+    <div id="search-results" class="search-results" hidden></div>
+  </div>
+  <button class="theme-btn" aria-label="Toggle dark mode" title="Toggle dark mode">
+    <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <circle cx="12" cy="12" r="4.5"/>
+      <g class="rays"><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.4 4.4l2.1 2.1M17.5 17.5l2.1 2.1M19.6 4.4l-2.1 2.1M6.5 17.5l-2.1 2.1"/></g>
+    </svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/>
+    </svg>
+  </button>
+</header>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <nav aria-label="Documentation">
+      <ul class="nav-list">
+<li><a href="../index.html">BBR Button Board</a></li>
+</ul>
+<p class="nav-group">Getting started</p>
+<ul class="nav-list">
+<li><a href="../getting-started/hardware.html">What you have</a></li>
+<li><a href="../getting-started/wiring.html">Plugging it together</a></li>
+<li><a href="../getting-started/first-run.html">First run</a></li>
+<li><a href="../getting-started/firmware.html">Updating the firmware</a></li>
+</ul>
+<p class="nav-group">Configuring</p>
+<ul class="nav-list">
+<li><a href="../configuring/config-app.html">The config app</a></li>
+<li><a href="../configuring/binding.html">Binding buttons</a></li>
+<li><a href="../configuring/leds.html" class="active">LED colours</a></li>
+<li><a href="../configuring/encoders.html">Rotary encoders</a></li>
+</ul>
+<p class="nav-group">Driver Station app</p>
+<ul class="nav-list">
+<li><a href="../driver-station/install.html">Install the library</a></li>
+<li><a href="../driver-station/first-script.html">Your first script</a></li>
+<li><a href="../driver-station/api.html">Python API summary</a></li>
+</ul>
+<p class="nav-group">Reference</p>
+<ul class="nav-list">
+<li><a href="../reference/commands.html">Serial command reference</a></li>
+<li><a href="../reference/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+    </nav>
+  </aside>
+
+  <main id="content" class="content">
+    <article class="prose">
+      <h1 id="led-colours">LED colours<a class="headerlink" href="#led-colours" title="Permanent link">#</a></h1>
+<p>Tiles with RGB keys — <code>mx9rgb</code> today — have one addressable LED under every key. There are two independent ways to drive them, and understanding which is which saves a lot of confusion.</p>
+<h2 id="two-layers">Two layers<a class="headerlink" href="#two-layers" title="Permanent link">#</a></h2>
+<p><strong>Defaults</strong> are part of your saved configuration. They are what the panel looks like when it powers up: a red key for the emergency stop, blue for the intake, dark for everything unbound. Set them in the config app&rsquo;s <strong>Configure</strong> screen, and press <strong>Save</strong>.</p>
+<p><strong>The live layer</strong> is set at runtime, over USB, by a companion app on the Driver Station laptop. It is never saved. This is what makes a panel react — flash the arm button red while the arm is out of bounds, light the scoring buttons only when the robot is in range.</p>
+<p>The live layer wins wherever both are set, per LED. Clearing it returns every LED to the saved defaults. See <a href="../driver-station/install.html">Driver Station app</a> for how to write to it.</p>
+<h2 id="colours-follow-the-button-not-the-key">Colours follow the button, not the key<a class="headerlink" href="#colours-follow-the-button-not-the-key" title="Permanent link">#</a></h2>
+<p>An LED colour set for a <strong>logical button</strong> moves with that button. Rebind Button 7 to a different key and its colour goes with it — which is almost always what you meant.</p>
+<p>LEDs that are not under a bound key — edge glow, spare positions — are addressed by tile and LED number instead.</p>
+<h2 id="effects">Effects<a class="headerlink" href="#effects" title="Permanent link">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>Effect</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>solid</code></td>
+<td>On, steady. The default.</td>
+</tr>
+<tr>
+<td><code>blink</code></td>
+<td>Slow flash</td>
+</tr>
+<tr>
+<td><code>fast</code></td>
+<td>Fast flash</td>
+</tr>
+<tr>
+<td><code>breathe</code></td>
+<td>Smooth fade in and out</td>
+</tr>
+</tbody>
+</table>
+<p>Effects are generated on the tile, so a blink stays smooth no matter how busy the bus is, and a companion app does not have to send anything to keep it going.</p>
+<h2 id="press-feedback">Press feedback<a class="headerlink" href="#press-feedback" title="Permanent link">#</a></h2>
+<p>By default a key flashes white while it is held, over whatever colour it was showing. It is a small thing that makes a panel feel like it is working — and on a panel where several keys share a button, it shows which one was actually pressed.</p>
+<p>You can change the feedback colour, or turn it off per button.</p>
+<h2 id="brightness-and-the-power-budget">Brightness and the power budget<a class="headerlink" href="#brightness-and-the-power-budget" title="Permanent link">#</a></h2>
+<p>The whole panel runs off the USB cable, and LEDs are what spend that budget.</p>
+<p>Rather than let a big panel brown out, the main module adds up the worst-case draw of every tile on the chain and lowers the <strong>global brightness</strong> until the total fits the budget. So adding a fourth lit tile dims the panel slightly instead of destabilising it.</p>
+<p>The <strong>Diagnose → Power</strong> view shows all three numbers: the budget, the worst case, and the brightness actually in use. If you are running from a port that can supply more than the default, raise the budget there.</p>
+<div class="hint hint-warning">
+<p>If a panel cannot fit even at minimum brightness, the board holds the LEDs off and raises a fault rather than trying. The Power view says so.</p>
+</div>
+<h2 id="turning-everything-off">Turning everything off<a class="headerlink" href="#turning-everything-off" title="Permanent link">#</a></h2>
+<p>There is a single &ldquo;all LEDs off&rdquo; command, and it takes priority over anything else in flight. It is the right thing to reach for when a panel is doing something unexpected on a field.</p>
+    </article>
+    <nav class="pager-row"><a class="pager prev" href="../configuring/binding.html"><span class="pager-label">Previous</span><span class="pager-title">Binding buttons</span></a><a class="pager next" href="../configuring/encoders.html"><span class="pager-label">Next</span><span class="pager-title">Rotary encoders</span></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/LearnWeaver/BBRControlBoard/edit/main/docs/gitbook/configuring/leds.md" rel="noopener">Edit this page on GitHub</a>
+    </footer>
+  </main>
+
+  <aside class="onpage" aria-label="On this page">
+    <p class="toc-title">On this page</p>
+<ul class="toc-list">
+<li><a href="#two-layers">Two layers</a>
+</li>
+<li><a href="#colours-follow-the-button-not-the-key">Colours follow the button, not the key</a>
+</li>
+<li><a href="#effects">Effects</a>
+</li>
+<li><a href="#press-feedback">Press feedback</a>
+</li>
+<li><a href="#brightness-and-the-power-budget">Brightness and the power budget</a>
+</li>
+<li><a href="#turning-everything-off">Turning everything off</a>
+</li>
+</ul>
+  </aside>
+</div>
+
+<div class="scrim" hidden></div>
+<script src="../app.js" defer></script>
+</body>
+</html>

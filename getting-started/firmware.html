@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Updating the firmware · BBR Button Board</title>
+<meta name="description" content="Updating the firmware Two different things get updated, in two different ways. Both live on the Firmware screen of the config app. Tiles Tiles update over the bus — the same cable ">
+<link rel="canonical" href="https://buttonboard.buildingblockrobotics.com/getting-started/firmware.html">
+<link rel="stylesheet" href="../style.css">
+<script>
+  // Set the theme before first paint so the page never flashes the wrong one.
+  try {
+    var t = localStorage.getItem('bbr-theme');
+    if (t) document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+</script>
+</head>
+<body class="page">
+
+<a class="skip" href="#content">Skip to content</a>
+
+<header class="topbar">
+  <button class="menu-btn" aria-label="Toggle navigation" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+  <a class="brand" href="../index.html">
+    <span class="brand-name">BBR Button Board</span>
+    <span class="brand-tagline">Documentation</span>
+  </a>
+  <div class="search" role="search">
+    <input type="search" id="search-input" placeholder="Search"
+           autocomplete="off" spellcheck="false" aria-label="Search the documentation">
+    <kbd class="search-key">/</kbd>
+    <div id="search-results" class="search-results" hidden></div>
+  </div>
+  <button class="theme-btn" aria-label="Toggle dark mode" title="Toggle dark mode">
+    <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <circle cx="12" cy="12" r="4.5"/>
+      <g class="rays"><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.4 4.4l2.1 2.1M17.5 17.5l2.1 2.1M19.6 4.4l-2.1 2.1M6.5 17.5l-2.1 2.1"/></g>
+    </svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/>
+    </svg>
+  </button>
+</header>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <nav aria-label="Documentation">
+      <ul class="nav-list">
+<li><a href="../index.html">BBR Button Board</a></li>
+</ul>
+<p class="nav-group">Getting started</p>
+<ul class="nav-list">
+<li><a href="../getting-started/hardware.html">What you have</a></li>
+<li><a href="../getting-started/wiring.html">Plugging it together</a></li>
+<li><a href="../getting-started/first-run.html">First run</a></li>
+<li><a href="../getting-started/firmware.html" class="active">Updating the firmware</a></li>
+</ul>
+<p class="nav-group">Configuring</p>
+<ul class="nav-list">
+<li><a href="../configuring/config-app.html">The config app</a></li>
+<li><a href="../configuring/binding.html">Binding buttons</a></li>
+<li><a href="../configuring/leds.html">LED colours</a></li>
+<li><a href="../configuring/encoders.html">Rotary encoders</a></li>
+</ul>
+<p class="nav-group">Driver Station app</p>
+<ul class="nav-list">
+<li><a href="../driver-station/install.html">Install the library</a></li>
+<li><a href="../driver-station/first-script.html">Your first script</a></li>
+<li><a href="../driver-station/api.html">Python API summary</a></li>
+</ul>
+<p class="nav-group">Reference</p>
+<ul class="nav-list">
+<li><a href="../reference/commands.html">Serial command reference</a></li>
+<li><a href="../reference/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+    </nav>
+  </aside>
+
+  <main id="content" class="content">
+    <article class="prose">
+      <h1 id="updating-the-firmware">Updating the firmware<a class="headerlink" href="#updating-the-firmware" title="Permanent link">#</a></h1>
+<p>Two different things get updated, in two different ways. Both live on the <strong>Firmware</strong> screen of the config app.</p>
+<h2 id="tiles">Tiles<a class="headerlink" href="#tiles" title="Permanent link">#</a></h2>
+<p>Tiles update <strong>over the bus</strong> — the same cable they are already plugged into. Nothing is unplugged, no programmer is needed, and one tile updates at a time while the rest of the chain carries on.</p>
+<ol>
+<li>Open <strong>Firmware</strong> in the config app.</li>
+<li>Any tile running older firmware than the images the site carries is listed with an <strong>Update</strong> button.</li>
+<li>Press it and wait. Progress is shown as it goes.</li>
+</ol>
+<p>The tile drops out of the chain for a few seconds and rejoins when it is done. Its address and its bindings are untouched.</p>
+<div class="hint hint-info">
+<p>A tile that loses power partway through an update is not bricked. The updater writes to a staging area and only commits after the whole image has arrived and its checksum matches; a tile that never gets that far comes back on its old firmware.</p>
+</div>
+<h2 id="the-main-module">The main module<a class="headerlink" href="#the-main-module" title="Permanent link">#</a></h2>
+<p>The main module updates over USB, using the same drag-and-drop mechanism as any RP2040 board.</p>
+<ol>
+<li>Press <strong>Update main module</strong> in the config app. The board reboots into its bootloader, and the COM port disappears — this is expected, and the config app will tell you it has lost the connection.</li>
+<li>A USB drive called <strong>RPI-RP2</strong> appears on your computer.</li>
+<li>Drag the <code>.uf2</code> file onto it. The drive disappears and the board restarts on the new firmware.</li>
+</ol>
+<p>Your configuration — bindings, LED colours, USB personality — is stored separately from the firmware and survives the update.</p>
+<p>If the config app cannot reach the board at all, you can get to the same place by hand: unplug the board, hold the <strong>BOOTSEL</strong> button, plug it back in, and release. <code>RPI-RP2</code> appears the same way.</p>
+<h2 id="which-versions-am-i-on">Which versions am I on?<a class="headerlink" href="#which-versions-am-i-on" title="Permanent link">#</a></h2>
+<p>The <strong>Connect</strong> screen reports the main module&rsquo;s firmware version, and <strong>Diagnose</strong> reports each tile&rsquo;s. Mixed versions across tiles are fine — the board checks that every tile speaks a compatible protocol and flags any that does not, rather than assuming.</p>
+    </article>
+    <nav class="pager-row"><a class="pager prev" href="../getting-started/first-run.html"><span class="pager-label">Previous</span><span class="pager-title">First run</span></a><a class="pager next" href="../configuring/config-app.html"><span class="pager-label">Next</span><span class="pager-title">The config app</span></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/LearnWeaver/BBRControlBoard/edit/main/docs/gitbook/getting-started/firmware.md" rel="noopener">Edit this page on GitHub</a>
+    </footer>
+  </main>
+
+  <aside class="onpage" aria-label="On this page">
+    <p class="toc-title">On this page</p>
+<ul class="toc-list">
+<li><a href="#tiles">Tiles</a>
+</li>
+<li><a href="#the-main-module">The main module</a>
+</li>
+<li><a href="#which-versions-am-i-on">Which versions am I on?</a>
+</li>
+</ul>
+  </aside>
+</div>
+
+<div class="scrim" hidden></div>
+<script src="../app.js" defer></script>
+</body>
+</html>

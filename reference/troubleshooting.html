@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Troubleshooting · BBR Button Board</title>
+<meta name="description" content="Troubleshooting Nothing appears when I plug it in Try a different USB cable. Charge-only cables are common and carry no data. Check the power LED on the main module. Dark means it ">
+<link rel="canonical" href="https://buttonboard.buildingblockrobotics.com/reference/troubleshooting.html">
+<link rel="stylesheet" href="../style.css">
+<script>
+  // Set the theme before first paint so the page never flashes the wrong one.
+  try {
+    var t = localStorage.getItem('bbr-theme');
+    if (t) document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+</script>
+</head>
+<body class="page">
+
+<a class="skip" href="#content">Skip to content</a>
+
+<header class="topbar">
+  <button class="menu-btn" aria-label="Toggle navigation" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+  <a class="brand" href="../index.html">
+    <span class="brand-name">BBR Button Board</span>
+    <span class="brand-tagline">Documentation</span>
+  </a>
+  <div class="search" role="search">
+    <input type="search" id="search-input" placeholder="Search"
+           autocomplete="off" spellcheck="false" aria-label="Search the documentation">
+    <kbd class="search-key">/</kbd>
+    <div id="search-results" class="search-results" hidden></div>
+  </div>
+  <button class="theme-btn" aria-label="Toggle dark mode" title="Toggle dark mode">
+    <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <circle cx="12" cy="12" r="4.5"/>
+      <g class="rays"><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.4 4.4l2.1 2.1M17.5 17.5l2.1 2.1M19.6 4.4l-2.1 2.1M6.5 17.5l-2.1 2.1"/></g>
+    </svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/>
+    </svg>
+  </button>
+</header>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <nav aria-label="Documentation">
+      <ul class="nav-list">
+<li><a href="../index.html">BBR Button Board</a></li>
+</ul>
+<p class="nav-group">Getting started</p>
+<ul class="nav-list">
+<li><a href="../getting-started/hardware.html">What you have</a></li>
+<li><a href="../getting-started/wiring.html">Plugging it together</a></li>
+<li><a href="../getting-started/first-run.html">First run</a></li>
+<li><a href="../getting-started/firmware.html">Updating the firmware</a></li>
+</ul>
+<p class="nav-group">Configuring</p>
+<ul class="nav-list">
+<li><a href="../configuring/config-app.html">The config app</a></li>
+<li><a href="../configuring/binding.html">Binding buttons</a></li>
+<li><a href="../configuring/leds.html">LED colours</a></li>
+<li><a href="../configuring/encoders.html">Rotary encoders</a></li>
+</ul>
+<p class="nav-group">Driver Station app</p>
+<ul class="nav-list">
+<li><a href="../driver-station/install.html">Install the library</a></li>
+<li><a href="../driver-station/first-script.html">Your first script</a></li>
+<li><a href="../driver-station/api.html">Python API summary</a></li>
+</ul>
+<p class="nav-group">Reference</p>
+<ul class="nav-list">
+<li><a href="../reference/commands.html">Serial command reference</a></li>
+<li><a href="../reference/troubleshooting.html" class="active">Troubleshooting</a></li>
+</ul>
+    </nav>
+  </aside>
+
+  <main id="content" class="content">
+    <article class="prose">
+      <h1 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">#</a></h1>
+<h2 id="nothing-appears-when-i-plug-it-in">Nothing appears when I plug it in<a class="headerlink" href="#nothing-appears-when-i-plug-it-in" title="Permanent link">#</a></h2>
+<ul>
+<li>Try a different USB cable. Charge-only cables are common and carry no data.</li>
+<li>Check the power LED on the main module. Dark means it is not getting power.</li>
+<li><strong>Hold the CFG button while plugging in.</strong> That forces a known-good USB configuration whatever is stored, and is the way back from a board that was configured into being unreachable.</li>
+<li>If it still does nothing, hold <strong>BOOTSEL</strong> while plugging in. An <code>RPI-RP2</code> drive appearing means the hardware is alive and the firmware is the problem — see <a href="../getting-started/firmware.html">Updating the firmware</a>.</li>
+</ul>
+<h2 id="the-config-app-cannot-see-the-board">The config app cannot see the board<a class="headerlink" href="#the-config-app-cannot-see-the-board" title="Permanent link">#</a></h2>
+<ul>
+<li><strong>Are you in Chrome or Edge?</strong> Firefox and Safari have no Web Serial, and no version of the app will work in them.</li>
+<li><strong>Is something else holding the port?</strong> A serial terminal, another browser tab, or a running Python script will each keep the port to itself. Close it.</li>
+<li>You must pick the port from the browser&rsquo;s dialog. The page cannot open one on its own.</li>
+</ul>
+<h2 id="a-tile-is-missing-from-the-chain">A tile is missing from the chain<a class="headerlink" href="#a-tile-is-missing-from-the-chain" title="Permanent link">#</a></h2>
+<p>In order of how often it turns out to be the cause:</p>
+<ol>
+<li><strong>A cable not fully clicked home.</strong> The commonest fault by a distance.</li>
+<li><strong>A missing terminator plug.</strong> Both ends of the chain need one. Without them a chain often works on the bench and fails on a longer cable.</li>
+<li><strong>Two terminators in the wrong places</strong> — for example a plug <em>and</em> the main module&rsquo;s termination jumper at the same end.</li>
+<li>A damaged cable. Swap it with a known-good one.</li>
+</ol>
+<p>Check <strong>Diagnose → Counters</strong>. A tile accumulating checksum errors or missed replies is a wiring or termination problem. A tile that never appears at all is more likely a cable or a dead board.</p>
+<h2 id="a-key-does-nothing">A key does nothing<a class="headerlink" href="#a-key-does-nothing" title="Permanent link">#</a></h2>
+<ul>
+<li>Is it <strong>bound</strong>? An unbound key registers nowhere. Check <strong>Configure</strong>.</li>
+<li>Does the tile see it at all? <strong>Diagnose</strong> shows presses straight off the bus, before binding. If it shows there and not in the Driver Station, the problem is the binding or the Driver Station. If it does not show there, it is the switch.</li>
+<li>Hot-swap sockets: pull the switch and look at the pins. A bent pin folds under the switch instead of entering the socket.</li>
+</ul>
+<h2 id="buttons-stick-on-or-fire-on-their-own">Buttons stick on, or fire on their own<a class="headerlink" href="#buttons-stick-on-or-fire-on-their-own" title="Permanent link">#</a></h2>
+<ul>
+<li>A worn microswitch chattering — raise that tile&rsquo;s debounce.</li>
+<li>If <strong>every</strong> button on a tile misbehaves at once, suspect the bus rather than the switches: check the counters, the cable and the terminators.</li>
+</ul>
+<h2 id="the-driver-station-sees-the-wrong-thing">The Driver Station sees the wrong thing<a class="headerlink" href="#the-driver-station-sees-the-wrong-thing" title="Permanent link">#</a></h2>
+<ul>
+<li><strong>FRC expects <code>frc</code>; FTC expects <code>xinput</code>.</strong> Check on the <strong>Connect</strong> screen.</li>
+<li>A personality change only takes effect at a USB reset. Unplug and plug back in.</li>
+<li>Under FTC, bind the pad with Start+A or Start+B as usual.</li>
+</ul>
+<p>Use <strong>Diagnose → Test</strong> to settle where the problem is: it makes the board report presses with no tile involved. If the Driver Station sees those, everything from the board to the laptop is fine and the problem is on the bus or in the bindings.</p>
+<h2 id="leds-are-dimmer-than-i-set-them">LEDs are dimmer than I set them<a class="headerlink" href="#leds-are-dimmer-than-i-set-them" title="Permanent link">#</a></h2>
+<p>That is the power budget working as intended. The board lowers global brightness until the panel fits the current it can draw from USB. <strong>Diagnose → Power</strong> shows the budget, the worst case and the brightness in use. Raise the budget if the port genuinely supplies more.</p>
+<p>If the panel cannot fit even at minimum brightness, the LEDs are held off and a fault is raised — the same view says so.</p>
+<h2 id="my-configuration-disappeared">My configuration disappeared<a class="headerlink" href="#my-configuration-disappeared" title="Permanent link">#</a></h2>
+<p>It was probably never saved. Changes work immediately but live in RAM until <strong>Save</strong> is pressed. Unplugging before that discards them.</p>
+<h2 id="everything-worked-yesterday">Everything worked yesterday<a class="headerlink" href="#everything-worked-yesterday" title="Permanent link">#</a></h2>
+<p>Check firmware versions on <strong>Connect</strong> and <strong>Diagnose</strong>. A tile updated to firmware the main module does not understand is reported as incompatible rather than being used — the board tells you instead of behaving strangely.</p>
+    </article>
+    <nav class="pager-row"><a class="pager prev" href="../reference/commands.html"><span class="pager-label">Previous</span><span class="pager-title">Serial command reference</span></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/LearnWeaver/BBRControlBoard/edit/main/docs/gitbook/reference/troubleshooting.md" rel="noopener">Edit this page on GitHub</a>
+    </footer>
+  </main>
+
+  <aside class="onpage" aria-label="On this page">
+    <p class="toc-title">On this page</p>
+<ul class="toc-list">
+<li><a href="#nothing-appears-when-i-plug-it-in">Nothing appears when I plug it in</a>
+</li>
+<li><a href="#the-config-app-cannot-see-the-board">The config app cannot see the board</a>
+</li>
+<li><a href="#a-tile-is-missing-from-the-chain">A tile is missing from the chain</a>
+</li>
+<li><a href="#a-key-does-nothing">A key does nothing</a>
+</li>
+<li><a href="#buttons-stick-on-or-fire-on-their-own">Buttons stick on, or fire on their own</a>
+</li>
+<li><a href="#the-driver-station-sees-the-wrong-thing">The Driver Station sees the wrong thing</a>
+</li>
+<li><a href="#leds-are-dimmer-than-i-set-them">LEDs are dimmer than I set them</a>
+</li>
+<li><a href="#my-configuration-disappeared">My configuration disappeared</a>
+</li>
+<li><a href="#everything-worked-yesterday">Everything worked yesterday</a>
+</li>
+</ul>
+  </aside>
+</div>
+
+<div class="scrim" hidden></div>
+<script src="../app.js" defer></script>
+</body>
+</html>

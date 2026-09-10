@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>First run · BBR Button Board</title>
+<meta name="description" content="First run Ten minutes, start to finish: plug in, bind a key, watch it register. 1. Plug it in Connect the tiles into a chain, fit the two terminator plugs, and plug the main module">
+<link rel="canonical" href="https://buttonboard.buildingblockrobotics.com/getting-started/first-run.html">
+<link rel="stylesheet" href="../style.css">
+<script>
+  // Set the theme before first paint so the page never flashes the wrong one.
+  try {
+    var t = localStorage.getItem('bbr-theme');
+    if (t) document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+</script>
+</head>
+<body class="page">
+
+<a class="skip" href="#content">Skip to content</a>
+
+<header class="topbar">
+  <button class="menu-btn" aria-label="Toggle navigation" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+  <a class="brand" href="../index.html">
+    <span class="brand-name">BBR Button Board</span>
+    <span class="brand-tagline">Documentation</span>
+  </a>
+  <div class="search" role="search">
+    <input type="search" id="search-input" placeholder="Search"
+           autocomplete="off" spellcheck="false" aria-label="Search the documentation">
+    <kbd class="search-key">/</kbd>
+    <div id="search-results" class="search-results" hidden></div>
+  </div>
+  <button class="theme-btn" aria-label="Toggle dark mode" title="Toggle dark mode">
+    <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <circle cx="12" cy="12" r="4.5"/>
+      <g class="rays"><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.4 4.4l2.1 2.1M17.5 17.5l2.1 2.1M19.6 4.4l-2.1 2.1M6.5 17.5l-2.1 2.1"/></g>
+    </svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/>
+    </svg>
+  </button>
+</header>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <nav aria-label="Documentation">
+      <ul class="nav-list">
+<li><a href="../index.html">BBR Button Board</a></li>
+</ul>
+<p class="nav-group">Getting started</p>
+<ul class="nav-list">
+<li><a href="../getting-started/hardware.html">What you have</a></li>
+<li><a href="../getting-started/wiring.html">Plugging it together</a></li>
+<li><a href="../getting-started/first-run.html" class="active">First run</a></li>
+<li><a href="../getting-started/firmware.html">Updating the firmware</a></li>
+</ul>
+<p class="nav-group">Configuring</p>
+<ul class="nav-list">
+<li><a href="../configuring/config-app.html">The config app</a></li>
+<li><a href="../configuring/binding.html">Binding buttons</a></li>
+<li><a href="../configuring/leds.html">LED colours</a></li>
+<li><a href="../configuring/encoders.html">Rotary encoders</a></li>
+</ul>
+<p class="nav-group">Driver Station app</p>
+<ul class="nav-list">
+<li><a href="../driver-station/install.html">Install the library</a></li>
+<li><a href="../driver-station/first-script.html">Your first script</a></li>
+<li><a href="../driver-station/api.html">Python API summary</a></li>
+</ul>
+<p class="nav-group">Reference</p>
+<ul class="nav-list">
+<li><a href="../reference/commands.html">Serial command reference</a></li>
+<li><a href="../reference/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+    </nav>
+  </aside>
+
+  <main id="content" class="content">
+    <article class="prose">
+      <h1 id="first-run">First run<a class="headerlink" href="#first-run" title="Permanent link">#</a></h1>
+<p>Ten minutes, start to finish: plug in, bind a key, watch it register.</p>
+<h2 id="1-plug-it-in">1. Plug it in<a class="headerlink" href="#1-plug-it-in" title="Permanent link">#</a></h2>
+<p>Connect the tiles into a chain, fit the two terminator plugs, and plug the main module into your laptop with a USB-C cable. The power LED comes on immediately.</p>
+<p>The laptop should find a new game controller by itself — no driver, no install. On Windows, <code>joy.cpl</code> (Start → Run → <code>joy.cpl</code>) shows it and is a useful sanity check throughout.</p>
+<h2 id="2-open-the-config-app">2. Open the config app<a class="headerlink" href="#2-open-the-config-app" title="Permanent link">#</a></h2>
+<p>Go to the config site in <strong>Chrome or Edge</strong> and press <strong>Connect</strong>. The browser shows a list of serial ports; pick the Button Board.</p>
+<div class="hint hint-warning">
+<p>Chromium browsers only. The config app talks to the board over Web Serial, which Firefox and Safari do not implement. The page will tell you rather than failing silently.</p>
+</div>
+<p>The <strong>Connect</strong> screen then shows what the board is: firmware version, serial number, how many tiles it can see, and which USB personality is active.</p>
+<h2 id="3-check-the-board-sees-your-tiles">3. Check the board sees your tiles<a class="headerlink" href="#3-check-the-board-sees-your-tiles" title="Permanent link">#</a></h2>
+<p>Switch to <strong>Diagnose</strong>. Every tile in the chain should be listed as <code>online</code>, with the tile kind and how many keys it has.</p>
+<p>If a tile is missing, work through <a href="../reference/troubleshooting.html">Troubleshooting</a> — but check the obvious two first: a cable not clicked fully home, and a missing terminator plug.</p>
+<p>Press keys. Diagnose shows presses live, straight off the bus, before any binding is involved. This is the fastest way to prove a switch works.</p>
+<h2 id="4-bind-a-key">4. Bind a key<a class="headerlink" href="#4-bind-a-key" title="Permanent link">#</a></h2>
+<p>Go to <strong>Configure</strong>. The chain is down the left; pick a tile and it is drawn the way it physically is, keys in the right places.</p>
+<ol>
+<li>Click the key you want to bind.</li>
+<li>In the inspector, choose the <strong>logical button</strong> it should be — 1 to 32.</li>
+<li>Press the key. The board confirms it.</li>
+</ol>
+<p>That is the whole binding step. Repeat for as many keys as you need. Buttons you never bind simply never press.</p>
+<h2 id="5-save">5. Save<a class="headerlink" href="#5-save" title="Permanent link">#</a></h2>
+<p>Press <strong>Save</strong>. Until you do, the configuration lives in RAM and is lost on the next power cycle. Saved configuration survives unplugging, reboots and firmware updates of the tiles.</p>
+<h2 id="6-point-the-driver-station-at-it">6. Point the Driver Station at it<a class="headerlink" href="#6-point-the-driver-station-at-it" title="Permanent link">#</a></h2>
+<p><strong>FRC:</strong> the board appears as a 32-button joystick. Assign it a port in the Driver Station the way you would any joystick.</p>
+<p><strong>FTC:</strong> switch the USB personality to <code>xinput</code> on the <strong>Connect</strong> screen, then unplug and plug back in — the personality only changes at a USB reset. The Driver Hub then sees an Xbox-style gamepad, and Start+A / Start+B binds it as gamepad 1 or 2 as usual.</p>
+<div class="hint hint-info">
+<p><strong>Nothing works and nothing shows up?</strong> Hold the <strong>CFG</strong> button on the main module while you plug the USB cable in. That forces a known-good configuration personality regardless of what is stored, so a board can never be configured into being unreachable.</p>
+</div>
+<h2 id="testing-without-a-robot">Testing without a robot<a class="headerlink" href="#testing-without-a-robot" title="Permanent link">#</a></h2>
+<p>The <strong>Diagnose</strong> screen can make the board report button presses that no one is touching — one button at a time walking 1 → 32, one button held, or all of them at once. That lets you prove the Driver Station end of the chain works before any tile is bound, and prove a binding reaches the robot without needing a third hand.</p>
+<p>Test mode ends by itself when you disconnect, so it cannot be left on by accident.</p>
+    </article>
+    <nav class="pager-row"><a class="pager prev" href="../getting-started/wiring.html"><span class="pager-label">Previous</span><span class="pager-title">Plugging it together</span></a><a class="pager next" href="../getting-started/firmware.html"><span class="pager-label">Next</span><span class="pager-title">Updating the firmware</span></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/LearnWeaver/BBRControlBoard/edit/main/docs/gitbook/getting-started/first-run.md" rel="noopener">Edit this page on GitHub</a>
+    </footer>
+  </main>
+
+  <aside class="onpage" aria-label="On this page">
+    <p class="toc-title">On this page</p>
+<ul class="toc-list">
+<li><a href="#1-plug-it-in">1. Plug it in</a>
+</li>
+<li><a href="#2-open-the-config-app">2. Open the config app</a>
+</li>
+<li><a href="#3-check-the-board-sees-your-tiles">3. Check the board sees your tiles</a>
+</li>
+<li><a href="#4-bind-a-key">4. Bind a key</a>
+</li>
+<li><a href="#5-save">5. Save</a>
+</li>
+<li><a href="#6-point-the-driver-station-at-it">6. Point the Driver Station at it</a>
+</li>
+<li><a href="#testing-without-a-robot">Testing without a robot</a>
+</li>
+</ul>
+  </aside>
+</div>
+
+<div class="scrim" hidden></div>
+<script src="../app.js" defer></script>
+</body>
+</html>

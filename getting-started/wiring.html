@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plugging it together · BBR Button Board</title>
+<meta name="description" content="Plugging it together The chain Every board — the main module and every tile — has two identical connectors, wired in parallel. Run a cable from one board to the next in any order y">
+<link rel="canonical" href="https://buttonboard.buildingblockrobotics.com/getting-started/wiring.html">
+<link rel="stylesheet" href="../style.css">
+<script>
+  // Set the theme before first paint so the page never flashes the wrong one.
+  try {
+    var t = localStorage.getItem('bbr-theme');
+    if (t) document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+</script>
+</head>
+<body class="page">
+
+<a class="skip" href="#content">Skip to content</a>
+
+<header class="topbar">
+  <button class="menu-btn" aria-label="Toggle navigation" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+  <a class="brand" href="../index.html">
+    <span class="brand-name">BBR Button Board</span>
+    <span class="brand-tagline">Documentation</span>
+  </a>
+  <div class="search" role="search">
+    <input type="search" id="search-input" placeholder="Search"
+           autocomplete="off" spellcheck="false" aria-label="Search the documentation">
+    <kbd class="search-key">/</kbd>
+    <div id="search-results" class="search-results" hidden></div>
+  </div>
+  <button class="theme-btn" aria-label="Toggle dark mode" title="Toggle dark mode">
+    <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <circle cx="12" cy="12" r="4.5"/>
+      <g class="rays"><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.4 4.4l2.1 2.1M17.5 17.5l2.1 2.1M19.6 4.4l-2.1 2.1M6.5 17.5l-2.1 2.1"/></g>
+    </svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/>
+    </svg>
+  </button>
+</header>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <nav aria-label="Documentation">
+      <ul class="nav-list">
+<li><a href="../index.html">BBR Button Board</a></li>
+</ul>
+<p class="nav-group">Getting started</p>
+<ul class="nav-list">
+<li><a href="../getting-started/hardware.html">What you have</a></li>
+<li><a href="../getting-started/wiring.html" class="active">Plugging it together</a></li>
+<li><a href="../getting-started/first-run.html">First run</a></li>
+<li><a href="../getting-started/firmware.html">Updating the firmware</a></li>
+</ul>
+<p class="nav-group">Configuring</p>
+<ul class="nav-list">
+<li><a href="../configuring/config-app.html">The config app</a></li>
+<li><a href="../configuring/binding.html">Binding buttons</a></li>
+<li><a href="../configuring/leds.html">LED colours</a></li>
+<li><a href="../configuring/encoders.html">Rotary encoders</a></li>
+</ul>
+<p class="nav-group">Driver Station app</p>
+<ul class="nav-list">
+<li><a href="../driver-station/install.html">Install the library</a></li>
+<li><a href="../driver-station/first-script.html">Your first script</a></li>
+<li><a href="../driver-station/api.html">Python API summary</a></li>
+</ul>
+<p class="nav-group">Reference</p>
+<ul class="nav-list">
+<li><a href="../reference/commands.html">Serial command reference</a></li>
+<li><a href="../reference/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+    </nav>
+  </aside>
+
+  <main id="content" class="content">
+    <article class="prose">
+      <h1 id="plugging-it-together">Plugging it together<a class="headerlink" href="#plugging-it-together" title="Permanent link">#</a></h1>
+<h2 id="the-chain">The chain<a class="headerlink" href="#the-chain" title="Permanent link">#</a></h2>
+<p>Every board — the main module and every tile — has <strong>two identical connectors</strong>, wired in parallel. Run a cable from one board to the next in any order you like:</p>
+<div class="highlight"><pre><span></span><code>main module ──── mx9 ──── mx9 ──── enc2
+     │                               │
+terminator                      terminator
+</code></pre></div>
+
+<ul>
+<li><strong>Order does not matter.</strong> The main module finds tiles by asking, not by counting along the cable.</li>
+<li><strong>Both connectors on a board are the same.</strong> There is no &ldquo;in&rdquo; and no &ldquo;out&rdquo;.</li>
+<li><strong>Cables are straight through.</strong> Pin 1 to pin 1. There is no crossover cable in this system.</li>
+<li><strong>Up to 31 tiles</strong>, and up to about 4 m of cable in total.</li>
+</ul>
+<h2 id="terminators-go-at-both-ends">Terminators go at both ends<a class="headerlink" href="#terminators-go-at-both-ends" title="Permanent link">#</a></h2>
+<p>The two connectors that end up with nothing plugged into them — one on the main module, one on the last tile — each take a <strong>terminator plug</strong>.</p>
+<div class="hint hint-warning">
+<p>Fit both. A chain missing a terminator usually works on the bench and then loses tiles under vibration or on a longer cable, which reads as a key that &ldquo;sometimes doesn&rsquo;t work&rdquo; rather than as a wiring fault.</p>
+</div>
+<p>If your panel is permanently installed and the main module sits at one end of the chain, you can use the main module&rsquo;s built-in termination jumper instead of a plug in its spare connector. One or the other, not both.</p>
+<h2 id="power">Power<a class="headerlink" href="#power" title="Permanent link">#</a></h2>
+<p>The whole panel runs off the USB cable. There is nothing else to plug in.</p>
+<p>That budget is not unlimited, and LEDs are what spend it. The main module works out the worst-case draw of every tile on the chain and turns the global LED brightness down until the panel fits the budget — so an over-lit panel dims rather than browning out mid-match. If you are running from a port that can supply more than the default, raise the budget in the config app. See <a href="../configuring/leds.html#brightness-and-the-power-budget">LED colours</a>.</p>
+<h2 id="adding-a-tile-mid-season">Adding a tile mid-season<a class="headerlink" href="#adding-a-tile-mid-season" title="Permanent link">#</a></h2>
+<p>Plug it into a spare connector, moving the terminator plug to the new end of the chain. The main module gives it an address by itself the next time it is powered on. Nothing that was already bound changes.</p>
+<p>The one thing to know: bindings are stored <strong>per tile position</strong>, not per physical board. If you swap a faulty tile for an identical one, the replacement inherits the old one&rsquo;s bindings automatically. If you add a second tile of the same kind, it is a new tile and starts unbound. <a href="../configuring/binding.html">Binding buttons</a> covers what to do when the board cannot tell which case it is looking at.</p>
+<h2 id="cable-pinout">Cable pinout<a class="headerlink" href="#cable-pinout" title="Permanent link">#</a></h2>
+<p>Six-way JST GH, 1.25 mm pitch. You only need this if you are making cables.</p>
+<table>
+<thead>
+<tr>
+<th>Pin</th>
+<th>Signal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>GND</td>
+</tr>
+<tr>
+<td>2</td>
+<td>GND</td>
+</tr>
+<tr>
+<td>3</td>
+<td>B (−)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>A (+)</td>
+</tr>
+<tr>
+<td>5</td>
+<td>5 V</td>
+</tr>
+<tr>
+<td>6</td>
+<td>5 V</td>
+</tr>
+</tbody>
+</table>
+<p>Ground and 5 V are doubled to carry the current an illuminated arcade tile can draw. The differential pair sits in the middle, away from the power pins.</p>
+    </article>
+    <nav class="pager-row"><a class="pager prev" href="../getting-started/hardware.html"><span class="pager-label">Previous</span><span class="pager-title">What you have</span></a><a class="pager next" href="../getting-started/first-run.html"><span class="pager-label">Next</span><span class="pager-title">First run</span></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/LearnWeaver/BBRControlBoard/edit/main/docs/gitbook/getting-started/wiring.md" rel="noopener">Edit this page on GitHub</a>
+    </footer>
+  </main>
+
+  <aside class="onpage" aria-label="On this page">
+    <p class="toc-title">On this page</p>
+<ul class="toc-list">
+<li><a href="#the-chain">The chain</a>
+</li>
+<li><a href="#terminators-go-at-both-ends">Terminators go at both ends</a>
+</li>
+<li><a href="#power">Power</a>
+</li>
+<li><a href="#adding-a-tile-mid-season">Adding a tile mid-season</a>
+</li>
+<li><a href="#cable-pinout">Cable pinout</a>
+</li>
+</ul>
+  </aside>
+</div>
+
+<div class="scrim" hidden></div>
+<script src="../app.js" defer></script>
+</body>
+</html>

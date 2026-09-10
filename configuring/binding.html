@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Binding buttons · BBR Button Board</title>
+<meta name="description" content="Binding buttons Keys, buttons, and why they are different A key is a physical thing on a tile. Keys are numbered from 0 within their tile, and a key on its own does nothing. A logi">
+<link rel="canonical" href="https://buttonboard.buildingblockrobotics.com/configuring/binding.html">
+<link rel="stylesheet" href="../style.css">
+<script>
+  // Set the theme before first paint so the page never flashes the wrong one.
+  try {
+    var t = localStorage.getItem('bbr-theme');
+    if (t) document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+</script>
+</head>
+<body class="page">
+
+<a class="skip" href="#content">Skip to content</a>
+
+<header class="topbar">
+  <button class="menu-btn" aria-label="Toggle navigation" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+  <a class="brand" href="../index.html">
+    <span class="brand-name">BBR Button Board</span>
+    <span class="brand-tagline">Documentation</span>
+  </a>
+  <div class="search" role="search">
+    <input type="search" id="search-input" placeholder="Search"
+           autocomplete="off" spellcheck="false" aria-label="Search the documentation">
+    <kbd class="search-key">/</kbd>
+    <div id="search-results" class="search-results" hidden></div>
+  </div>
+  <button class="theme-btn" aria-label="Toggle dark mode" title="Toggle dark mode">
+    <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <circle cx="12" cy="12" r="4.5"/>
+      <g class="rays"><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.4 4.4l2.1 2.1M17.5 17.5l2.1 2.1M19.6 4.4l-2.1 2.1M6.5 17.5l-2.1 2.1"/></g>
+    </svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/>
+    </svg>
+  </button>
+</header>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <nav aria-label="Documentation">
+      <ul class="nav-list">
+<li><a href="../index.html">BBR Button Board</a></li>
+</ul>
+<p class="nav-group">Getting started</p>
+<ul class="nav-list">
+<li><a href="../getting-started/hardware.html">What you have</a></li>
+<li><a href="../getting-started/wiring.html">Plugging it together</a></li>
+<li><a href="../getting-started/first-run.html">First run</a></li>
+<li><a href="../getting-started/firmware.html">Updating the firmware</a></li>
+</ul>
+<p class="nav-group">Configuring</p>
+<ul class="nav-list">
+<li><a href="../configuring/config-app.html">The config app</a></li>
+<li><a href="../configuring/binding.html" class="active">Binding buttons</a></li>
+<li><a href="../configuring/leds.html">LED colours</a></li>
+<li><a href="../configuring/encoders.html">Rotary encoders</a></li>
+</ul>
+<p class="nav-group">Driver Station app</p>
+<ul class="nav-list">
+<li><a href="../driver-station/install.html">Install the library</a></li>
+<li><a href="../driver-station/first-script.html">Your first script</a></li>
+<li><a href="../driver-station/api.html">Python API summary</a></li>
+</ul>
+<p class="nav-group">Reference</p>
+<ul class="nav-list">
+<li><a href="../reference/commands.html">Serial command reference</a></li>
+<li><a href="../reference/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+    </nav>
+  </aside>
+
+  <main id="content" class="content">
+    <article class="prose">
+      <h1 id="binding-buttons">Binding buttons<a class="headerlink" href="#binding-buttons" title="Permanent link">#</a></h1>
+<h2 id="keys-buttons-and-why-they-are-different">Keys, buttons, and why they are different<a class="headerlink" href="#keys-buttons-and-why-they-are-different" title="Permanent link">#</a></h2>
+<p>A <strong>key</strong> is a physical thing on a tile. Keys are numbered from 0 within their tile, and a key on its own does nothing.</p>
+<p>A <strong>logical button</strong> is what the Driver Station sees. There are 32 of them, numbered 1 to 32, and they exist whether or not anything is bound to them.</p>
+<p><strong>Binding</strong> connects the two. Until a key is bound, pressing it registers nowhere.</p>
+<p>This indirection is the whole point. Your robot code refers to Button 7, and stays true when Button 7 moves to a different key, a different tile, or a different kind of tile entirely.</p>
+<h2 id="binding-a-key">Binding a key<a class="headerlink" href="#binding-a-key" title="Permanent link">#</a></h2>
+<p>In <strong>Configure</strong>, click the key, choose a button number, and press the key to confirm. The board waits for the press itself, so there is no way to bind the wrong key by mistyping a number.</p>
+<p>Rebinding a key to a different button replaces the old binding. A key feeds at most one button.</p>
+<h2 id="groups-several-keys-one-button">Groups: several keys, one button<a class="headerlink" href="#groups-several-keys-one-button" title="Permanent link">#</a></h2>
+<p>Several keys <strong>can</strong> feed the same button. The button is pressed while any of them is down.</p>
+<p>This is what you want for:</p>
+<ul>
+<li>The same action reachable from two ends of a wide panel.</li>
+<li>A driver and a co-driver who each need the same override.</li>
+<li>An arcade button and a keypad key that do the same job.</li>
+</ul>
+<p>Add a key to an existing button rather than replacing it, and up to 16 keys can share one button.</p>
+<div class="hint hint-info">
+<p>The reverse is not allowed: one key cannot drive two buttons. If it could, releasing it would have to release both, and &ldquo;which button did that press belong to&rdquo; stops having an answer.</p>
+</div>
+<h2 id="debounce">Debounce<a class="headerlink" href="#debounce" title="Permanent link">#</a></h2>
+<p>Mechanical switches make and break contact several times in the few milliseconds around a press. The tile filters that out, and the default — 5 ms — suits every switch these tiles are designed for.</p>
+<p>You can raise it per tile if a particular switch chatters, at the cost of that much latency on every press. Worn arcade microswitches are the usual reason.</p>
+<h2 id="what-happens-when-a-tile-disappears">What happens when a tile disappears<a class="headerlink" href="#what-happens-when-a-tile-disappears" title="Permanent link">#</a></h2>
+<p>If a tile stops answering — cable pulled, board damaged — every button bound to it reads as <strong>released</strong>, immediately. Not &ldquo;stuck at whatever it was last&rdquo;, which is the failure mode that drives a robot into a wall.</p>
+<p>Bindings to a missing tile are kept, not deleted, so unplugging a tile to work on the panel and plugging it back in costs you nothing.</p>
+<h2 id="swapping-and-replacing-tiles">Swapping and replacing tiles<a class="headerlink" href="#swapping-and-replacing-tiles" title="Permanent link">#</a></h2>
+<p>Bindings are stored against a tile&rsquo;s position on the bus, and the board remembers which physical tile was in each position.</p>
+<ul>
+<li><strong>Replace a broken tile with an identical one</strong> — the new tile takes the old one&rsquo;s place and its bindings, automatically.</li>
+<li><strong>Add another tile of the same kind</strong> — it is a new tile, and starts unbound.</li>
+</ul>
+<p>When the board cannot tell those two cases apart, it says so instead of guessing, and the config app offers the choice. Nothing is silently rebound.</p>
+<h2 id="saving">Saving<a class="headerlink" href="#saving" title="Permanent link">#</a></h2>
+<p>Bindings work as soon as they are made, but live in RAM until you press <strong>Save</strong>. Save writes them to flash and reads them back to check.</p>
+    </article>
+    <nav class="pager-row"><a class="pager prev" href="../configuring/config-app.html"><span class="pager-label">Previous</span><span class="pager-title">The config app</span></a><a class="pager next" href="../configuring/leds.html"><span class="pager-label">Next</span><span class="pager-title">LED colours</span></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/LearnWeaver/BBRControlBoard/edit/main/docs/gitbook/configuring/binding.md" rel="noopener">Edit this page on GitHub</a>
+    </footer>
+  </main>
+
+  <aside class="onpage" aria-label="On this page">
+    <p class="toc-title">On this page</p>
+<ul class="toc-list">
+<li><a href="#keys-buttons-and-why-they-are-different">Keys, buttons, and why they are different</a>
+</li>
+<li><a href="#binding-a-key">Binding a key</a>
+</li>
+<li><a href="#groups-several-keys-one-button">Groups: several keys, one button</a>
+</li>
+<li><a href="#debounce">Debounce</a>
+</li>
+<li><a href="#what-happens-when-a-tile-disappears">What happens when a tile disappears</a>
+</li>
+<li><a href="#swapping-and-replacing-tiles">Swapping and replacing tiles</a>
+</li>
+<li><a href="#saving">Saving</a>
+</li>
+</ul>
+  </aside>
+</div>
+
+<div class="scrim" hidden></div>
+<script src="../app.js" defer></script>
+</body>
+</html>

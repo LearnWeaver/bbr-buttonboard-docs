@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Install the library · BBR Button Board</title>
+<meta name="description" content="Install the library The Button Board can be driven from a program on the Driver Station laptop — reading robot state from NetworkTables and pushing LED colours and display text bac">
+<link rel="canonical" href="https://buttonboard.buildingblockrobotics.com/driver-station/install.html">
+<link rel="stylesheet" href="../style.css">
+<script>
+  // Set the theme before first paint so the page never flashes the wrong one.
+  try {
+    var t = localStorage.getItem('bbr-theme');
+    if (t) document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+</script>
+</head>
+<body class="page">
+
+<a class="skip" href="#content">Skip to content</a>
+
+<header class="topbar">
+  <button class="menu-btn" aria-label="Toggle navigation" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+  <a class="brand" href="../index.html">
+    <span class="brand-name">BBR Button Board</span>
+    <span class="brand-tagline">Documentation</span>
+  </a>
+  <div class="search" role="search">
+    <input type="search" id="search-input" placeholder="Search"
+           autocomplete="off" spellcheck="false" aria-label="Search the documentation">
+    <kbd class="search-key">/</kbd>
+    <div id="search-results" class="search-results" hidden></div>
+  </div>
+  <button class="theme-btn" aria-label="Toggle dark mode" title="Toggle dark mode">
+    <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <circle cx="12" cy="12" r="4.5"/>
+      <g class="rays"><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.4 4.4l2.1 2.1M17.5 17.5l2.1 2.1M19.6 4.4l-2.1 2.1M6.5 17.5l-2.1 2.1"/></g>
+    </svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/>
+    </svg>
+  </button>
+</header>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <nav aria-label="Documentation">
+      <ul class="nav-list">
+<li><a href="../index.html">BBR Button Board</a></li>
+</ul>
+<p class="nav-group">Getting started</p>
+<ul class="nav-list">
+<li><a href="../getting-started/hardware.html">What you have</a></li>
+<li><a href="../getting-started/wiring.html">Plugging it together</a></li>
+<li><a href="../getting-started/first-run.html">First run</a></li>
+<li><a href="../getting-started/firmware.html">Updating the firmware</a></li>
+</ul>
+<p class="nav-group">Configuring</p>
+<ul class="nav-list">
+<li><a href="../configuring/config-app.html">The config app</a></li>
+<li><a href="../configuring/binding.html">Binding buttons</a></li>
+<li><a href="../configuring/leds.html">LED colours</a></li>
+<li><a href="../configuring/encoders.html">Rotary encoders</a></li>
+</ul>
+<p class="nav-group">Driver Station app</p>
+<ul class="nav-list">
+<li><a href="../driver-station/install.html" class="active">Install the library</a></li>
+<li><a href="../driver-station/first-script.html">Your first script</a></li>
+<li><a href="../driver-station/api.html">Python API summary</a></li>
+</ul>
+<p class="nav-group">Reference</p>
+<ul class="nav-list">
+<li><a href="../reference/commands.html">Serial command reference</a></li>
+<li><a href="../reference/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+    </nav>
+  </aside>
+
+  <main id="content" class="content">
+    <article class="prose">
+      <h1 id="install-the-library">Install the library<a class="headerlink" href="#install-the-library" title="Permanent link">#</a></h1>
+<p>The Button Board can be driven from a program on the Driver Station laptop — reading robot state from NetworkTables and pushing LED colours and display text back to the panel. <code>bb</code> is the Python library for that.</p>
+<div class="hint hint-info">
+<p>You do not need this to use the board. Buttons work through the Driver Station like any gamepad, with nothing installed. This is for making the panel <em>react</em> to the robot.</p>
+</div>
+<h2 id="what-you-need">What you need<a class="headerlink" href="#what-you-need" title="Permanent link">#</a></h2>
+<ul>
+<li>Python 3.9 or newer.</li>
+<li><code>pyserial</code>.</li>
+</ul>
+<div class="highlight"><pre><span></span><code>python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>pyserial
+</code></pre></div>
+
+<p>The library itself lives in <code>tools/bb/</code> in the repository. Copy that directory next to your script, or put its parent on <code>PYTHONPATH</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">PYTHONPATH</span><span class="o">=</span>/path/to/BBRControlBoard/tools
+</code></pre></div>
+
+<h2 id="check-it-works">Check it works<a class="headerlink" href="#check-it-works" title="Permanent link">#</a></h2>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">bb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Board</span>
+
+<span class="k">with</span> <span class="n">Board</span><span class="o">.</span><span class="n">open</span><span class="p">()</span> <span class="k">as</span> <span class="n">board</span><span class="p">:</span>          <span class="c1"># finds the COM port by itself</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">board</span><span class="o">.</span><span class="n">hello</span><span class="p">())</span>
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code>{'ok': True, 'product': 'Button Board', 'fw': '0.1.0', 'proto': 1, ...}
+</code></pre></div>
+
+<p>If it cannot find the board, pass the port explicitly — <code>Board.open(port="COM7")</code> on Windows, <code>Board.open(port="/dev/ttyACM0")</code> on Linux.</p>
+<h2 id="without-a-board">Without a board<a class="headerlink" href="#without-a-board" title="Permanent link">#</a></h2>
+<p><code>MockBoard</code> speaks the same protocol in-process, so a companion app can be written and tested with no hardware attached:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">bb</span><span class="w"> </span><span class="kn">import</span> <span class="n">MockBoard</span>
+
+<span class="n">board</span> <span class="o">=</span> <span class="n">MockBoard</span><span class="p">()</span>
+<span class="n">board</span><span class="o">.</span><span class="n">led</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s2">"red"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">board</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">leds</span><span class="p">)</span>      <span class="c1"># {('btn', 3): 'led 3 FF0000'}</span>
+</code></pre></div>
+
+<h2 id="one-connection-at-a-time">One connection at a time<a class="headerlink" href="#one-connection-at-a-time" title="Permanent link">#</a></h2>
+<p>The board&rsquo;s configuration channel is a serial port, and a serial port has one owner. If the config app has the board open in a browser tab, your script cannot open it, and the other way round. Close one before starting the other.</p>
+    </article>
+    <nav class="pager-row"><a class="pager prev" href="../configuring/encoders.html"><span class="pager-label">Previous</span><span class="pager-title">Rotary encoders</span></a><a class="pager next" href="../driver-station/first-script.html"><span class="pager-label">Next</span><span class="pager-title">Your first script</span></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/LearnWeaver/BBRControlBoard/edit/main/docs/gitbook/driver-station/install.md" rel="noopener">Edit this page on GitHub</a>
+    </footer>
+  </main>
+
+  <aside class="onpage" aria-label="On this page">
+    <p class="toc-title">On this page</p>
+<ul class="toc-list">
+<li><a href="#what-you-need">What you need</a>
+</li>
+<li><a href="#check-it-works">Check it works</a>
+</li>
+<li><a href="#without-a-board">Without a board</a>
+</li>
+<li><a href="#one-connection-at-a-time">One connection at a time</a>
+</li>
+</ul>
+  </aside>
+</div>
+
+<div class="scrim" hidden></div>
+<script src="../app.js" defer></script>
+</body>
+</html>
