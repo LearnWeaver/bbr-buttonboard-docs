@@ -282,7 +282,7 @@
 </tbody>
 </table>
 <div class="hint hint-warning">
-<p>Display tiles are <strong>reserved</strong>: the protocol defines them and the library implements them, but no tile exists yet and the board answers <code>unknown</code>. Develop against <code>MockBoard()</code>; <code>MockBoard(display=False)</code> reproduces the board as it is today.</p>
+<p>The first display tile is <code>disp1</code>: a 128×32 SSD1306, <strong>21 columns × 4 rows</strong>. Take the geometry from <code>screen.cols</code> / <code>screen.rows</code>, which come from the tile&rsquo;s own descriptor, rather than hard-coding it. No <code>disp1</code> board has been built yet, so develop against <code>MockBoard()</code>; <code>MockBoard(display=False)</code> reproduces a board older than §14, which answers <code>unknown</code>.</p>
 </div>
 <h2 id="the-board-itself">The board itself<a class="headerlink" href="#the-board-itself" title="Permanent link">#</a></h2>
 <table>

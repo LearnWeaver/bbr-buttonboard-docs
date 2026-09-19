@@ -95,16 +95,16 @@ terminator                      terminator
 <li><strong>Up to 31 tiles</strong>, and up to about 4 m of cable in total.</li>
 </ul>
 <h2 id="terminators-go-at-both-ends">Terminators go at both ends<a class="headerlink" href="#terminators-go-at-both-ends" title="Permanent link">#</a></h2>
-<p>The two connectors that end up with nothing plugged into them — one on the main module, one on the last tile — each take a <strong>terminator plug</strong>.</p>
+<p>The two connectors that end up with nothing plugged into them — one on the main module, one on the last tile — each take a <strong>terminator</strong>.</p>
 <div class="hint hint-warning">
 <p>Fit both. A chain missing a terminator usually works on the bench and then loses tiles under vibration or on a longer cable, which reads as a key that &ldquo;sometimes doesn&rsquo;t work&rdquo; rather than as a wiring fault.</p>
 </div>
-<p>If your panel is permanently installed and the main module sits at one end of the chain, you can use the main module&rsquo;s built-in termination jumper instead of a plug in its spare connector. One or the other, not both.</p>
+<p>If your panel is permanently installed and the main module sits at one end of the chain, you can use the main module&rsquo;s built-in termination jumper instead of a terminator in its spare connector. One or the other, not both.</p>
 <h2 id="power">Power<a class="headerlink" href="#power" title="Permanent link">#</a></h2>
 <p>The whole panel runs off the USB cable. There is nothing else to plug in.</p>
 <p>That budget is not unlimited, and LEDs are what spend it. The main module works out the worst-case draw of every tile on the chain and turns the global LED brightness down until the panel fits the budget — so an over-lit panel dims rather than browning out mid-match. If you are running from a port that can supply more than the default, raise the budget in the config app. See <a href="../configuring/leds.html#brightness-and-the-power-budget">LED colours</a>.</p>
 <h2 id="adding-a-tile-mid-season">Adding a tile mid-season<a class="headerlink" href="#adding-a-tile-mid-season" title="Permanent link">#</a></h2>
-<p>Plug it into a spare connector, moving the terminator plug to the new end of the chain. The main module gives it an address by itself the next time it is powered on. Nothing that was already bound changes.</p>
+<p>Plug it into a spare connector, moving the terminator to the new end of the chain. The main module gives it an address by itself the next time it is powered on. Nothing that was already bound changes.</p>
 <p>The one thing to know: bindings are stored <strong>per tile position</strong>, not per physical board. If you swap a faulty tile for an identical one, the replacement inherits the old one&rsquo;s bindings automatically. If you add a second tile of the same kind, it is a new tile and starts unbound. <a href="../configuring/binding.html">Binding buttons</a> covers what to do when the board cannot tell which case it is looking at.</p>
 <h2 id="cable-pinout">Cable pinout<a class="headerlink" href="#cable-pinout" title="Permanent link">#</a></h2>
 <p>Six-way JST GH, 1.25 mm pitch. You only need this if you are making cables.</p>

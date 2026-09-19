@@ -96,7 +96,7 @@
    ┌────┴──────┐      RS-485, one cable per link
    │   main    ├──── tile ──── tile ──── tile ───┤
    │  module   │                                 │
-   └───────────┘                          terminator plug
+   └───────────┘                          terminator
 </code></pre></div>
 
 <p>The main module polls every tile in turn, collects which keys are down, and sends one USB report. From the Driver Station&rsquo;s point of view there is a single game controller with 32 buttons on it — it never learns that there are tiles at all.</p>
