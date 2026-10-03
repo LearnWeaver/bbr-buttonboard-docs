@@ -63,6 +63,11 @@
 <li><a href="../configuring/binding.html">Binding buttons</a></li>
 <li><a href="../configuring/leds.html">LED colours</a></li>
 <li><a href="../configuring/encoders.html">Rotary encoders</a></li>
+<li><a href="../configuring/screen-keys.html">Screen keys and legends</a></li>
+</ul>
+<p class="nav-group">On the robot</p>
+<ul class="nav-list">
+<li><a href="../on-the-robot/legends.html">Changing legends in a match</a></li>
 </ul>
 <p class="nav-group">Driver Station app</p>
 <ul class="nav-list">
@@ -146,8 +151,19 @@
 <td>Two rotary encoders with push-to-click shafts</td>
 <td>2 encoders + 2 keys</td>
 </tr>
+<tr>
+<td><strong>disp1</strong></td>
+<td>A 128 × 32 text panel — a readout, not a control</td>
+<td>none</td>
+</tr>
+<tr>
+<td><strong>screenkey1</strong></td>
+<td>One key whose cap <strong>is</strong> a 128 × 128 colour screen</td>
+<td>1</td>
+</tr>
 </tbody>
 </table>
+<p><code>disp1</code> and <code>screenkey1</code> are the display tiles: the panel shows what the robot is doing, and on <code>screenkey1</code> it is the key&rsquo;s own legend, so the label changes as the match does. See <a href="../configuring/screen-keys.html">Screen keys and legends</a>.</p>
 <p>Keys on a tile are numbered from <strong>0</strong>. Buttons the Driver Station sees are numbered from <strong>1</strong>. Those two numbering schemes are separate on purpose — see <a href="../configuring/binding.html">Binding buttons</a>.</p>
 <div class="hint hint-info">
 <p>Hot-swap means the key switches push in and pull out by hand, with no soldering. A broken switch in the pit is a ten-second repair.</p>

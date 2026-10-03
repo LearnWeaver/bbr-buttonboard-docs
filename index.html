@@ -63,6 +63,11 @@
 <li><a href="configuring/binding.html">Binding buttons</a></li>
 <li><a href="configuring/leds.html">LED colours</a></li>
 <li><a href="configuring/encoders.html">Rotary encoders</a></li>
+<li><a href="configuring/screen-keys.html">Screen keys and legends</a></li>
+</ul>
+<p class="nav-group">On the robot</p>
+<ul class="nav-list">
+<li><a href="on-the-robot/legends.html">Changing legends in a match</a></li>
 </ul>
 <p class="nav-group">Driver Station app</p>
 <ul class="nav-list">
@@ -88,6 +93,7 @@
 <li><strong>No code on the robot.</strong> The board is an ordinary game controller. Your OpMode or robot code reads buttons exactly the way it reads a gamepad.</li>
 <li><strong>Works with both Driver Stations.</strong> An FRC-friendly HID gamepad with 32 buttons, or an XInput gamepad for the FTC Driver Station — one setting, no hardware change.</li>
 <li><strong>Configured in the browser.</strong> Bind a key by pressing it. No firmware rebuild, no config file.</li>
+<li><strong>Keys that relabel themselves.</strong> A screen key has a colour display inside the cap, so one key can say INTAKE in one part of a match and CLIMB in another.</li>
 <li><strong>LEDs your robot drives.</strong> Tiles with RGB keys can be lit from a companion app on the Driver Station laptop, so the panel reacts to what the robot is doing.</li>
 </ul>
 <h2 id="how-it-fits-together">How it fits together<a class="headerlink" href="#how-it-fits-together" title="Permanent link">#</a></h2>
@@ -129,10 +135,14 @@
 <td>Light the panel from robot state</td>
 <td><a href="driver-station/install.html">Driver Station app</a></td>
 </tr>
+<tr>
+<td>Change a key&rsquo;s legend mid-match</td>
+<td><a href="configuring/screen-keys.html">Screen keys and legends</a></td>
+</tr>
 </tbody>
 </table>
 <div class="hint hint-info">
-<p>Two things this board deliberately is not: it is not a keyboard, and it does not run your robot code. It is a controller the Driver Station already knows how to talk to, so nothing on the robot has to change to use one.</p>
+<p>Two things this board deliberately is not: it is not a keyboard, and it does not run your robot code. It is a controller the Driver Station already knows how to talk to, so nothing on the robot has to change to use one. The one exception is changing a screen key&rsquo;s legend during a match, which needs a few lines in your OpMode — see <a href="on-the-robot/legends.html">Changing legends in a match</a>.</p>
 </div>
     </article>
     <nav class="pager-row"><a class="pager next" href="getting-started/hardware.html"><span class="pager-label">Next</span><span class="pager-title">What you have</span></a></nav>

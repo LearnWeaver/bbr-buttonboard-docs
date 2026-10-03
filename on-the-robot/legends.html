@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Changing legends in a match · BBR Button Board</title>
+<meta name="description" content="Changing legends in a match A screen key can show a different legend as the match goes on — INTAKE while you are collecting, SCORE while you are lined up, CLIMB in the endgame. Thi">
+<link rel="canonical" href="https://buttonboard.buildingblockrobotics.com/on-the-robot/legends.html">
+<link rel="stylesheet" href="../style.css">
+<script>
+  // Set the theme before first paint so the page never flashes the wrong one.
+  try {
+    var t = localStorage.getItem('bbr-theme');
+    if (t) document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+</script>
+</head>
+<body class="page">
+
+<a class="skip" href="#content">Skip to content</a>
+
+<header class="topbar">
+  <button class="menu-btn" aria-label="Toggle navigation" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+  <a class="brand" href="../index.html">
+    <span class="brand-name">BBR Button Board</span>
+    <span class="brand-tagline">Documentation</span>
+  </a>
+  <div class="search" role="search">
+    <input type="search" id="search-input" placeholder="Search"
+           autocomplete="off" spellcheck="false" aria-label="Search the documentation">
+    <kbd class="search-key">/</kbd>
+    <div id="search-results" class="search-results" hidden></div>
+  </div>
+  <button class="theme-btn" aria-label="Toggle dark mode" title="Toggle dark mode">
+    <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <circle cx="12" cy="12" r="4.5"/>
+      <g class="rays"><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.4 4.4l2.1 2.1M17.5 17.5l2.1 2.1M19.6 4.4l-2.1 2.1M6.5 17.5l-2.1 2.1"/></g>
+    </svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/>
+    </svg>
+  </button>
+</header>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <nav aria-label="Documentation">
+      <ul class="nav-list">
+<li><a href="../index.html">BBR Button Board</a></li>
+</ul>
+<p class="nav-group">Getting started</p>
+<ul class="nav-list">
+<li><a href="../getting-started/hardware.html">What you have</a></li>
+<li><a href="../getting-started/wiring.html">Plugging it together</a></li>
+<li><a href="../getting-started/first-run.html">First run</a></li>
+<li><a href="../getting-started/firmware.html">Updating the firmware</a></li>
+</ul>
+<p class="nav-group">Configuring</p>
+<ul class="nav-list">
+<li><a href="../configuring/config-app.html">The config app</a></li>
+<li><a href="../configuring/binding.html">Binding buttons</a></li>
+<li><a href="../configuring/leds.html">LED colours</a></li>
+<li><a href="../configuring/encoders.html">Rotary encoders</a></li>
+<li><a href="../configuring/screen-keys.html">Screen keys and legends</a></li>
+</ul>
+<p class="nav-group">On the robot</p>
+<ul class="nav-list">
+<li><a href="../on-the-robot/legends.html" class="active">Changing legends in a match</a></li>
+</ul>
+<p class="nav-group">Driver Station app</p>
+<ul class="nav-list">
+<li><a href="../driver-station/install.html">Install the library</a></li>
+<li><a href="../driver-station/first-script.html">Your first script</a></li>
+<li><a href="../driver-station/api.html">Python API summary</a></li>
+</ul>
+<p class="nav-group">Reference</p>
+<ul class="nav-list">
+<li><a href="../reference/commands.html">Serial command reference</a></li>
+<li><a href="../reference/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+    </nav>
+  </aside>
+
+  <main id="content" class="content">
+    <article class="prose">
+      <h1 id="changing-legends-in-a-match">Changing legends in a match<a class="headerlink" href="#changing-legends-in-a-match" title="Permanent link">#</a></h1>
+<p>A <a href="../configuring/screen-keys.html">screen key</a> can show a different legend as the match goes on — INTAKE while you are collecting, SCORE while you are lined up, CLIMB in the endgame. This page is how the robot tells it to.</p>
+<p>It is the one place the Button Board asks for code on the robot. Everything else about the board is an ordinary gamepad.</p>
+<div class="hint hint-info">
+<p>This describes the design, not something you can plug in today. The <code>screenkey1</code> tile has never been manufactured, and <strong>it has not been established that the FTC Driver Station forwards a rumble call to this board at all</strong>. The library is written, tested against both ends of the arithmetic, and unproven on hardware. Read <a href="#what-is-not-proven">What is not proven</a> before you rely on it in a real match.</p>
+</div>
+<h2 id="why-rumble-of-all-things">Why rumble, of all things<a class="headerlink" href="#why-rumble-of-all-things" title="Permanent link">#</a></h2>
+<p>For FTC the board presents itself as an Xbox-style gamepad, and that leaves it with exactly one interface — no serial port, no config channel. During a match there is no way in.</p>
+<p>Except one. The Driver Station can send a gamepad a <strong>rumble</strong> command, and <code>gamepad.rumble()</code> is a normal thing for an OpMode to call. That is a very narrow door: it carries a number, not text. But a stored picture is switched by a number, so the number is all we need.</p>
+<p>The trade is: load the legends before the match, switch them during it with one call.</p>
+<h2 id="the-number-is-a-legend-code-not-a-key">The number is a legend code, not a key<a class="headerlink" href="#the-number-is-a-legend-code-not-a-key" title="Permanent link">#</a></h2>
+<p><code>showLegend(3)</code> does not mean &ldquo;key 3&rdquo;. It means &ldquo;whatever the config app has bound to code 3&rdquo; — see <a href="../configuring/screen-keys.html#binding-legend-codes">Binding legend codes</a>.</p>
+<p>Name the codes in your OpMode for what they <em>mean</em>, and the numbers appear in exactly one place:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">LEGEND_INTAKE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">LEGEND_SCORE</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">LEGEND_CLIMB</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span>
+</code></pre></div>
+
+<p>Someone can then rearrange the panel — a different key, a different picture — without anyone touching the robot code.</p>
+<h2 id="adding-the-library">Adding the library<a class="headerlink" href="#adding-the-library" title="Permanent link">#</a></h2>
+<p>FTC teams copy files; there is no dependency to add beyond the SDK you already have. From the repository:</p>
+<div class="highlight"><pre><span></span><code>cp -r robot/ftc/src/org      TeamCode/src/main/java/
+cp -r robot/ftc/src-ftc/org  TeamCode/src/main/java/
+</code></pre></div>
+
+<p>That leaves three files in <code>org/firstinspires/ftc/teamcode/buttonboard/</code>. Do not copy <code>test/</code> — it is for a desktop JDK and Android Studio will try to build it. If your team uses a different package root, change the <code>package</code> line in all three files to match.</p>
+<p>The rumble API landed in <strong>FTC SDK v7.0</strong>; nothing here needs anything newer.</p>
+<h2 id="a-minimal-opmode">A minimal OpMode<a class="headerlink" href="#a-minimal-opmode" title="Permanent link">#</a></h2>
+<div class="highlight"><pre><span></span><code><span class="nd">@TeleOp</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Button Board legends"</span><span class="p">)</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">LegendDemo</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">LinearOpMode</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">LEGEND_INTAKE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">LEGEND_SCORE</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">LEGEND_CLIMB</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span>
+
+<span class="w">    </span><span class="nd">@Override</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">runOpMode</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// gamepad1 must be the pad the Button Board bound as.</span>
+<span class="w">        </span><span class="n">ButtonBoard</span><span class="w"> </span><span class="n">board</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ButtonBoard</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">GamepadRumbleSink</span><span class="p">(</span><span class="n">gamepad1</span><span class="p">));</span>
+
+<span class="w">        </span><span class="n">waitForStart</span><span class="p">();</span>
+
+<span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">opModeIsActive</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="c1">// Safe to call every loop: it sends only when the code changes.</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">gamepad1</span><span class="p">.</span><span class="na">right_trigger</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0.5</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="n">board</span><span class="p">.</span><span class="na">showLegend</span><span class="p">(</span><span class="n">LEGEND_CLIMB</span><span class="p">);</span>
+<span class="w">            </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">gamepad1</span><span class="p">.</span><span class="na">a</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="n">board</span><span class="p">.</span><span class="na">showLegend</span><span class="p">(</span><span class="n">LEGEND_SCORE</span><span class="p">);</span>
+<span class="w">            </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="n">board</span><span class="p">.</span><span class="na">showLegend</span><span class="p">(</span><span class="n">LEGEND_INTAKE</span><span class="p">);</span>
+<span class="w">            </span><span class="p">}</span>
+
+<span class="w">            </span><span class="n">telemetry</span><span class="p">.</span><span class="na">addData</span><span class="p">(</span><span class="s">"legend"</span><span class="p">,</span><span class="w"> </span><span class="n">board</span><span class="p">.</span><span class="na">lastLegend</span><span class="p">());</span>
+<span class="w">            </span><span class="n">telemetry</span><span class="p">.</span><span class="na">update</span><span class="p">();</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>The config app writes this call out for you: the <strong>Legend codes</strong> section has an <em>In the OpMode</em> block with the exact line for every code you have bound, and a <strong>Copy</strong> button.</p>
+<h2 id="the-api">The API<a class="headerlink" href="#the-api" title="Permanent link">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>Call</th>
+<th>Does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>showLegend(int code)</code></td>
+<td>Show the legend bound to <code>code</code> — <strong>unless it is already the last one sent</strong>. Returns whether it sent anything. Throws on anything outside 1–15.</td>
+</tr>
+<tr>
+<td><code>refresh()</code></td>
+<td>Send the last code again regardless. For when the board was power-cycled and your belief about it is stale.</td>
+</tr>
+<tr>
+<td><code>forget()</code></td>
+<td>Drop that belief without sending. The next <code>showLegend</code> sends whatever it is given.</td>
+</tr>
+<tr>
+<td><code>lastLegend()</code></td>
+<td>The last code <em>sent</em> — not what the board is known to be showing.</td>
+</tr>
+<tr>
+<td><code>stopRumble()</code></td>
+<td>Send zero power. Stops a real gamepad buzzing; <strong>does not clear the key.</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="call-it-every-loop">Call it every loop<a class="headerlink" href="#call-it-every-loop" title="Permanent link">#</a></h3>
+<p><code>showLegend()</code> remembers what it last sent and suppresses repeats, which is the entire reason to use it rather than calling <code>rumble()</code> yourself. An OpMode loop runs at about 50 Hz, and the SDK&rsquo;s own sample is blunt about not spamming the rumble motors.</p>
+<p>So write it as a plain statement of what the legend should be right now, and let it work out whether anything needs sending.</p>
+<h3 id="there-is-no-way-to-blank-a-key">There is no way to blank a key<a class="headerlink" href="#there-is-no-way-to-blank-a-key" title="Permanent link">#</a></h3>
+<p>Zero is the SDK&rsquo;s <em>stop</em>, so the board ignores it — deliberately, because ending a rumble must not wipe a screen. To show nothing, store a blank picture in a slot, bind a code to it, and show that code.</p>
+<h3 id="if-the-board-is-unplugged-mid-match">If the board is unplugged mid-match<a class="headerlink" href="#if-the-board-is-unplugged-mid-match" title="Permanent link">#</a></h3>
+<p>Nothing tells you. There is no acknowledgement on this path at all: a board in FTC mode cannot answer.</p>
+<p>If it is power-cycled it comes back showing whatever its map starts with, while your OpMode still believes the legend it last sent — so the next <code>showLegend()</code> of that same code is suppressed as a repeat and the panel stays wrong. <code>refresh()</code> is the way out, wired to a button you can reach.</p>
+<h3 id="do-not-use-it-as-an-animation">Do not use it as an animation<a class="headerlink" href="#do-not-use-it-as-an-animation" title="Permanent link">#</a></h3>
+<p>The SDK keeps <strong>one</strong> outgoing rumble at a time and sends it about every 50 ms. Two calls inside one of those windows means the first is thrown away, not queued.</p>
+<p>That is harmless here, because a code names a legend absolutely — the panel converges on the latest one you asked for. What it costs is <em>intermediate</em> legends: flick A → B → C inside 50 ms and B may never appear. If a legend needs to be seen, leave it up for at least a tenth of a second.</p>
+<div class="hint hint-warning">
+<p><strong>Rumble goes to one gamepad.</strong> Whichever position the Driver Station gave the board — gamepad1 or gamepad2 — is the one to construct <code>GamepadRumbleSink</code> with. Send to the other and nothing happens, with no error.</p>
+</div>
+<h2 id="setting-the-board-up-first">Setting the board up first<a class="headerlink" href="#setting-the-board-up-first" title="Permanent link">#</a></h2>
+<p>The codes mean nothing until the pictures are on the tile and the codes are bound, and <strong>neither can be done in FTC mode</strong> — that is the whole reason this channel exists. The order is:</p>
+<ol>
+<li>Put the board in a mode that has the config channel: <strong><code>frc</code></strong> in the config app&rsquo;s Connect screen. Save, then unplug and plug back in.</li>
+<li><a href="../configuring/screen-keys.html">Load the pictures into slots and bind the codes.</a> Save.</li>
+<li>Switch back to <strong><code>xinput</code></strong>, save, unplug and plug back in.</li>
+<li>Check which gamepad position the Driver Station gives it.</li>
+</ol>
+<p>The bindings live in your saved configuration, so step 2 survives step 3.</p>
+<div class="hint hint-warning">
+<p>The config app offers a <em>&ldquo;bind the next code&rdquo;</em> button that waits for a rumble and binds whichever code arrives. <strong>Against a real board it will wait forever.</strong> No single board can both receive a rumble and report that it did — the mode with the rumble endpoint has no config channel to report on. It works against the fake board, and it becomes real if the two are ever combined. Bind by picking the number instead; that works everywhere.</p>
+</div>
+<h2 id="what-is-not-proven">What is not proven<a class="headerlink" href="#what-is-not-proven" title="Permanent link">#</a></h2>
+<p>None of this has run on hardware, and it is worth being precise about which parts are assumptions:</p>
+<ul>
+<li><strong>No part of this path has been tested on a real board</strong> — not the OpMode, not the Driver Station&rsquo;s forwarding, not the board&rsquo;s decoding of a real rumble packet.</li>
+<li><strong>That the Driver Station forwards a rumble to this board is not established.</strong> What has been tested is only that an FTC Driver Hub recognises the board as a gamepad. Whether its rumble path reaches a device with this board&rsquo;s identity is exactly the open question.</li>
+<li><strong>The ~50 ms rate limit is read out of the SDK&rsquo;s source, not measured.</strong></li>
+<li><strong>Latency is unknown.</strong> Showing a stored picture takes about a frame at the tile, but the time from <code>showLegend()</code> to pixels also includes the Driver Station, the radio link and the bus, and none of it has been timed.</li>
+<li><strong><code>isRumbling()</code> will say <code>true</code></strong> for the length of each step even though the board has no motors to rumble. Do not gate legend changes on it — you would suppress real ones.</li>
+</ul>
+    </article>
+    <nav class="pager-row"><a class="pager prev" href="../configuring/screen-keys.html"><span class="pager-label">Previous</span><span class="pager-title">Screen keys and legends</span></a><a class="pager next" href="../driver-station/install.html"><span class="pager-label">Next</span><span class="pager-title">Install the library</span></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/LearnWeaver/BBRControlBoard/edit/main/docs/gitbook/on-the-robot/legends.md" rel="noopener">Edit this page on GitHub</a>
+    </footer>
+  </main>
+
+  <aside class="onpage" aria-label="On this page">
+    <p class="toc-title">On this page</p>
+<ul class="toc-list">
+<li><a href="#why-rumble-of-all-things">Why rumble, of all things</a>
+</li>
+<li><a href="#the-number-is-a-legend-code-not-a-key">The number is a legend code, not a key</a>
+</li>
+<li><a href="#adding-the-library">Adding the library</a>
+</li>
+<li><a href="#a-minimal-opmode">A minimal OpMode</a>
+</li>
+<li><a href="#the-api">The API</a>
+<ul class="toc-sub">
+<li><a href="#call-it-every-loop">Call it every loop</a></li>
+<li><a href="#there-is-no-way-to-blank-a-key">There is no way to blank a key</a></li>
+<li><a href="#if-the-board-is-unplugged-mid-match">If the board is unplugged mid-match</a></li>
+<li><a href="#do-not-use-it-as-an-animation">Do not use it as an animation</a></li>
+</ul>
+</li>
+<li><a href="#setting-the-board-up-first">Setting the board up first</a>
+</li>
+<li><a href="#what-is-not-proven">What is not proven</a>
+</li>
+</ul>
+  </aside>
+</div>
+
+<div class="scrim" hidden></div>
+<script src="../app.js" defer></script>
+</body>
+</html>

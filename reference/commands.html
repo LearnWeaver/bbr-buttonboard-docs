@@ -63,6 +63,11 @@
 <li><a href="../configuring/binding.html">Binding buttons</a></li>
 <li><a href="../configuring/leds.html">LED colours</a></li>
 <li><a href="../configuring/encoders.html">Rotary encoders</a></li>
+<li><a href="../configuring/screen-keys.html">Screen keys and legends</a></li>
+</ul>
+<p class="nav-group">On the robot</p>
+<ul class="nav-list">
+<li><a href="../on-the-robot/legends.html">Changing legends in a match</a></li>
 </ul>
 <p class="nav-group">Driver Station app</p>
 <ul class="nav-list">
@@ -116,6 +121,10 @@
 <tr>
 <td><code>usb frc</code> | <code>usb xinput</code></td>
 <td>Set the USB personality, applied at the next reset</td>
+</tr>
+<tr>
+<td><code>pixel on</code> | <code>pixel off</code></td>
+<td>Flash the main module&rsquo;s light white on every button press. On by default; <code>save</code> keeps the setting</td>
 </tr>
 <tr>
 <td><code>bind &lt;btn&gt;</code></td>
@@ -198,6 +207,14 @@
 <td>Stop</td>
 </tr>
 <tr>
+<td><code>disp &lt;addr&gt; …</code></td>
+<td>Write text, a bar or a picture to a display tile</td>
+</tr>
+<tr>
+<td><code>disp &lt;addr&gt; slot &lt;n&gt; …</code></td>
+<td>Store, show or erase one of the tile&rsquo;s saved pictures</td>
+</tr>
+<tr>
 <td><code>replace &lt;old&gt; &lt;new&gt;</code></td>
 <td>Move a tile&rsquo;s bindings to another address by hand</td>
 </tr>
@@ -248,6 +265,10 @@
 <tr>
 <td><code>player</code></td>
 <td>The FTC Driver Station assigned this board a player number</td>
+</tr>
+<tr>
+<td><code>rumble</code></td>
+<td>A rumble packet arrived, with the legend code it decodes to — FTC mode only</td>
 </tr>
 </tbody>
 </table>

@@ -63,6 +63,11 @@
 <li><a href="../configuring/binding.html" class="active">Binding buttons</a></li>
 <li><a href="../configuring/leds.html">LED colours</a></li>
 <li><a href="../configuring/encoders.html">Rotary encoders</a></li>
+<li><a href="../configuring/screen-keys.html">Screen keys and legends</a></li>
+</ul>
+<p class="nav-group">On the robot</p>
+<ul class="nav-list">
+<li><a href="../on-the-robot/legends.html">Changing legends in a match</a></li>
 </ul>
 <p class="nav-group">Driver Station app</p>
 <ul class="nav-list">
@@ -88,7 +93,7 @@
 <p>This indirection is the whole point. Your robot code refers to Button 7, and stays true when Button 7 moves to a different key, a different tile, or a different kind of tile entirely.</p>
 <h2 id="binding-a-key">Binding a key<a class="headerlink" href="#binding-a-key" title="Permanent link">#</a></h2>
 <p>In <strong>Configure</strong>, click the key, choose a button number, and press the key to confirm. The board waits for the press itself, so there is no way to bind the wrong key by mistyping a number.</p>
-<p>Rebinding a key to a different button replaces the old binding. A key feeds at most one button.</p>
+<p>Rebinding a key to a different button replaces the old binding, including any combo the key was part of.</p>
 <h2 id="groups-several-keys-one-button">Groups: several keys, one button<a class="headerlink" href="#groups-several-keys-one-button" title="Permanent link">#</a></h2>
 <p>Several keys <strong>can</strong> feed the same button. The button is pressed while any of them is down.</p>
 <p>This is what you want for:</p>
@@ -98,8 +103,18 @@
 <li>An arcade button and a keypad key that do the same job.</li>
 </ul>
 <p>Add a key to an existing button rather than replacing it, and up to 16 keys can share one button.</p>
+<h2 id="combos-one-key-several-buttons">Combos: one key, several buttons<a class="headerlink" href="#combos-one-key-several-buttons" title="Permanent link">#</a></h2>
+<p>The reverse works too. One key can press several buttons at once, and releasing it releases them all together.</p>
+<p>The case that needs it is FTC. The Driver Station assigns a pad to <strong>gamepad 1</strong> when it sees <strong>Start+A</strong>, and to <strong>gamepad 2</strong> on <strong>Start+B</strong>. That normally takes two hands. Bind one key to each and it takes one press.</p>
+<p>In <strong>Configure</strong>, click the key, then:</p>
+<ul>
+<li><strong>Start+A</strong> or <strong>Start+B</strong> sets that combo in one click.</li>
+<li><strong>Combo</strong> turns on toggling: each number you click is added to the key, or taken off it. Click <strong>Combo</strong> again to go back to picking one button.</li>
+</ul>
+<p>The key shows every button it feeds, for example <code>B1+8</code>. A combo does not take the buttons away from other keys: a key bound to Start+A and a separate key bound to Start both work.</p>
+<p>If the buttons in a combo have different LED colours, the key shows the colour of the lowest-numbered one.</p>
 <div class="hint hint-info">
-<p>The reverse is not allowed: one key cannot drive two buttons. If it could, releasing it would have to release both, and &ldquo;which button did that press belong to&rdquo; stops having an answer.</p>
+<p>The Driver Station sees every button in a combo change in the same instant. It does not see Start first and then A. The board sends the combo correctly, but whether the Driver Hub accepts simultaneous presses has not been tested on one yet. If it does not, bind Start and A to two separate keys as before.</p>
 </div>
 <h2 id="debounce">Debounce<a class="headerlink" href="#debounce" title="Permanent link">#</a></h2>
 <p>Mechanical switches make and break contact several times in the few milliseconds around a press. The tile filters that out, and the default — 5 ms — suits every switch these tiles are designed for.</p>
@@ -131,6 +146,8 @@
 <li><a href="#binding-a-key">Binding a key</a>
 </li>
 <li><a href="#groups-several-keys-one-button">Groups: several keys, one button</a>
+</li>
+<li><a href="#combos-one-key-several-buttons">Combos: one key, several buttons</a>
 </li>
 <li><a href="#debounce">Debounce</a>
 </li>

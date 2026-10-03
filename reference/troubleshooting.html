@@ -63,6 +63,11 @@
 <li><a href="../configuring/binding.html">Binding buttons</a></li>
 <li><a href="../configuring/leds.html">LED colours</a></li>
 <li><a href="../configuring/encoders.html">Rotary encoders</a></li>
+<li><a href="../configuring/screen-keys.html">Screen keys and legends</a></li>
+</ul>
+<p class="nav-group">On the robot</p>
+<ul class="nav-list">
+<li><a href="../on-the-robot/legends.html">Changing legends in a match</a></li>
 </ul>
 <p class="nav-group">Driver Station app</p>
 <ul class="nav-list">
@@ -114,11 +119,18 @@
 <li>A worn microswitch chattering — raise that tile&rsquo;s debounce.</li>
 <li>If <strong>every</strong> button on a tile misbehaves at once, suspect the bus rather than the switches: check the counters, the cable and the terminators.</li>
 </ul>
+<h2 id="is-the-board-sending-my-presses-at-all">Is the board sending my presses at all?<a class="headerlink" href="#is-the-board-sending-my-presses-at-all" title="Permanent link">#</a></h2>
+<p>The main module&rsquo;s small RGB light flashes white each time a button is pressed, as the board sends it over USB. That works in every personality, <code>xinput</code> included, so it answers &ldquo;is it the board or the Driver Station&rdquo; without a laptop.</p>
+<ul>
+<li><strong>Flashes, but the Driver Station sees nothing:</strong> the board is fine. Check the personality and the Driver Station&rsquo;s own settings.</li>
+<li><strong>No flash:</strong> the key is not bound, the tile is lost, or the board is in bind mode. Check <strong>Configure</strong>.</li>
+<li><strong>Never flashes at all:</strong> it may be turned off. It is the <strong>Status light</strong> checkbox on the <strong>Connect</strong> screen.</li>
+</ul>
 <h2 id="the-driver-station-sees-the-wrong-thing">The Driver Station sees the wrong thing<a class="headerlink" href="#the-driver-station-sees-the-wrong-thing" title="Permanent link">#</a></h2>
 <ul>
 <li><strong>FRC expects <code>frc</code>; FTC expects <code>xinput</code>.</strong> Check on the <strong>Connect</strong> screen.</li>
 <li>A personality change only takes effect at a USB reset. Unplug and plug back in.</li>
-<li>Under FTC, bind the pad with Start+A or Start+B as usual.</li>
+<li>Under FTC, bind the pad with Start+A or Start+B as usual. A key bound as a Start+A or Start+B combo does it in one press (see <a href="../configuring/binding.html">Binding buttons</a>).</li>
 </ul>
 <p>Use <strong>Diagnose → Test</strong> to settle where the problem is: it makes the board report presses with no tile involved. If the Driver Station sees those, everything from the board to the laptop is fine and the problem is on the bus or in the bindings.</p>
 <h2 id="leds-are-dimmer-than-i-set-them">LEDs are dimmer than I set them<a class="headerlink" href="#leds-are-dimmer-than-i-set-them" title="Permanent link">#</a></h2>
@@ -147,6 +159,8 @@
 <li><a href="#a-key-does-nothing">A key does nothing</a>
 </li>
 <li><a href="#buttons-stick-on-or-fire-on-their-own">Buttons stick on, or fire on their own</a>
+</li>
+<li><a href="#is-the-board-sending-my-presses-at-all">Is the board sending my presses at all?</a>
 </li>
 <li><a href="#the-driver-station-sees-the-wrong-thing">The Driver Station sees the wrong thing</a>
 </li>

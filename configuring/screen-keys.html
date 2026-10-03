@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Screen keys and legends · BBR Button Board</title>
+<meta name="description" content="Screen keys and legends Most keys have a legend printed on the cap, and changing it means pulling the cap off. A screen key has a colour display inside the cap, so the legend is so">
+<link rel="canonical" href="https://buttonboard.buildingblockrobotics.com/configuring/screen-keys.html">
+<link rel="stylesheet" href="../style.css">
+<script>
+  // Set the theme before first paint so the page never flashes the wrong one.
+  try {
+    var t = localStorage.getItem('bbr-theme');
+    if (t) document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+</script>
+</head>
+<body class="page">
+
+<a class="skip" href="#content">Skip to content</a>
+
+<header class="topbar">
+  <button class="menu-btn" aria-label="Toggle navigation" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+  <a class="brand" href="../index.html">
+    <span class="brand-name">BBR Button Board</span>
+    <span class="brand-tagline">Documentation</span>
+  </a>
+  <div class="search" role="search">
+    <input type="search" id="search-input" placeholder="Search"
+           autocomplete="off" spellcheck="false" aria-label="Search the documentation">
+    <kbd class="search-key">/</kbd>
+    <div id="search-results" class="search-results" hidden></div>
+  </div>
+  <button class="theme-btn" aria-label="Toggle dark mode" title="Toggle dark mode">
+    <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <circle cx="12" cy="12" r="4.5"/>
+      <g class="rays"><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.4 4.4l2.1 2.1M17.5 17.5l2.1 2.1M19.6 4.4l-2.1 2.1M6.5 17.5l-2.1 2.1"/></g>
+    </svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/>
+    </svg>
+  </button>
+</header>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <nav aria-label="Documentation">
+      <ul class="nav-list">
+<li><a href="../index.html">BBR Button Board</a></li>
+</ul>
+<p class="nav-group">Getting started</p>
+<ul class="nav-list">
+<li><a href="../getting-started/hardware.html">What you have</a></li>
+<li><a href="../getting-started/wiring.html">Plugging it together</a></li>
+<li><a href="../getting-started/first-run.html">First run</a></li>
+<li><a href="../getting-started/firmware.html">Updating the firmware</a></li>
+</ul>
+<p class="nav-group">Configuring</p>
+<ul class="nav-list">
+<li><a href="../configuring/config-app.html">The config app</a></li>
+<li><a href="../configuring/binding.html">Binding buttons</a></li>
+<li><a href="../configuring/leds.html">LED colours</a></li>
+<li><a href="../configuring/encoders.html">Rotary encoders</a></li>
+<li><a href="../configuring/screen-keys.html" class="active">Screen keys and legends</a></li>
+</ul>
+<p class="nav-group">On the robot</p>
+<ul class="nav-list">
+<li><a href="../on-the-robot/legends.html">Changing legends in a match</a></li>
+</ul>
+<p class="nav-group">Driver Station app</p>
+<ul class="nav-list">
+<li><a href="../driver-station/install.html">Install the library</a></li>
+<li><a href="../driver-station/first-script.html">Your first script</a></li>
+<li><a href="../driver-station/api.html">Python API summary</a></li>
+</ul>
+<p class="nav-group">Reference</p>
+<ul class="nav-list">
+<li><a href="../reference/commands.html">Serial command reference</a></li>
+<li><a href="../reference/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+    </nav>
+  </aside>
+
+  <main id="content" class="content">
+    <article class="prose">
+      <h1 id="screen-keys-and-legends">Screen keys and legends<a class="headerlink" href="#screen-keys-and-legends" title="Permanent link">#</a></h1>
+<p>Most keys have a legend printed on the cap, and changing it means pulling the cap off. A <strong>screen key</strong> has a colour display <em>inside</em> the cap, so the legend is software — the same physical key can say INTAKE in one part of a match and CLIMB in another.</p>
+<div class="hint hint-info">
+<p>Screen keys are the newest part of the system, and further from your hands than the encoder tiles are. The protocol, the config app and the tile firmware all support them; <strong>the board has never been manufactured</strong>, and nothing on this page has run on real hardware. Everything here describes the design and works against the config app&rsquo;s built-in fake board.</p>
+</div>
+<h2 id="the-two-display-tiles">The two display tiles<a class="headerlink" href="#the-two-display-tiles" title="Permanent link">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>Tile</th>
+<th>Panel</th>
+<th>Keys</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>disp1</strong></td>
+<td>128 × 32 monochrome, 21 columns × 4 rows of text</td>
+<td>none — it is a readout, not a control</td>
+</tr>
+<tr>
+<td><strong>screenkey1</strong></td>
+<td>128 × 128 colour, inside a key cap</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<p><code>disp1</code> is the panel you put on the panel: match time, a mechanism state, a message from the robot. <code>screenkey1</code> is one key whose cap is the screen.</p>
+<p>Both are ordinary tiles on the same chain, in any order, and both are addressed like any other.</p>
+<h2 id="text-is-cheap-pictures-are-not">Text is cheap, pictures are not<a class="headerlink" href="#text-is-cheap-pictures-are-not" title="Permanent link">#</a></h2>
+<p>A display tile holds a <strong>grid of characters</strong>, not a picture. The board sends text and the tile draws it with its own font. That is what keeps a screen tile affordable in bus time — a line of text is a few dozen bytes.</p>
+<p>A picture is a different matter. A 128 × 128 full-colour image is 32 KB, which is a couple of seconds of bus with everything else waiting. So there are two ways to put one on a panel, and choosing between them is the whole of this page:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><strong>Stream it</strong></th>
+<th><strong>Store it in a slot</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Colours</td>
+<td>Two, dithered</td>
+<td><strong>Full colour</strong></td>
+</tr>
+<tr>
+<td>Cost to show</td>
+<td>~0.2 s of bus, <strong>every time</strong></td>
+<td>One frame — a few milliseconds</td>
+</tr>
+<tr>
+<td>Cost to load</td>
+<td>none</td>
+<td>seconds, <strong>once</strong></td>
+</tr>
+<tr>
+<td>Kept where</td>
+<td>nowhere; the panel holds it until cleared</td>
+<td>the tile&rsquo;s own flash chip</td>
+</tr>
+</tbody>
+</table>
+<p>Streaming is right for something you show once. <strong>Storing is what makes a legend work</strong>, and it is the reason a screen key can be in colour at all: the picture only has to cross the bus at configuration time, so the bus objection to 16-bit colour disappears. After that, changing legends is as cheap as changing a light.</p>
+<p>A <code>screenkey1</code> has room for several stored pictures. Each numbered place is a <strong>slot</strong>.</p>
+<h2 id="loading-a-picture-into-a-slot">Loading a picture into a slot<a class="headerlink" href="#loading-a-picture-into-a-slot" title="Permanent link">#</a></h2>
+<p>In the config app&rsquo;s <strong>Configure</strong> screen, select the tile and find the <strong>Picture</strong> section of the inspector.</p>
+<ol>
+<li>Choose an image file. The app shows you what the tile will actually draw — re-sized and encoded for that panel — not the file you picked.</li>
+<li>Set <strong>send as</strong> to <em>a stored picture</em>.</li>
+<li>Choose the slot and, on a colour panel, the encoding. Full colour is <code>rgb565</code>; the one-bit form is smaller and faster to load.</li>
+<li>Press <strong>Store in slot <em>n</em></strong>.</li>
+</ol>
+<p>The slot is erased the moment the transfer starts and is not a picture again until the whole thing arrives and its checksum matches. So an interrupted store leaves the slot <strong>empty</strong>, never half-drawn. If it fails, the app says so and you store it again.</p>
+<p>The <strong>Slots</strong> section lists what is in each one, with <strong>Show</strong> and <strong>Erase</strong> buttons for checking your work.</p>
+<div class="hint hint-warning">
+<p>What a slot holds cannot be read back — there is no command that asks. The list in the config app is what <em>that page</em> put there, not what the tile reports. Close the tab and it forgets; the pictures stay on the tile.</p>
+</div>
+<h2 id="binding-legend-codes">Binding legend codes<a class="headerlink" href="#binding-legend-codes" title="Permanent link">#</a></h2>
+<p>A stored picture is switched by a number, and that number is what robot code sends. The <strong>Legend codes</strong> section of the same inspector binds them.</p>
+<p>There are fifteen codes, 1 to 15. Each row picks a slot on this tile:</p>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Bound to</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>slot 0 — intake.png</td>
+<td></td>
+</tr>
+<tr>
+<td>2</td>
+<td>slot 3 — climb.png</td>
+<td></td>
+</tr>
+<tr>
+<td>3</td>
+<td><em>unbound</em></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>A code with no binding does nothing. So does a binding whose tile is unplugged or whose slot is empty — a match is not the place to pop up a configuration error.</p>
+<p><strong>Zero is never a legend.</strong> Zero is how the robot <em>stops</em> a rumble, and stopping a rumble must not change what is on a screen.</p>
+<p>Bindings are part of your saved configuration, so press <strong>Save</strong> when you are happy with them.</p>
+<h3 id="why-the-indirection-is-worth-it">Why the indirection is worth it<a class="headerlink" href="#why-the-indirection-is-worth-it" title="Permanent link">#</a></h3>
+<p>A code does not name a key and it does not name a picture. It names <em>an entry in the map</em>, which says which tile and which slot.</p>
+<p>That means the layout can change without the robot code changing. Move the legend to a different key, swap the picture for a better one, rearrange the panel between matches — the OpMode still says &ldquo;show code 3&rdquo;, and code 3 is whatever you have most recently decided it means.</p>
+<h2 id="getting-them-there-from-a-terminal">Getting them there from a terminal<a class="headerlink" href="#getting-them-there-from-a-terminal" title="Permanent link">#</a></h2>
+<p>Everything above is also a command on the <a href="../reference/commands.html">serial channel</a>, if you would rather script it:</p>
+<div class="highlight"><pre><span></span><code>python3<span class="w"> </span>tools/bbctl.py<span class="w"> </span>--rumble-list<span class="w">              </span><span class="c1"># what is bound now</span>
+python3<span class="w"> </span>tools/bbctl.py<span class="w"> </span>--rumble-bind<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="m">5</span><span class="w"> </span><span class="m">0</span><span class="w">        </span><span class="c1"># code 3 → tile 5, slot 0</span>
+</code></pre></div>
+
+<p>Loading a picture is <code>disp &lt;addr&gt; slot &lt;n&gt; begin/data/end</code>, which <code>tools/bb</code> wraps.</p>
+<h2 id="next">Next<a class="headerlink" href="#next" title="Permanent link">#</a></h2>
+<p>Once the pictures are stored and the codes are bound, the robot can switch between them mid-match — see <a href="../on-the-robot/legends.html">Changing legends in a match</a>.</p>
+    </article>
+    <nav class="pager-row"><a class="pager prev" href="../configuring/encoders.html"><span class="pager-label">Previous</span><span class="pager-title">Rotary encoders</span></a><a class="pager next" href="../on-the-robot/legends.html"><span class="pager-label">Next</span><span class="pager-title">Changing legends in a match</span></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/LearnWeaver/BBRControlBoard/edit/main/docs/gitbook/configuring/screen-keys.md" rel="noopener">Edit this page on GitHub</a>
+    </footer>
+  </main>
+
+  <aside class="onpage" aria-label="On this page">
+    <p class="toc-title">On this page</p>
+<ul class="toc-list">
+<li><a href="#the-two-display-tiles">The two display tiles</a>
+</li>
+<li><a href="#text-is-cheap-pictures-are-not">Text is cheap, pictures are not</a>
+</li>
+<li><a href="#loading-a-picture-into-a-slot">Loading a picture into a slot</a>
+</li>
+<li><a href="#binding-legend-codes">Binding legend codes</a>
+<ul class="toc-sub">
+<li><a href="#why-the-indirection-is-worth-it">Why the indirection is worth it</a></li>
+</ul>
+</li>
+<li><a href="#getting-them-there-from-a-terminal">Getting them there from a terminal</a>
+</li>
+<li><a href="#next">Next</a>
+</li>
+</ul>
+  </aside>
+</div>
+
+<div class="scrim" hidden></div>
+<script src="../app.js" defer></script>
+</body>
+</html>
