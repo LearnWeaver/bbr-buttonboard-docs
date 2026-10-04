@@ -90,6 +90,7 @@
 <h2 id="two-layers">Two layers<a class="headerlink" href="#two-layers" title="Permanent link">#</a></h2>
 <p><strong>Defaults</strong> are part of your saved configuration. They are what the panel looks like when it powers up: a red key for the emergency stop, blue for the intake, dark for everything unbound. Set them in the config app&rsquo;s <strong>Configure</strong> screen, and press <strong>Save</strong>.</p>
 <p><strong>The live layer</strong> is set at runtime, over USB, by a companion app on the Driver Station laptop. It is never saved. This is what makes a panel react — flash the arm button red while the arm is out of bounds, light the scoring buttons only when the robot is in range.</p>
+<p>In FTC mode there is no USB channel for a companion app, but the robot can still write the live layer: a rumble code can be set up to recolour keys. See <a href="../on-the-robot/legends.html#changing-a-keys-colour-the-same-way">Changing a key&rsquo;s colour the same way</a>.</p>
 <p>The live layer wins wherever both are set, per LED. Clearing it returns every LED to the saved defaults. See <a href="../driver-station/install.html">Driver Station app</a> for how to write to it.</p>
 <h2 id="colours-follow-the-button-not-the-key">Colours follow the button, not the key<a class="headerlink" href="#colours-follow-the-button-not-the-key" title="Permanent link">#</a></h2>
 <p>An LED colour set for a <strong>logical button</strong> moves with that button. Rebind Button 7 to a different key and its colour goes with it — which is almost always what you meant.</p>

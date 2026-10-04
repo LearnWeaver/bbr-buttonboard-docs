@@ -190,11 +190,17 @@ cp -r robot/ftc/src-ftc/org  TeamCode/src/main/java/
 <div class="hint hint-warning">
 <p><strong>Rumble goes to one gamepad.</strong> Whichever position the Driver Station gave the board — gamepad1 or gamepad2 — is the one to construct <code>GamepadRumbleSink</code> with. Send to the other and nothing happens, with no error.</p>
 </div>
+<h2 id="changing-a-keys-colour-the-same-way">Changing a key&rsquo;s colour the same way<a class="headerlink" href="#changing-a-keys-colour-the-same-way" title="Permanent link">#</a></h2>
+<p>A code can also recolour keys. In the config app, select a key on an RGB tile, and under <strong>Robot colour</strong> pick a code, an effect and a colour. When the robot sends that code, the key takes that colour. If the same code also has a legend bound, one <code>showLegend()</code> call changes both, so a key can turn red and read CLIMB at the same moment.</p>
+<p>There are two special colours. <strong>∅</strong> turns the LED off. <strong>normal</strong> puts the key back on the colour it has in your saved configuration.</p>
+<p>A code changes only the keys it names. Because the SDK can drop a code sent less than 50 ms before the next one, don&rsquo;t rely on an in-between code having arrived. If code 5 means &ldquo;back to normal&rdquo;, give code 5 a <strong>normal</strong> entry for every key your other codes recolour.</p>
+<p>These colours live on the board&rsquo;s live LED layer, the same one the <a href="../driver-station/install.html">Driver Station app</a> writes. They are not saved, and a power cycle or <code>led reset</code> clears them. That brings the same problem as an unplugged board above: <code>showLegend()</code> thinks the colour is still showing, so <code>refresh()</code> is the way to put it back.</p>
+<p>The map holds up to 32 robot colours in total.</p>
 <h2 id="setting-the-board-up-first">Setting the board up first<a class="headerlink" href="#setting-the-board-up-first" title="Permanent link">#</a></h2>
 <p>The codes mean nothing until the pictures are on the tile and the codes are bound, and <strong>neither can be done in FTC mode</strong> — that is the whole reason this channel exists. The order is:</p>
 <ol>
 <li>Put the board in a mode that has the config channel: <strong><code>frc</code></strong> in the config app&rsquo;s Connect screen. Save, then unplug and plug back in.</li>
-<li><a href="../configuring/screen-keys.html">Load the pictures into slots and bind the codes.</a> Save.</li>
+<li><a href="../configuring/screen-keys.html">Load the pictures into slots and bind the codes.</a> Add any robot colours. Save.</li>
 <li>Switch back to <strong><code>xinput</code></strong>, save, unplug and plug back in.</li>
 <li>Check which gamepad position the Driver Station gives it.</li>
 </ol>
@@ -236,6 +242,8 @@ cp -r robot/ftc/src-ftc/org  TeamCode/src/main/java/
 <li><a href="#if-the-board-is-unplugged-mid-match">If the board is unplugged mid-match</a></li>
 <li><a href="#do-not-use-it-as-an-animation">Do not use it as an animation</a></li>
 </ul>
+</li>
+<li><a href="#changing-a-keys-colour-the-same-way">Changing a key’s colour the same way</a>
 </li>
 <li><a href="#setting-the-board-up-first">Setting the board up first</a>
 </li>
