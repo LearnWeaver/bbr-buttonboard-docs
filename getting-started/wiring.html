@@ -99,8 +99,22 @@ terminator                      terminator
 <li><strong>Cables are straight through.</strong> Pin 1 to pin 1. There is no crossover cable in this system.</li>
 <li><strong>Up to 31 tiles</strong>, and up to about 4 m of cable in total.</li>
 </ul>
+<h2 id="splitting-the-chain">Splitting the chain<a class="headerlink" href="#splitting-the-chain" title="Permanent link">#</a></h2>
+<p>A <strong>splitter</strong> is a small square board with four connectors wired in parallel. Use one where the cable wants to go in more than one direction, for example along both sides of a panel:</p>
+<div class="highlight"><pre><span></span><code>main module ──── mx9 ──── splitter ──── mx9 ──── enc2
+     │                       │                    │
+terminator                  mx4               terminator
+</code></pre></div>
+
+<p>The bus doesn&rsquo;t care: tiles on a branch are found and addressed exactly like tiles on the main run. What changes is where the terminators go:</p>
+<ul>
+<li><strong>Still exactly two terminators</strong>, at the two ends that are <strong>farthest apart along the cable</strong>. In the drawing that&rsquo;s the main module and the enc2. The mx4 on the short branch gets none.</li>
+<li><strong>Never a terminator on a splitter</strong>, unless that splitter is itself at one of the two far ends.</li>
+<li><strong>No loops.</strong> Never cable back to a board that is already on the bus. Nothing detects a loop, and it leaves the bus with no ends to terminate.</li>
+<li><strong>Count the branches in the 4 m.</strong> The limit is the total of every cable on the bus.</li>
+</ul>
 <h2 id="terminators-go-at-both-ends">Terminators go at both ends<a class="headerlink" href="#terminators-go-at-both-ends" title="Permanent link">#</a></h2>
-<p>The two connectors that end up with nothing plugged into them — one on the main module, one on the last tile — each take a <strong>terminator</strong>.</p>
+<p>On a plain chain, the two connectors that end up with nothing plugged into them — one on the main module, one on the last tile — each take a <strong>terminator</strong>. With a splitter, see the rules above.</p>
 <div class="hint hint-warning">
 <p>Fit both. A chain missing a terminator usually works on the bench and then loses tiles under vibration or on a longer cable, which reads as a key that &ldquo;sometimes doesn&rsquo;t work&rdquo; rather than as a wiring fault.</p>
 </div>
@@ -159,6 +173,8 @@ terminator                      terminator
     <p class="toc-title">On this page</p>
 <ul class="toc-list">
 <li><a href="#the-chain">The chain</a>
+</li>
+<li><a href="#splitting-the-chain">Splitting the chain</a>
 </li>
 <li><a href="#terminators-go-at-both-ends">Terminators go at both ends</a>
 </li>
