@@ -4,8 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>LED colours · BBR Button Board</title>
-<meta name="description" content="LED colours Tiles with RGB keys — mx9rgb today — have one addressable LED under every key. There are two independent ways to drive them, and understanding which is which saves a lo">
+<meta name="description" content="LED colours Tiles with RGB keys — mx9rgb today — have one addressable LED under every key. There are two independent ways to drive them. Two layers Defaults are part of your saved ">
 <link rel="canonical" href="https://buttonboard.buildingblockrobotics.com/configuring/leds.html">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <link rel="stylesheet" href="../style.css">
 <script>
   // Set the theme before first paint so the page never flashes the wrong one.
@@ -86,14 +89,14 @@
   <main id="content" class="content">
     <article class="prose">
       <h1 id="led-colours">LED colours<a class="headerlink" href="#led-colours" title="Permanent link">#</a></h1>
-<p>Tiles with RGB keys — <code>mx9rgb</code> today — have one addressable LED under every key. There are two independent ways to drive them, and understanding which is which saves a lot of confusion.</p>
+<p>Tiles with RGB keys — <code>mx9rgb</code> today — have one addressable LED under every key. There are two independent ways to drive them.</p>
 <h2 id="two-layers">Two layers<a class="headerlink" href="#two-layers" title="Permanent link">#</a></h2>
 <p><strong>Defaults</strong> are part of your saved configuration. They are what the panel looks like when it powers up: a red key for the emergency stop, blue for the intake, dark for everything unbound. Set them in the config app&rsquo;s <strong>Configure</strong> screen, and press <strong>Save</strong>.</p>
-<p><strong>The live layer</strong> is set at runtime, over USB, by a companion app on the Driver Station laptop. It is never saved. This is what makes a panel react — flash the arm button red while the arm is out of bounds, light the scoring buttons only when the robot is in range.</p>
+<p><strong>The live layer</strong> is set at runtime, over USB, by a companion app on the Driver Station laptop. It is never saved. Use it to, for example, flash the arm button red while the arm is out of bounds, or light the scoring buttons only when the robot is in range.</p>
 <p>In FTC mode there is no USB channel for a companion app, but the robot can still write the live layer: a rumble code can be set up to recolour keys. See <a href="../on-the-robot/legends.html#changing-a-keys-colour-the-same-way">Changing a key&rsquo;s colour the same way</a>.</p>
 <p>The live layer wins wherever both are set, per LED. Clearing it returns every LED to the saved defaults. See <a href="../driver-station/install.html">Driver Station app</a> for how to write to it.</p>
 <h2 id="colours-follow-the-button-not-the-key">Colours follow the button, not the key<a class="headerlink" href="#colours-follow-the-button-not-the-key" title="Permanent link">#</a></h2>
-<p>An LED colour set for a <strong>logical button</strong> moves with that button. Rebind Button 7 to a different key and its colour goes with it — which is almost always what you meant.</p>
+<p>An LED colour set for a <strong>logical button</strong> moves with that button. Rebind Button 7 to a different key and its colour goes with it.</p>
 <p>LEDs that are not under a bound key — edge glow, spare positions — are addressed by tile and LED number instead.</p>
 <h2 id="effects">Effects<a class="headerlink" href="#effects" title="Permanent link">#</a></h2>
 <table>
@@ -122,19 +125,19 @@
 </tr>
 </tbody>
 </table>
-<p>Effects are generated on the tile, so a blink stays smooth no matter how busy the bus is, and a companion app does not have to send anything to keep it going.</p>
+<p>Once set, an effect keeps running without a companion app sending anything further.</p>
 <h2 id="press-feedback">Press feedback<a class="headerlink" href="#press-feedback" title="Permanent link">#</a></h2>
-<p>By default a key flashes white while it is held, over whatever colour it was showing. It is a small thing that makes a panel feel like it is working — and on a panel where several keys share a button, it shows which one was actually pressed.</p>
+<p>By default a key flashes white while it is held, over whatever colour it was showing. Where several keys share a button, this shows which one was pressed.</p>
 <p>You can change the feedback colour, or turn it off per button.</p>
 <h2 id="brightness-and-the-power-budget">Brightness and the power budget<a class="headerlink" href="#brightness-and-the-power-budget" title="Permanent link">#</a></h2>
-<p>The whole panel runs off the USB cable, and LEDs are what spend that budget.</p>
-<p>Rather than let a big panel brown out, the main module adds up the worst-case draw of every tile on the chain and lowers the <strong>global brightness</strong> until the total fits the budget. So adding a fourth lit tile dims the panel slightly instead of destabilising it.</p>
+<p>The whole panel runs off the USB cable, and the LEDs draw most of that power.</p>
+<p>The main module adds up the worst-case draw of every tile on the chain and lowers the <strong>global brightness</strong> until the total fits the budget. Adding another lit tile dims the whole panel slightly.</p>
 <p>The <strong>Diagnose → Power</strong> view shows all three numbers: the budget, the worst case, and the brightness actually in use. If you are running from a port that can supply more than the default, raise the budget there.</p>
 <div class="hint hint-warning">
-<p>If a panel cannot fit even at minimum brightness, the board holds the LEDs off and raises a fault rather than trying. The Power view says so.</p>
+<p>If a panel cannot fit even at minimum brightness, the board holds the LEDs off and raises a fault. The Power view says so.</p>
 </div>
 <h2 id="turning-everything-off">Turning everything off<a class="headerlink" href="#turning-everything-off" title="Permanent link">#</a></h2>
-<p>There is a single &ldquo;all LEDs off&rdquo; command, and it takes priority over anything else in flight. It is the right thing to reach for when a panel is doing something unexpected on a field.</p>
+<p>There is a single &ldquo;all LEDs off&rdquo; command, and it takes priority over anything else in flight. Use it when a panel is doing something unexpected on a field.</p>
     </article>
     <nav class="pager-row"><a class="pager prev" href="../configuring/binding.html"><span class="pager-label">Previous</span><span class="pager-title">Binding buttons</span></a><a class="pager next" href="../configuring/encoders.html"><span class="pager-label">Next</span><span class="pager-title">Rotary encoders</span></a></nav>
     <footer class="page-footer">

@@ -4,8 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Screen keys and legends · BBR Button Board</title>
-<meta name="description" content="Screen keys and legends Most keys have a legend printed on the cap, and changing it means pulling the cap off. A screen key has a colour display inside the cap, so the legend is so">
+<meta name="description" content="Screen keys and legends A screen key has a colour display inside the cap, so its legend can change: the same key can say INTAKE in one part of a match and CLIMB in another. The pro">
 <link rel="canonical" href="https://buttonboard.buildingblockrobotics.com/configuring/screen-keys.html">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <link rel="stylesheet" href="../style.css">
 <script>
   // Set the theme before first paint so the page never flashes the wrong one.
@@ -86,9 +89,9 @@
   <main id="content" class="content">
     <article class="prose">
       <h1 id="screen-keys-and-legends">Screen keys and legends<a class="headerlink" href="#screen-keys-and-legends" title="Permanent link">#</a></h1>
-<p>Most keys have a legend printed on the cap, and changing it means pulling the cap off. A <strong>screen key</strong> has a colour display <em>inside</em> the cap, so the legend is software — the same physical key can say INTAKE in one part of a match and CLIMB in another.</p>
+<p>A <strong>screen key</strong> has a colour display <em>inside</em> the cap, so its legend can change: the same key can say INTAKE in one part of a match and CLIMB in another.</p>
 <div class="hint hint-info">
-<p>Screen keys are the newest part of the system, and further from your hands than the encoder tiles are. The protocol, the config app and the tile firmware all support them; <strong>the board has never been manufactured</strong>, and nothing on this page has run on real hardware. Everything here describes the design and works against the config app&rsquo;s built-in fake board.</p>
+<p>The protocol, the config app and the tile firmware all support screen keys, but <strong>the board has never been manufactured</strong>, and nothing on this page has run on real hardware. Everything here describes the design and works against the config app&rsquo;s built-in fake board.</p>
 </div>
 <h2 id="the-two-display-tiles">The two display tiles<a class="headerlink" href="#the-two-display-tiles" title="Permanent link">#</a></h2>
 <table>
@@ -112,11 +115,11 @@
 </tr>
 </tbody>
 </table>
-<p><code>disp1</code> is the panel you put on the panel: match time, a mechanism state, a message from the robot. <code>screenkey1</code> is one key whose cap is the screen.</p>
-<p>Both are ordinary tiles on the same chain, in any order, and both are addressed like any other.</p>
-<h2 id="text-is-cheap-pictures-are-not">Text is cheap, pictures are not<a class="headerlink" href="#text-is-cheap-pictures-are-not" title="Permanent link">#</a></h2>
-<p>A display tile holds a <strong>grid of characters</strong>, not a picture. The board sends text and the tile draws it with its own font. That is what keeps a screen tile affordable in bus time — a line of text is a few dozen bytes.</p>
-<p>A picture is a different matter. A 128 × 128 full-colour image is 32 KB, which is a couple of seconds of bus with everything else waiting. So there are two ways to put one on a panel, and choosing between them is the whole of this page:</p>
+<p><code>disp1</code> shows readouts: match time, a mechanism state, a message from the robot. <code>screenkey1</code> is one key whose cap is the screen.</p>
+<p>Both are ordinary tiles: they go anywhere on the chain and are addressed like any other.</p>
+<h2 id="showing-text-and-pictures">Showing text and pictures<a class="headerlink" href="#showing-text-and-pictures" title="Permanent link">#</a></h2>
+<p>A display tile shows <strong>text</strong> in a grid of characters, drawn in the tile&rsquo;s own font.</p>
+<p>There are two ways to show a <strong>picture</strong>:</p>
 <table>
 <thead>
 <tr>
@@ -132,14 +135,14 @@
 <td><strong>Full colour</strong></td>
 </tr>
 <tr>
-<td>Cost to show</td>
-<td>~0.2 s of bus, <strong>every time</strong></td>
-<td>One frame — a few milliseconds</td>
+<td>Time to show</td>
+<td>~0.2 s, <strong>every time</strong></td>
+<td>A few milliseconds</td>
 </tr>
 <tr>
-<td>Cost to load</td>
+<td>Time to load</td>
 <td>none</td>
-<td>seconds, <strong>once</strong></td>
+<td>a few seconds, <strong>once</strong></td>
 </tr>
 <tr>
 <td>Kept where</td>
@@ -148,7 +151,7 @@
 </tr>
 </tbody>
 </table>
-<p>Streaming is right for something you show once. <strong>Storing is what makes a legend work</strong>, and it is the reason a screen key can be in colour at all: the picture only has to cross the bus at configuration time, so the bus objection to 16-bit colour disappears. After that, changing legends is as cheap as changing a light.</p>
+<p>Stream a picture you show once. Store the pictures you use as legends.</p>
 <p>A <code>screenkey1</code> has room for several stored pictures. Each numbered place is a <strong>slot</strong>.</p>
 <h2 id="loading-a-picture-into-a-slot">Loading a picture into a slot<a class="headerlink" href="#loading-a-picture-into-a-slot" title="Permanent link">#</a></h2>
 <p>In the config app&rsquo;s <strong>Configure</strong> screen, select the tile and find the <strong>Picture</strong> section of the inspector.</p>
@@ -158,13 +161,13 @@
 <li>Choose the slot and, on a colour panel, the encoding. Full colour is <code>rgb565</code>; the one-bit form is smaller and faster to load.</li>
 <li>Press <strong>Store in slot <em>n</em></strong>.</li>
 </ol>
-<p>The slot is erased the moment the transfer starts and is not a picture again until the whole thing arrives and its checksum matches. So an interrupted store leaves the slot <strong>empty</strong>, never half-drawn. If it fails, the app says so and you store it again.</p>
-<p>The <strong>Slots</strong> section lists what is in each one, with <strong>Show</strong> and <strong>Erase</strong> buttons for checking your work.</p>
+<p>The slot is erased when the transfer starts and holds a picture again only once the whole transfer has arrived and its checksum matches. An interrupted store leaves the slot <strong>empty</strong>, never half-drawn. If it fails, the app says so; store it again.</p>
+<p>The <strong>Slots</strong> section lists what is in each one, with <strong>Show</strong> and <strong>Erase</strong> buttons.</p>
 <div class="hint hint-warning">
 <p>What a slot holds cannot be read back — there is no command that asks. The list in the config app is what <em>that page</em> put there, not what the tile reports. Close the tab and it forgets; the pictures stay on the tile.</p>
 </div>
 <h2 id="binding-legend-codes">Binding legend codes<a class="headerlink" href="#binding-legend-codes" title="Permanent link">#</a></h2>
-<p>A stored picture is switched by a number, and that number is what robot code sends. The <strong>Legend codes</strong> section of the same inspector binds them.</p>
+<p>A stored picture is switched by a number, and that number is what robot code sends. A code names an entry in a map, which says which tile and which slot, so the panel layout or the pictures can change without changing robot code. The <strong>Legend codes</strong> section of the same inspector binds them.</p>
 <p>There are fifteen codes, 1 to 15. Each row picks a slot on this tile:</p>
 <table>
 <thead>
@@ -192,14 +195,11 @@
 </tr>
 </tbody>
 </table>
-<p>A code with no binding does nothing. So does a binding whose tile is unplugged or whose slot is empty — a match is not the place to pop up a configuration error.</p>
-<p><strong>Zero is never a legend.</strong> Zero is how the robot <em>stops</em> a rumble, and stopping a rumble must not change what is on a screen.</p>
+<p>A code with no binding does nothing, and so does a binding whose tile is unplugged or whose slot is empty. No error is shown.</p>
+<p><strong>Zero is never a legend.</strong> Zero stops a rumble and leaves every screen unchanged.</p>
 <p>Bindings are part of your saved configuration, so press <strong>Save</strong> when you are happy with them.</p>
-<h3 id="why-the-indirection-is-worth-it">Why the indirection is worth it<a class="headerlink" href="#why-the-indirection-is-worth-it" title="Permanent link">#</a></h3>
-<p>A code does not name a key and it does not name a picture. It names <em>an entry in the map</em>, which says which tile and which slot.</p>
-<p>That means the layout can change without the robot code changing. Move the legend to a different key, swap the picture for a better one, rearrange the panel between matches — the OpMode still says &ldquo;show code 3&rdquo;, and code 3 is whatever you have most recently decided it means.</p>
 <h2 id="getting-them-there-from-a-terminal">Getting them there from a terminal<a class="headerlink" href="#getting-them-there-from-a-terminal" title="Permanent link">#</a></h2>
-<p>Everything above is also a command on the <a href="../reference/commands.html">serial channel</a>, if you would rather script it:</p>
+<p>Everything above is also a command on the <a href="../reference/commands.html">serial channel</a>:</p>
 <div class="highlight"><pre><span></span><code>python3<span class="w"> </span>tools/bbctl.py<span class="w"> </span>--rumble-list<span class="w">              </span><span class="c1"># what is bound now</span>
 python3<span class="w"> </span>tools/bbctl.py<span class="w"> </span>--rumble-bind<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="m">5</span><span class="w"> </span><span class="m">0</span><span class="w">        </span><span class="c1"># code 3 → tile 5, slot 0</span>
 </code></pre></div>
@@ -219,14 +219,11 @@ python3<span class="w"> </span>tools/bbctl.py<span class="w"> </span>--rumble-bi
 <ul class="toc-list">
 <li><a href="#the-two-display-tiles">The two display tiles</a>
 </li>
-<li><a href="#text-is-cheap-pictures-are-not">Text is cheap, pictures are not</a>
+<li><a href="#showing-text-and-pictures">Showing text and pictures</a>
 </li>
 <li><a href="#loading-a-picture-into-a-slot">Loading a picture into a slot</a>
 </li>
 <li><a href="#binding-legend-codes">Binding legend codes</a>
-<ul class="toc-sub">
-<li><a href="#why-the-indirection-is-worth-it">Why the indirection is worth it</a></li>
-</ul>
 </li>
 <li><a href="#getting-them-there-from-a-terminal">Getting them there from a terminal</a>
 </li>

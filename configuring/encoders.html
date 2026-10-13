@@ -4,8 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Rotary encoders · BBR Button Board</title>
-<meta name="description" content="Rotary encoders The enc2 tile carries two rotary encoders, each with a push-to-click shaft. They are the right control for anything continuous — arm setpoint, shooter speed, LED br">
+<meta name="description" content="Rotary encoders The enc2 tile carries two rotary encoders, each with a push-to-click shaft. Use them for continuous values — arm setpoint, shooter speed, LED brightness on the robo">
 <link rel="canonical" href="https://buttonboard.buildingblockrobotics.com/configuring/encoders.html">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <link rel="stylesheet" href="../style.css">
 <script>
   // Set the theme before first paint so the page never flashes the wrong one.
@@ -86,20 +89,20 @@
   <main id="content" class="content">
     <article class="prose">
       <h1 id="rotary-encoders">Rotary encoders<a class="headerlink" href="#rotary-encoders" title="Permanent link">#</a></h1>
-<p>The <code>enc2</code> tile carries two rotary encoders, each with a push-to-click shaft. They are the right control for anything continuous — arm setpoint, shooter speed, LED brightness on the robot — where a button can only step.</p>
+<p>The <code>enc2</code> tile carries two rotary encoders, each with a push-to-click shaft. Use them for continuous values — arm setpoint, shooter speed, LED brightness on the robot.</p>
 <div class="hint hint-info">
-<p>Encoder tiles are the newest part of the system. The protocol and the config app support them; the tile firmware is still in development. Everything on this page describes the design, not something you can plug in today.</p>
+<p>The protocol and the config app support encoder tiles; the tile firmware is still in development. This page describes the design, not something you can plug in today.</p>
 </div>
 <h2 id="what-the-driver-station-sees">What the Driver Station sees<a class="headerlink" href="#what-the-driver-station-sees" title="Permanent link">#</a></h2>
-<p><strong>FRC.</strong> Each encoder can be bound to one of four <strong>axes</strong>. The axis reports an accumulated position — turn it clockwise and the number goes up, keep turning and it keeps going. Four axes is the whole board, so two <code>enc2</code> tiles claim all of them.</p>
-<p>An axis is not a joystick. It does not spring back to centre and it has no deadzone, because there is nothing to return to: the value is where the knob has got to.</p>
-<p><strong>Scale</strong> sets how far one click moves the axis. The default, 256, makes every click one step your robot code can see: the Driver Station sends axes to the robot at 8 bits, so smaller values need several clicks before anything changes. At 256 the axis reaches its end after about 128 clicks, around six turns of a typical knob. Pick a larger scale for a knob that should reach the end in fewer turns. Changing the scale zeroes the position.</p>
-<p><strong>FTC.</strong> XInput&rsquo;s sticks are sprung and deadzoned, which throws away an accumulated position entirely. So under <code>xinput</code> an encoder becomes <strong>pulsed buttons</strong> instead: one button pulses per detent clockwise, another per detent anticlockwise, and your OpMode counts them.</p>
+<p><strong>FRC.</strong> Each encoder can be bound to one of four <strong>axes</strong>. The axis reports an accumulated position — turn it clockwise and the number goes up, keep turning and it keeps going. There are four axes in total, so two <code>enc2</code> tiles claim all of them.</p>
+<p>An axis does not spring back to centre and has no deadzone.</p>
+<p><strong>Scale</strong> sets how far one click moves the axis. The default, 256, makes every click one step your robot code can see; smaller values need several clicks before anything changes. At 256 the axis reaches its end after about 128 clicks, around six turns of a typical knob. Pick a larger scale for a knob that should reach the end in fewer turns. Changing the scale zeroes the position.</p>
+<p><strong>FTC.</strong> Under <code>xinput</code> an encoder becomes <strong>pulsed buttons</strong> instead: one button pulses per detent clockwise, another per detent anticlockwise, and your OpMode counts them.</p>
 <p>Pulsed buttons are available under <code>frc</code> too, if you would rather count clicks than read a position.</p>
 <h2 id="the-shaft-push">The shaft push<a class="headerlink" href="#the-shaft-push" title="Permanent link">#</a></h2>
-<p>The push switch on each encoder is an ordinary key. Bind it like any other key — it takes a logical button number and behaves exactly as a keypad key does.</p>
+<p>The push switch on each encoder is an ordinary key. Bind it like any other key to a logical button number.</p>
 <h2 id="zeroing">Zeroing<a class="headerlink" href="#zeroing" title="Permanent link">#</a></h2>
-<p>An accumulated position needs a defined starting point. The board can zero any axis, or all of them, on command — at the start of a match, or when the mechanism it drives is homed.</p>
+<p>The board can zero any axis, or all of them, on command — at the start of a match, or when the mechanism it drives is homed.</p>
     </article>
     <nav class="pager-row"><a class="pager prev" href="../configuring/leds.html"><span class="pager-label">Previous</span><span class="pager-title">LED colours</span></a><a class="pager next" href="../configuring/screen-keys.html"><span class="pager-label">Next</span><span class="pager-title">Screen keys and legends</span></a></nav>
     <footer class="page-footer">

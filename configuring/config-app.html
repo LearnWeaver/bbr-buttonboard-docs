@@ -4,8 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The config app · BBR Button Board</title>
-<meta name="description" content="The config app Everything is configured in a browser. There is nothing to install, and the page talks to the board directly over USB — your configuration never leaves the laptop. C">
+<meta name="description" content="The config app Everything is configured in a browser at https://configure.buttonboard.buildingblockrobotics.com, with nothing to install. The page talks to the board directly over ">
 <link rel="canonical" href="https://buttonboard.buildingblockrobotics.com/configuring/config-app.html">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <link rel="stylesheet" href="../style.css">
 <script>
   // Set the theme before first paint so the page never flashes the wrong one.
@@ -86,24 +89,24 @@
   <main id="content" class="content">
     <article class="prose">
       <h1 id="the-config-app">The config app<a class="headerlink" href="#the-config-app" title="Permanent link">#</a></h1>
-<p>Everything is configured in a browser. There is nothing to install, and the page talks to the board directly over USB — your configuration never leaves the laptop.</p>
+<p>Everything is configured in a browser at <strong><a href="https://configure.buttonboard.buildingblockrobotics.com">https://configure.buttonboard.buildingblockrobotics.com</a></strong>, with nothing to install. The page talks to the board directly over USB; your configuration never leaves the laptop.</p>
 <div class="hint hint-warning">
-<p><strong>Chrome or Edge, on a desktop.</strong> The app uses Web Serial, which Firefox and Safari do not implement and which no mobile browser supports. It has to be served over HTTPS or from <code>localhost</code>; opening the files directly with <code>file://</code> will not work.</p>
+<p><strong>Chrome or Edge, on a desktop.</strong> The app uses Web Serial, which Firefox, Safari and mobile browsers do not support. It has to be served over HTTPS or from <code>localhost</code>; opening the files directly with <code>file://</code> will not work.</p>
 </div>
-<p>Press <strong>Connect</strong>, pick the board from the browser&rsquo;s port list, and you are in. The board has to be selected by hand the first time — a page cannot go looking for serial ports on its own, which is exactly the protection you want.</p>
+<p>Press <strong>Connect</strong> and pick the board from the browser&rsquo;s port list. The first time, the board has to be selected by hand.</p>
 <h2 id="four-screens">Four screens<a class="headerlink" href="#four-screens" title="Permanent link">#</a></h2>
 <h3 id="connect">Connect<a class="headerlink" href="#connect" title="Permanent link">#</a></h3>
 <p>Board identity: product, firmware version, serial number, tile count, and whether the stored configuration is valid.</p>
 <p>This is also where the <strong>USB personality</strong> is set — <code>frc</code> for the FRC Driver Station, <code>xinput</code> for FTC. The change is stored immediately but only takes effect on the next USB reset, so unplug and plug back in after switching.</p>
 <h3 id="configure">Configure<a class="headerlink" href="#configure" title="Permanent link">#</a></h3>
-<p>The panel as it physically is. The chain runs down the left; select a tile and it is drawn in its real layout, so you click the key you mean instead of hunting through a table of numbers.</p>
+<p>The panel as it physically is. The chain runs down the left; select a tile and it is drawn in its real layout, so you can click the key itself.</p>
 <p>Selecting a key opens the inspector, which does three things: binds it to a logical button, adds it to a group with other keys, and sets its LED colour. See <a href="binding.html">Binding buttons</a> and <a href="leds.html">LED colours</a>.</p>
 <p>Select a display tile and the inspector offers what that tile can do instead: text and a bar on the panel, a <strong>Picture</strong> to send or store, the tile&rsquo;s <strong>Slots</strong>, and the <strong>Legend codes</strong> that let robot code switch between them. See <a href="screen-keys.html">Screen keys and legends</a>.</p>
 <h3 id="diagnose">Diagnose<a class="headerlink" href="#diagnose" title="Permanent link">#</a></h3>
-<p>What the bus is actually doing.</p>
+<p>The state of the bus.</p>
 <ul>
 <li><strong>Tiles</strong> — every tile the board knows about, its kind, its firmware, whether it is online, and which keys are down right now.</li>
-<li><strong>Counters</strong> — checksum errors and missed replies per tile. Both should sit at zero; a tile that is steadily accumulating either has a cable or termination problem.</li>
+<li><strong>Counters</strong> — checksum errors and missed replies per tile. Both should sit at zero; a tile that is steadily accumulating either has a cable problem.</li>
 <li><strong>Power</strong> — the LED power budget, the worst-case draw of the current panel, and the brightness that fits it.</li>
 <li><strong>Test</strong> — makes the board report button presses with no tile involved, for checking the Driver Station end on its own.</li>
 </ul>
@@ -111,9 +114,9 @@
 <p>Updates for the tiles over the bus, and for the main module over USB. See <a href="../getting-started/firmware.html">Updating the firmware</a>.</p>
 <h2 id="saved-versus-not-saved">Saved versus not saved<a class="headerlink" href="#saved-versus-not-saved" title="Permanent link">#</a></h2>
 <p>Changes take effect <strong>immediately</strong> — bind a key and it works on the next press — but they live in RAM until you press <strong>Save</strong>. The app shows when there are unsaved changes.</p>
-<p>That split is deliberate: you can try a layout, decide you preferred the old one, and power-cycle back to it.</p>
+<p>A power cycle discards unsaved changes and returns the board to its last saved configuration.</p>
 <h2 id="without-a-board">Without a board<a class="headerlink" href="#without-a-board" title="Permanent link">#</a></h2>
-<p>The config app runs against a built-in fake board with a few tiles on it, so the interface can be explored, demonstrated or taught with nothing plugged in.</p>
+<p>The config app runs against a built-in fake board with a few tiles on it, so the interface can be used with nothing plugged in.</p>
     </article>
     <nav class="pager-row"><a class="pager prev" href="../getting-started/firmware.html"><span class="pager-label">Previous</span><span class="pager-title">Updating the firmware</span></a><a class="pager next" href="../configuring/binding.html"><span class="pager-label">Next</span><span class="pager-title">Binding buttons</span></a></nav>
     <footer class="page-footer">

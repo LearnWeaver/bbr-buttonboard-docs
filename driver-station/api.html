@@ -6,6 +6,9 @@
 <title>Python API summary · BBR Button Board</title>
 <meta name="description" content="Python API summary Everything here is a method on Board. Each one sends a command and returns the board’s reply as a dictionary, or raises. Connecting Call What it does Board.open(">
 <link rel="canonical" href="https://buttonboard.buildingblockrobotics.com/driver-station/api.html">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <link rel="stylesheet" href="../style.css">
 <script>
   // Set the theme before first paint so the page never flashes the wrong one.
@@ -287,7 +290,7 @@
 </tbody>
 </table>
 <div class="hint hint-warning">
-<p>The first display tile is <code>disp1</code>: a 128×32 SSD1306, <strong>21 columns × 4 rows</strong>. Take the geometry from <code>screen.cols</code> / <code>screen.rows</code>, which come from the tile&rsquo;s own descriptor, rather than hard-coding it. No <code>disp1</code> board has been built yet, so develop against <code>MockBoard()</code>; <code>MockBoard(display=False)</code> reproduces a board older than §14, which answers <code>unknown</code>.</p>
+<p>The first display tile is <code>disp1</code>: a 128×32 SSD1306, <strong>21 columns × 4 rows</strong>. Take the geometry from <code>screen.cols</code> / <code>screen.rows</code>, which come from the tile&rsquo;s own descriptor, rather than hard-coding it. No <code>disp1</code> board has been built yet, so develop against <code>MockBoard()</code>; <code>MockBoard(display=False)</code> behaves like firmware without display support, which answers <code>unknown</code>.</p>
 </div>
 <h2 id="the-board-itself">The board itself<a class="headerlink" href="#the-board-itself" title="Permanent link">#</a></h2>
 <table>
@@ -317,7 +320,7 @@
 </tbody>
 </table>
 <h2 id="events">Events<a class="headerlink" href="#events" title="Permanent link">#</a></h2>
-<p>The board reports things that happen on its own — a tile lost, a fault raised, a key pressed during binding.</p>
+<p>The board reports events such as a tile lost, a fault raised, or a key pressed during binding.</p>
 <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">on_tile</span><span class="p">(</span><span class="n">ev</span><span class="p">):</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">ev</span><span class="p">[</span><span class="s2">"addr"</span><span class="p">],</span> <span class="n">ev</span><span class="p">[</span><span class="s2">"state"</span><span class="p">])</span>      <span class="c1"># 3 lost</span>
 
@@ -326,7 +329,7 @@
 
 <p>Names are <code>tile</code>, <code>fault</code>, <code>key</code>, <code>enc</code>, <code>progress</code> and <code>player</code>; <code>"*"</code> receives all of them.</p>
 <div class="hint hint-warning">
-<p>Callbacks run on the library&rsquo;s reader thread. Do not call <code>board</code> methods from inside one — the reader is what completes them, so the call blocks until it times out. Put the event on a queue and handle it in your loop.</p>
+<p>Callbacks run on the library&rsquo;s reader thread. Do not call <code>board</code> methods from inside one: the call blocks until it times out. Put the event on a queue and handle it in your loop.</p>
 </div>
 <h2 id="errors">Errors<a class="headerlink" href="#errors" title="Permanent link">#</a></h2>
 <table>

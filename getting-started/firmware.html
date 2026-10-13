@@ -4,8 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Updating the firmware · BBR Button Board</title>
-<meta name="description" content="Updating the firmware Two different things get updated, in two different ways. Both live on the Firmware screen of the config app. Tiles Tiles update over the bus — the same cable ">
+<meta name="description" content="Updating the firmware Tiles and the main module update in different ways. Both start from the Firmware screen of the config app. Tiles Tiles update over the bus. Nothing is unplugg">
 <link rel="canonical" href="https://buttonboard.buildingblockrobotics.com/getting-started/firmware.html">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <link rel="stylesheet" href="../style.css">
 <script>
   // Set the theme before first paint so the page never flashes the wrong one.
@@ -86,9 +89,9 @@
   <main id="content" class="content">
     <article class="prose">
       <h1 id="updating-the-firmware">Updating the firmware<a class="headerlink" href="#updating-the-firmware" title="Permanent link">#</a></h1>
-<p>Two different things get updated, in two different ways. Both live on the <strong>Firmware</strong> screen of the config app.</p>
+<p>Tiles and the main module update in different ways. Both start from the <strong>Firmware</strong> screen of the config app.</p>
 <h2 id="tiles">Tiles<a class="headerlink" href="#tiles" title="Permanent link">#</a></h2>
-<p>Tiles update <strong>over the bus</strong> — the same cable they are already plugged into. Nothing is unplugged, no programmer is needed, and one tile updates at a time while the rest of the chain carries on.</p>
+<p>Tiles update <strong>over the bus</strong>. Nothing is unplugged and no programmer is needed. One tile updates at a time; the rest of the chain keeps working.</p>
 <ol>
 <li>Open <strong>Firmware</strong> in the config app.</li>
 <li>Any tile running older firmware than the images the site carries is listed with an <strong>Update</strong> button.</li>
@@ -96,19 +99,19 @@
 </ol>
 <p>The tile drops out of the chain for a few seconds and rejoins when it is done. Its address and its bindings are untouched.</p>
 <div class="hint hint-info">
-<p>A tile that loses power partway through an update is not bricked. The updater writes to a staging area and only commits after the whole image has arrived and its checksum matches; a tile that never gets that far comes back on its old firmware.</p>
+<p>A tile that loses power partway through an update is not bricked. It comes back on its old firmware.</p>
 </div>
 <h2 id="the-main-module">The main module<a class="headerlink" href="#the-main-module" title="Permanent link">#</a></h2>
-<p>The main module updates over USB, using the same drag-and-drop mechanism as any RP2040 board.</p>
+<p>The main module updates over USB by drag-and-drop.</p>
 <ol>
-<li>Press <strong>Update main module</strong> in the config app. The board reboots into its bootloader, and the COM port disappears — this is expected, and the config app will tell you it has lost the connection.</li>
+<li>Press <strong>Update main module</strong> in the config app. The board reboots into its bootloader, and the COM port disappears. This is expected; the config app reports the lost connection.</li>
 <li>A USB drive called <strong>RPI-RP2</strong> appears on your computer.</li>
 <li>Drag the <code>.uf2</code> file onto it. The drive disappears and the board restarts on the new firmware.</li>
 </ol>
-<p>Your configuration — bindings, LED colours, USB personality — is stored separately from the firmware and survives the update.</p>
-<p>If the config app cannot reach the board at all, you can get to the same place by hand: unplug the board, hold the <strong>BOOTSEL</strong> button, plug it back in, and release. <code>RPI-RP2</code> appears the same way.</p>
+<p>Your configuration — bindings, LED colours, USB personality — survives the update.</p>
+<p>If the config app cannot reach the board at all, unplug the board, hold the <strong>BOOTSEL</strong> button, plug it back in, and release. <code>RPI-RP2</code> appears the same way.</p>
 <h2 id="which-versions-am-i-on">Which versions am I on?<a class="headerlink" href="#which-versions-am-i-on" title="Permanent link">#</a></h2>
-<p>The <strong>Connect</strong> screen reports the main module&rsquo;s firmware version, and <strong>Diagnose</strong> reports each tile&rsquo;s. Mixed versions across tiles are fine — the board checks that every tile speaks a compatible protocol and flags any that does not, rather than assuming.</p>
+<p>The <strong>Connect</strong> screen reports the main module&rsquo;s firmware version, and <strong>Diagnose</strong> reports each tile&rsquo;s. Mixed versions across tiles are fine. Diagnose flags any tile whose protocol is not compatible.</p>
     </article>
     <nav class="pager-row"><a class="pager prev" href="../getting-started/first-run.html"><span class="pager-label">Previous</span><span class="pager-title">First run</span></a><a class="pager next" href="../configuring/config-app.html"><span class="pager-label">Next</span><span class="pager-title">The config app</span></a></nav>
     <footer class="page-footer">

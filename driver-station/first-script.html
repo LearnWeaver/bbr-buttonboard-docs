@@ -4,8 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Your first script · BBR Button Board</title>
-<meta name="description" content="Your first script A companion app is a loop: read what the robot is doing, decide what the panel should look like, push it. Here is the whole shape of one. from bb import Board wit">
+<meta name="description" content="Your first script A companion app is a loop: read what the robot is doing, decide what the panel should look like, push it. from bb import Board with Board.open() as board: leds = ">
 <link rel="canonical" href="https://buttonboard.buildingblockrobotics.com/driver-station/first-script.html">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <link rel="stylesheet" href="../style.css">
 <script>
   // Set the theme before first paint so the page never flashes the wrong one.
@@ -86,7 +89,7 @@
   <main id="content" class="content">
     <article class="prose">
       <h1 id="your-first-script">Your first script<a class="headerlink" href="#your-first-script" title="Permanent link">#</a></h1>
-<p>A companion app is a loop: read what the robot is doing, decide what the panel should look like, push it. Here is the whole shape of one.</p>
+<p>A companion app is a loop: read what the robot is doing, decide what the panel should look like, push it.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">bb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Board</span>
 
 <span class="k">with</span> <span class="n">Board</span><span class="o">.</span><span class="n">open</span><span class="p">()</span> <span class="k">as</span> <span class="n">board</span><span class="p">:</span>
@@ -101,10 +104,9 @@
         <span class="n">leds</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
 </code></pre></div>
 
-<h2 id="why-led_layer-and-not-boardled">Why <code>led_layer()</code> and not <code>board.led()</code><a class="headerlink" href="#why-led_layer-and-not-boardled" title="Permanent link">#</a></h2>
-<p>Both work. The difference is what happens when nothing changes.</p>
-<p><code>board.led(3, "red")</code> sends a command every time you call it. In a 50 Hz loop that is 50 commands a second per button, whether or not the colour changed — the board processes all of them and puts the changes on the bus.</p>
-<p><code>led_layer()</code> stages the writes and <code>flush()</code> sends <strong>only what changed</strong>. A steady panel costs nothing at all. Use it for anything that runs in a loop; use <code>board.led()</code> for one-off changes.</p>
+<h2 id="led_layer-or-boardled"><code>led_layer()</code> or <code>board.led()</code><a class="headerlink" href="#led_layer-or-boardled" title="Permanent link">#</a></h2>
+<p><code>board.led(3, "red")</code> sends a command every time you call it, whether or not the colour changed.</p>
+<p><code>led_layer()</code> stages the writes and <code>flush()</code> sends <strong>only what changed</strong>. Use it for anything that runs in a loop; use <code>board.led()</code> for one-off changes.</p>
 <div class="highlight"><pre><span></span><code><span class="n">leds</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s2">"red"</span><span class="p">)</span>
 <span class="n">leds</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>        <span class="c1"># sends: led 3 FF0000</span>
 <span class="n">leds</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s2">"red"</span><span class="p">)</span>
@@ -112,7 +114,7 @@
 </code></pre></div>
 
 <h2 id="colours">Colours<a class="headerlink" href="#colours" title="Permanent link">#</a></h2>
-<p>Anything sensible works:</p>
+<p>A colour can be given as:</p>
 <div class="highlight"><pre><span></span><code><span class="n">leds</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">"red"</span><span class="p">)</span>             <span class="c1"># a name</span>
 <span class="n">leds</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">"#0040FF"</span><span class="p">)</span>         <span class="c1"># hex, with or without the #</span>
 <span class="n">leds</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">255</span><span class="p">))</span>      <span class="c1"># an (r, g, b) triple</span>
@@ -127,15 +129,15 @@
 <span class="n">leds</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s2">"red"</span><span class="p">,</span> <span class="s2">"breathe"</span><span class="p">)</span>     <span class="c1"># fade in and out</span>
 </code></pre></div>
 
-<p>The tile generates the effect, so it keeps running with no further commands.</p>
+<p>An effect keeps running with no further commands.</p>
 <h2 id="clearing-up">Clearing up<a class="headerlink" href="#clearing-up" title="Permanent link">#</a></h2>
 <div class="highlight"><pre><span></span><code><span class="n">board</span><span class="o">.</span><span class="n">led_reset</span><span class="p">()</span>      <span class="c1"># back to the colours saved in the configuration</span>
 <span class="n">board</span><span class="o">.</span><span class="n">led_all</span><span class="p">(</span><span class="s2">"off"</span><span class="p">)</span>   <span class="c1"># everything dark, right now</span>
 </code></pre></div>
 
-<p><code>led_all("off")</code> is the panic button — it takes priority over anything else in progress.</p>
+<p><code>led_all("off")</code> is the panic button: it overrides anything else in progress.</p>
 <h2 id="when-the-board-goes-away">When the board goes away<a class="headerlink" href="#when-the-board-goes-away" title="Permanent link">#</a></h2>
-<p>A companion app runs for a whole match, and USB cables get kicked. Every call raises rather than failing quietly:</p>
+<p>If the board is disconnected, every call raises <code>BoardError</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">bb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Board</span><span class="p">,</span> <span class="n">BoardError</span>
 
 <span class="k">try</span><span class="p">:</span>
@@ -145,7 +147,7 @@
     <span class="c1"># reconnect, then leds.forget() so the next flush redraws everything</span>
 </code></pre></div>
 
-<p><code>forget()</code> matters after a reconnect or a reboot: the diffing layer thinks the board still shows what it last sent, and after a power cycle that is no longer true.</p>
+<p>Call <code>forget()</code> after a reconnect or a board reboot, so the next <code>flush()</code> resends everything.</p>
     </article>
     <nav class="pager-row"><a class="pager prev" href="../driver-station/install.html"><span class="pager-label">Previous</span><span class="pager-title">Install the library</span></a><a class="pager next" href="../driver-station/api.html"><span class="pager-label">Next</span><span class="pager-title">Python API summary</span></a></nav>
     <footer class="page-footer">
@@ -156,7 +158,7 @@
   <aside class="onpage" aria-label="On this page">
     <p class="toc-title">On this page</p>
 <ul class="toc-list">
-<li><a href="#why-led_layer-and-not-boardled">Why led_layer() and not board.led()</a>
+<li><a href="#led_layer-or-boardled">led_layer() or board.led()</a>
 </li>
 <li><a href="#colours">Colours</a>
 </li>

@@ -6,6 +6,9 @@
 <title>Plugging it together · BBR Button Board</title>
 <meta name="description" content="Plugging it together The chain Every board — the main module and every tile — has two identical connectors, wired in parallel. Run a cable from one board to the next in any order y">
 <link rel="canonical" href="https://buttonboard.buildingblockrobotics.com/getting-started/wiring.html">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <link rel="stylesheet" href="../style.css">
 <script>
   // Set the theme before first paint so the page never flashes the wrong one.
@@ -89,12 +92,10 @@
 <h2 id="the-chain">The chain<a class="headerlink" href="#the-chain" title="Permanent link">#</a></h2>
 <p>Every board — the main module and every tile — has <strong>two identical connectors</strong>, wired in parallel. Run a cable from one board to the next in any order you like:</p>
 <div class="highlight"><pre><span></span><code>main module ──── mx9 ──── mx9 ──── enc2
-     │                               │
-terminator                      terminator
 </code></pre></div>
 
 <ul>
-<li><strong>Order does not matter.</strong> The main module finds tiles by asking, not by counting along the cable.</li>
+<li><strong>Order does not matter.</strong></li>
 <li><strong>Both connectors on a board are the same.</strong> There is no &ldquo;in&rdquo; and no &ldquo;out&rdquo;.</li>
 <li><strong>Cables are straight through.</strong> Pin 1 to pin 1. There is no crossover cable in this system.</li>
 <li><strong>Up to 31 tiles</strong>, and up to about 4 m of cable in total.</li>
@@ -102,29 +103,21 @@ terminator                      terminator
 <h2 id="splitting-the-chain">Splitting the chain<a class="headerlink" href="#splitting-the-chain" title="Permanent link">#</a></h2>
 <p>A <strong>splitter</strong> is a small square board with four connectors wired in parallel. Use one where the cable wants to go in more than one direction, for example along both sides of a panel:</p>
 <div class="highlight"><pre><span></span><code>main module ──── mx9 ──── splitter ──── mx9 ──── enc2
-     │                       │                    │
-terminator                  mx4               terminator
+                             │
+                            mx4
 </code></pre></div>
 
-<p>The bus doesn&rsquo;t care: tiles on a branch are found and addressed exactly like tiles on the main run. What changes is where the terminators go:</p>
+<p>Tiles on a branch work exactly like tiles on the main run.</p>
 <ul>
-<li><strong>Still exactly two terminators</strong>, at the two ends that are <strong>farthest apart along the cable</strong>. In the drawing that&rsquo;s the main module and the enc2. The mx4 on the short branch gets none.</li>
-<li><strong>Never a terminator on a splitter</strong>, unless that splitter is itself at one of the two far ends.</li>
-<li><strong>No loops.</strong> Never cable back to a board that is already on the bus. Nothing detects a loop, and it leaves the bus with no ends to terminate.</li>
+<li><strong>No loops.</strong> Never cable back to a board that is already on the bus. Nothing detects a loop.</li>
 <li><strong>Count the branches in the 4 m.</strong> The limit is the total of every cable on the bus.</li>
 </ul>
-<h2 id="terminators-go-at-both-ends">Terminators go at both ends<a class="headerlink" href="#terminators-go-at-both-ends" title="Permanent link">#</a></h2>
-<p>On a plain chain, the two connectors that end up with nothing plugged into them — one on the main module, one on the last tile — each take a <strong>terminator</strong>. With a splitter, see the rules above.</p>
-<div class="hint hint-warning">
-<p>Fit both. A chain missing a terminator usually works on the bench and then loses tiles under vibration or on a longer cable, which reads as a key that &ldquo;sometimes doesn&rsquo;t work&rdquo; rather than as a wiring fault.</p>
-</div>
-<p>If your panel is permanently installed and the main module sits at one end of the chain, you can use the main module&rsquo;s built-in termination jumper instead of a terminator in its spare connector. One or the other, not both.</p>
 <h2 id="power">Power<a class="headerlink" href="#power" title="Permanent link">#</a></h2>
 <p>The whole panel runs off the USB cable. There is nothing else to plug in.</p>
-<p>That budget is not unlimited, and LEDs are what spend it. The main module works out the worst-case draw of every tile on the chain and turns the global LED brightness down until the panel fits the budget — so an over-lit panel dims rather than browning out mid-match. If you are running from a port that can supply more than the default, raise the budget in the config app. See <a href="../configuring/leds.html#brightness-and-the-power-budget">LED colours</a>.</p>
+<p>The main module turns the global LED brightness down until the worst-case draw of the chain fits the USB power budget, so a panel with many LEDs runs dimmer. If you are running from a port that can supply more than the default, raise the budget in the config app. See <a href="../configuring/leds.html#brightness-and-the-power-budget">LED colours</a>.</p>
 <h2 id="adding-a-tile-mid-season">Adding a tile mid-season<a class="headerlink" href="#adding-a-tile-mid-season" title="Permanent link">#</a></h2>
-<p>Plug it into a spare connector, moving the terminator to the new end of the chain. The main module gives it an address by itself the next time it is powered on. Nothing that was already bound changes.</p>
-<p>The one thing to know: bindings are stored <strong>per tile position</strong>, not per physical board. If you swap a faulty tile for an identical one, the replacement inherits the old one&rsquo;s bindings automatically. If you add a second tile of the same kind, it is a new tile and starts unbound. <a href="../configuring/binding.html">Binding buttons</a> covers what to do when the board cannot tell which case it is looking at.</p>
+<p>Plug it into a spare connector. The main module gives it an address by itself the next time it is powered on. Nothing that was already bound changes.</p>
+<p>Bindings are stored <strong>per tile position</strong>, not per physical board. If you swap a faulty tile for an identical one, the replacement inherits the old one&rsquo;s bindings automatically. If you add a second tile of the same kind, it is a new tile and starts unbound. <a href="../configuring/binding.html">Binding buttons</a> covers what to do when the board cannot tell which case it is looking at.</p>
 <h2 id="cable-pinout">Cable pinout<a class="headerlink" href="#cable-pinout" title="Permanent link">#</a></h2>
 <p>Six-way JST GH, 1.25 mm pitch. You only need this if you are making cables.</p>
 <table>
@@ -161,7 +154,6 @@ terminator                  mx4               terminator
 </tr>
 </tbody>
 </table>
-<p>Ground and 5 V are doubled to carry the current an illuminated arcade tile can draw. The differential pair sits in the middle, away from the power pins.</p>
     </article>
     <nav class="pager-row"><a class="pager prev" href="../getting-started/hardware.html"><span class="pager-label">Previous</span><span class="pager-title">What you have</span></a><a class="pager next" href="../getting-started/first-run.html"><span class="pager-label">Next</span><span class="pager-title">First run</span></a></nav>
     <footer class="page-footer">
@@ -175,8 +167,6 @@ terminator                  mx4               terminator
 <li><a href="#the-chain">The chain</a>
 </li>
 <li><a href="#splitting-the-chain">Splitting the chain</a>
-</li>
-<li><a href="#terminators-go-at-both-ends">Terminators go at both ends</a>
 </li>
 <li><a href="#power">Power</a>
 </li>

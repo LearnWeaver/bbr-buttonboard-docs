@@ -6,6 +6,9 @@
 <title>BBR Button Board</title>
 <meta name="description" content="BBR Button Board A button box you build out of tiles. One USB cable to the Driver Station. The Button Board is a modular control panel for FIRST robotics. A main module plugs into ">
 <link rel="canonical" href="https://buttonboard.buildingblockrobotics.com/index.html">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="stylesheet" href="style.css">
 <script>
   // Set the theme before first paint so the page never flashes the wrong one.
@@ -89,23 +92,23 @@
 <p><strong>A button box you build out of tiles. One USB cable to the Driver Station.</strong></p>
 <p>The Button Board is a modular control panel for FIRST robotics. A <strong>main module</strong> plugs into the Driver Station laptop over USB and presents itself as a game controller. Everything a driver actually touches lives on <strong>tiles</strong> — nine-key keypads, single keys, arcade buttons, rotary encoders — daisy-chained off the main module on one four-wire cable.</p>
 <ul>
-<li><strong>Build the panel you want.</strong> Tiles chain in any order. Add one mid-season without rewiring anything.</li>
+<li><strong>Build the panel you want.</strong> Tiles chain in any order. </li>
 <li><strong>No code on the robot.</strong> The board is an ordinary game controller. Your OpMode or robot code reads buttons exactly the way it reads a gamepad.</li>
 <li><strong>Works with both Driver Stations.</strong> An FRC-friendly HID gamepad with 32 buttons, or an XInput gamepad for the FTC Driver Station — one setting, no hardware change.</li>
 <li><strong>Configured in the browser.</strong> Bind a key by pressing it. No firmware rebuild, no config file.</li>
 <li><strong>Keys that relabel themselves.</strong> A screen key has a colour display inside the cap, so one key can say INTAKE in one part of a match and CLIMB in another.</li>
-<li><strong>LEDs your robot drives.</strong> Tiles with RGB keys can be lit from a companion app on the Driver Station laptop, so the panel reacts to what the robot is doing.</li>
+<li><strong>LEDs your robot drives.</strong> Keys on RGB tiles change colour with what the robot is doing. In FTC the OpMode does it directly: bind a <a href="on-the-robot/legends.html#changing-a-keys-colour-the-same-way">rumble code</a> to key colours in the config app, and one <code>rumble()</code> call recolours them, and switches a screen key&rsquo;s legend at the same time. In FRC a companion app on the Driver Station laptop drives them.</li>
 </ul>
 <h2 id="how-it-fits-together">How it fits together<a class="headerlink" href="#how-it-fits-together" title="Permanent link">#</a></h2>
 <div class="highlight"><pre><span></span><code>Driver Station laptop
         │  USB-C
    ┌────┴──────┐      RS-485, one cable per link
-   │   main    ├──── tile ──── tile ──── tile ───┤
-   │  module   │                                 │
-   └───────────┘                          terminator
+   │   main    ├──── tile ──── tile ──── tile
+   │  module   │
+   └───────────┘
 </code></pre></div>
 
-<p>The main module polls every tile in turn, collects which keys are down, and sends one USB report. From the Driver Station&rsquo;s point of view there is a single game controller with 32 buttons on it — it never learns that there are tiles at all.</p>
+<p>The main module polls every tile in turn, collects which keys are down, and sends one USB report. From the Driver Station&rsquo;s point of view there is a single game controller with 32 buttons on it.</p>
 <h2 id="start-here">Start here<a class="headerlink" href="#start-here" title="Permanent link">#</a></h2>
 <table>
 <thead>
@@ -142,7 +145,7 @@
 </tbody>
 </table>
 <div class="hint hint-info">
-<p>Two things this board deliberately is not: it is not a keyboard, and it does not run your robot code. It is a controller the Driver Station already knows how to talk to, so nothing on the robot has to change to use one. The one exception is changing a screen key&rsquo;s legend during a match, which needs a few lines in your OpMode — see <a href="on-the-robot/legends.html">Changing legends in a match</a>.</p>
+<p>The board is not a keyboard and does not run your robot code. Nothing on the robot has to change to use one. The exception is changing a screen key&rsquo;s legend during a match, which needs a few lines in your OpMode — see <a href="on-the-robot/legends.html">Changing legends in a match</a>.</p>
 </div>
     </article>
     <nav class="pager-row"><a class="pager next" href="getting-started/hardware.html"><span class="pager-label">Next</span><span class="pager-title">What you have</span></a></nav>

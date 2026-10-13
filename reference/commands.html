@@ -4,8 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Serial command reference · BBR Button Board</title>
-<meta name="description" content="Serial command reference The board’s configuration channel is a plain text serial port. Anything that can open a COM port can drive it — the config app, the Python library, or PuTT">
+<meta name="description" content="Serial command reference The board’s configuration channel is a plain text serial port. The config app, the Python library or a serial terminal such as PuTTY can drive it. You send">
 <link rel="canonical" href="https://buttonboard.buildingblockrobotics.com/reference/commands.html">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <link rel="stylesheet" href="../style.css">
 <script>
   // Set the theme before first paint so the page never flashes the wrong one.
@@ -86,16 +89,16 @@
   <main id="content" class="content">
     <article class="prose">
       <h1 id="serial-command-reference">Serial command reference<a class="headerlink" href="#serial-command-reference" title="Permanent link">#</a></h1>
-<p>The board&rsquo;s configuration channel is a plain text serial port. Anything that can open a COM port can drive it — the config app, the Python library, or PuTTY in the pit with no software installed at all.</p>
+<p>The board&rsquo;s configuration channel is a plain text serial port. The config app, the Python library or a serial terminal such as PuTTY can drive it.</p>
 <ul>
 <li>You send <strong>one command per line</strong>, ending in a newline.</li>
 <li>The board answers with <strong>one JSON object per line</strong>.</li>
 <li>Every command produces exactly one final line, either <code>{"ok":true,...}</code> or <code>{"ok":false,"err":"..."}</code>.</li>
-<li>The board may send <strong>event</strong> lines at any time, marked with <code>"ev"</code>. A client has to expect one between its own command and the reply.</li>
+<li>The board may send <strong>event</strong> lines at any time, marked with <code>"ev"</code>. One can arrive between a command and its reply.</li>
 </ul>
 <p>Baud rate is ignored; any setting works.</p>
 <div class="hint hint-warning">
-<p><strong>Enter must send a newline, not a carriage return.</strong> PuTTY&rsquo;s default sends CR, which this channel ignores — so commands appear to be accepted and nothing at all happens. Set it to send LF, or use <code>bbctl</code>.</p>
+<p><strong>Enter must send a newline, not a carriage return.</strong> PuTTY&rsquo;s default sends CR, which this channel ignores: commands appear to be accepted and nothing happens. Set it to send LF, or use <code>bbctl</code>.</p>
 </div>
 <h2 id="the-commands">The commands<a class="headerlink" href="#the-commands" title="Permanent link">#</a></h2>
 <table>
@@ -286,7 +289,7 @@
 </code></pre></div>
 
 <h2 id="bbctl">bbctl<a class="headerlink" href="#bbctl" title="Permanent link">#</a></h2>
-<p><code>tools/bbctl.py</code> in the repository is a console for this channel that gets the details right — newline endings, holding the port open so test mode survives, and reading on past event lines to the real reply.</p>
+<p><code>tools/bbctl.py</code> in the repository is a console for this channel. It sends the right newline endings, holds the port open so test mode survives, and reads past event lines to the reply.</p>
 <div class="highlight"><pre><span></span><code>python3<span class="w"> </span>tools/bbctl.py<span class="w">                          </span><span class="c1"># interactive console</span>
 python3<span class="w"> </span>tools/bbctl.py<span class="w"> </span>hello<span class="w"> </span>stats<span class="w">               </span><span class="c1"># run and exit</span>
 python3<span class="w"> </span>tools/bbctl.py<span class="w"> </span>-p<span class="w"> </span>COM7<span class="w"> </span><span class="s2">"test walk 250"</span><span class="w">   </span><span class="c1"># explicit port</span>
