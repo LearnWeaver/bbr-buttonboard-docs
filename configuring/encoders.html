@@ -66,7 +66,7 @@
 <li><a href="../configuring/binding.html">Binding buttons</a></li>
 <li><a href="../configuring/leds.html">LED colours</a></li>
 <li><a href="../configuring/encoders.html" class="active">Rotary encoders</a></li>
-<li><a href="../configuring/screen-keys.html">Screen keys and legends</a></li>
+<li><a href="../configuring/screen-keys.html">Display tiles and legends</a></li>
 </ul>
 <p class="nav-group">On the robot</p>
 <ul class="nav-list">
@@ -90,9 +90,6 @@
     <article class="prose">
       <h1 id="rotary-encoders">Rotary encoders<a class="headerlink" href="#rotary-encoders" title="Permanent link">#</a></h1>
 <p>The <code>enc2</code> tile carries two rotary encoders, each with a push-to-click shaft. Use them for continuous values — arm setpoint, shooter speed, LED brightness on the robot.</p>
-<div class="hint hint-info">
-<p>The protocol and the config app support encoder tiles; the tile firmware is still in development. This page describes the design, not something you can plug in today.</p>
-</div>
 <h2 id="what-the-driver-station-sees">What the Driver Station sees<a class="headerlink" href="#what-the-driver-station-sees" title="Permanent link">#</a></h2>
 <p><strong>FRC.</strong> Each encoder can be bound to one of four <strong>axes</strong>. The axis reports an accumulated position — turn it clockwise and the number goes up, keep turning and it keeps going. There are four axes in total, so two <code>enc2</code> tiles claim all of them.</p>
 <p>An axis does not spring back to centre and has no deadzone.</p>
@@ -104,7 +101,7 @@
 <h2 id="zeroing">Zeroing<a class="headerlink" href="#zeroing" title="Permanent link">#</a></h2>
 <p>The board can zero any axis, or all of them, on command — at the start of a match, or when the mechanism it drives is homed.</p>
     </article>
-    <nav class="pager-row"><a class="pager prev" href="../configuring/leds.html"><span class="pager-label">Previous</span><span class="pager-title">LED colours</span></a><a class="pager next" href="../configuring/screen-keys.html"><span class="pager-label">Next</span><span class="pager-title">Screen keys and legends</span></a></nav>
+    <nav class="pager-row"><a class="pager prev" href="../configuring/leds.html"><span class="pager-label">Previous</span><span class="pager-title">LED colours</span></a><a class="pager next" href="../configuring/screen-keys.html"><span class="pager-label">Next</span><span class="pager-title">Display tiles and legends</span></a></nav>
     <footer class="page-footer">
       <a href="https://github.com/LearnWeaver/BBRControlBoard/edit/main/docs/gitbook/configuring/encoders.md" rel="noopener">Edit this page on GitHub</a>
     </footer>

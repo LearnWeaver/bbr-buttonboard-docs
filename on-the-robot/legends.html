@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Changing legends in a match · BBR Button Board</title>
-<meta name="description" content="Changing legends in a match A screen key can show a different legend as the match goes on — INTAKE while you are collecting, SCORE while you are lined up, CLIMB in the endgame. Thi">
+<meta name="description" content="Changing legends in a match A screen key, or a disp2 colour display, can show a different legend or picture as the match goes on — INTAKE while you are collecting, SCORE while you ">
 <link rel="canonical" href="https://buttonboard.buildingblockrobotics.com/on-the-robot/legends.html">
 <link rel="icon" href="../favicon.ico" sizes="any">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
@@ -66,7 +66,7 @@
 <li><a href="../configuring/binding.html">Binding buttons</a></li>
 <li><a href="../configuring/leds.html">LED colours</a></li>
 <li><a href="../configuring/encoders.html">Rotary encoders</a></li>
-<li><a href="../configuring/screen-keys.html">Screen keys and legends</a></li>
+<li><a href="../configuring/screen-keys.html">Display tiles and legends</a></li>
 </ul>
 <p class="nav-group">On the robot</p>
 <ul class="nav-list">
@@ -89,10 +89,10 @@
   <main id="content" class="content">
     <article class="prose">
       <h1 id="changing-legends-in-a-match">Changing legends in a match<a class="headerlink" href="#changing-legends-in-a-match" title="Permanent link">#</a></h1>
-<p>A <a href="../configuring/screen-keys.html">screen key</a> can show a different legend as the match goes on — INTAKE while you are collecting, SCORE while you are lined up, CLIMB in the endgame. This page is how the robot tells it to.</p>
+<p>A <a href="../configuring/screen-keys.html">screen key</a>, or a <code>disp2</code> colour display, can show a different legend or picture as the match goes on — INTAKE while you are collecting, SCORE while you are lined up, CLIMB in the endgame. This page is how the robot tells it to.</p>
 <p>This is the only part of the board that needs code on the robot.</p>
 <div class="hint hint-info">
-<p>This describes the design, not something you can plug in today. The <code>screenkey1</code> tile has never been manufactured, and <strong>it has not been established that the FTC Driver Station forwards a rumble call to this board at all</strong>. The library is written and tested, but unproven on hardware.</p>
+<p><strong>It has not yet been confirmed that the FTC Driver Station forwards a rumble call to this board.</strong> Test it with your Driver Station before relying on it in a match.</p>
 </div>
 <h2 id="how-it-works">How it works<a class="headerlink" href="#how-it-works" title="Permanent link">#</a></h2>
 <p>In FTC mode the board is an Xbox-style gamepad with no config channel, so during a match the only way to reach it is a gamepad <strong>rumble</strong> command. The rumble carries a number, and that number selects a stored legend.</p>
@@ -210,7 +210,7 @@ cp -r robot/ftc/src-ftc/org  TeamCode/src/main/java/
 <p>The config app offers a <em>&ldquo;bind the next code&rdquo;</em> button that waits for a rumble and binds whichever code arrives. <strong>Against a real board it will wait forever</strong>, because a board that can receive a rumble has no config channel to report it on. It works against the fake board. Bind by picking the number instead; that works everywhere.</p>
 </div>
     </article>
-    <nav class="pager-row"><a class="pager prev" href="../configuring/screen-keys.html"><span class="pager-label">Previous</span><span class="pager-title">Screen keys and legends</span></a><a class="pager next" href="../driver-station/install.html"><span class="pager-label">Next</span><span class="pager-title">Install the library</span></a></nav>
+    <nav class="pager-row"><a class="pager prev" href="../configuring/screen-keys.html"><span class="pager-label">Previous</span><span class="pager-title">Display tiles and legends</span></a><a class="pager next" href="../driver-station/install.html"><span class="pager-label">Next</span><span class="pager-title">Install the library</span></a></nav>
     <footer class="page-footer">
       <a href="https://github.com/LearnWeaver/BBRControlBoard/edit/main/docs/gitbook/on-the-robot/legends.md" rel="noopener">Edit this page on GitHub</a>
     </footer>

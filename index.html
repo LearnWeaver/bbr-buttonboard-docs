@@ -66,7 +66,7 @@
 <li><a href="configuring/binding.html">Binding buttons</a></li>
 <li><a href="configuring/leds.html">LED colours</a></li>
 <li><a href="configuring/encoders.html">Rotary encoders</a></li>
-<li><a href="configuring/screen-keys.html">Screen keys and legends</a></li>
+<li><a href="configuring/screen-keys.html">Display tiles and legends</a></li>
 </ul>
 <p class="nav-group">On the robot</p>
 <ul class="nav-list">
@@ -96,7 +96,7 @@
 <li><strong>No code on the robot.</strong> The board is an ordinary game controller. Your OpMode or robot code reads buttons exactly the way it reads a gamepad.</li>
 <li><strong>Works with both Driver Stations.</strong> An FRC-friendly HID gamepad with 32 buttons, or an XInput gamepad for the FTC Driver Station — one setting, no hardware change.</li>
 <li><strong>Configured in the browser.</strong> Bind a key by pressing it. No firmware rebuild, no config file.</li>
-<li><strong>Keys that relabel themselves.</strong> A screen key has a colour display inside the cap, so one key can say INTAKE in one part of a match and CLIMB in another.</li>
+<li><strong>Keys that relabel themselves.</strong> A screen key has a colour display inside the cap, so one key can say INTAKE in one part of a match and CLIMB in another. A colour display tile shows the same kind of pictures beside the keys.</li>
 <li><strong>LEDs your robot drives.</strong> Keys on RGB tiles change colour with what the robot is doing. In FTC the OpMode does it directly: bind a <a href="on-the-robot/legends.html#changing-a-keys-colour-the-same-way">rumble code</a> to key colours in the config app, and one <code>rumble()</code> call recolours them, and switches a screen key&rsquo;s legend at the same time. In FRC a companion app on the Driver Station laptop drives them.</li>
 </ul>
 <h2 id="how-it-fits-together">How it fits together<a class="headerlink" href="#how-it-fits-together" title="Permanent link">#</a></h2>
@@ -139,8 +139,8 @@
 <td><a href="driver-station/install.html">Driver Station app</a></td>
 </tr>
 <tr>
-<td>Change a key&rsquo;s legend mid-match</td>
-<td><a href="configuring/screen-keys.html">Screen keys and legends</a></td>
+<td>Change a legend or picture mid-match</td>
+<td><a href="configuring/screen-keys.html">Display tiles and legends</a></td>
 </tr>
 </tbody>
 </table>

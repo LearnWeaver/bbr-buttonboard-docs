@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Screen keys and legends · BBR Button Board</title>
-<meta name="description" content="Screen keys and legends A screen key has a colour display inside the cap, so its legend can change: the same key can say INTAKE in one part of a match and CLIMB in another. The pro">
+<title>Display tiles and legends · BBR Button Board</title>
+<meta name="description" content="Display tiles and legends A display tile shows text and pictures that can change during a match. On a screen key the display is inside the cap, so the key’s legend changes: the sam">
 <link rel="canonical" href="https://buttonboard.buildingblockrobotics.com/configuring/screen-keys.html">
 <link rel="icon" href="../favicon.ico" sizes="any">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
@@ -66,7 +66,7 @@
 <li><a href="../configuring/binding.html">Binding buttons</a></li>
 <li><a href="../configuring/leds.html">LED colours</a></li>
 <li><a href="../configuring/encoders.html">Rotary encoders</a></li>
-<li><a href="../configuring/screen-keys.html" class="active">Screen keys and legends</a></li>
+<li><a href="../configuring/screen-keys.html" class="active">Display tiles and legends</a></li>
 </ul>
 <p class="nav-group">On the robot</p>
 <ul class="nav-list">
@@ -88,35 +88,41 @@
 
   <main id="content" class="content">
     <article class="prose">
-      <h1 id="screen-keys-and-legends">Screen keys and legends<a class="headerlink" href="#screen-keys-and-legends" title="Permanent link">#</a></h1>
-<p>A <strong>screen key</strong> has a colour display <em>inside</em> the cap, so its legend can change: the same key can say INTAKE in one part of a match and CLIMB in another.</p>
-<div class="hint hint-info">
-<p>The protocol, the config app and the tile firmware all support screen keys, but <strong>the board has never been manufactured</strong>, and nothing on this page has run on real hardware. Everything here describes the design and works against the config app&rsquo;s built-in fake board.</p>
-</div>
-<h2 id="the-two-display-tiles">The two display tiles<a class="headerlink" href="#the-two-display-tiles" title="Permanent link">#</a></h2>
+      <h1 id="display-tiles-and-legends">Display tiles and legends<a class="headerlink" href="#display-tiles-and-legends" title="Permanent link">#</a></h1>
+<p>A display tile shows text and pictures that can change during a match. On a <strong>screen key</strong> the display is <em>inside</em> the cap, so the key&rsquo;s legend changes: the same key can say INTAKE in one part of a match and CLIMB in another. The <strong>disp2</strong> colour display shows the same kind of stored pictures on a larger panel, next to the keys rather than in one.</p>
+<h2 id="the-display-tiles">The display tiles<a class="headerlink" href="#the-display-tiles" title="Permanent link">#</a></h2>
 <table>
 <thead>
 <tr>
 <th>Tile</th>
 <th>Panel</th>
 <th>Keys</th>
+<th>Pictures</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><strong>disp1</strong></td>
 <td>128 × 32 monochrome, 21 columns × 4 rows of text</td>
-<td>none — it is a readout, not a control</td>
+<td>none</td>
+<td>no</td>
+</tr>
+<tr>
+<td><strong>disp2</strong></td>
+<td>160 × 128 colour, 13 columns × 8 rows of text</td>
+<td>none</td>
+<td>streamed, and 32 stored</td>
 </tr>
 <tr>
 <td><strong>screenkey1</strong></td>
 <td>128 × 128 colour, inside a key cap</td>
 <td>1</td>
+<td>streamed, and 32 stored</td>
 </tr>
 </tbody>
 </table>
-<p><code>disp1</code> shows readouts: match time, a mechanism state, a message from the robot. <code>screenkey1</code> is one key whose cap is the screen.</p>
-<p>Both are ordinary tiles: they go anywhere on the chain and are addressed like any other.</p>
+<p><code>disp1</code> shows readouts: match time, a mechanism state, a message from the robot. <code>disp2</code> shows the same in colour, plus full-colour pictures: a mode, a target, a status image. <code>screenkey1</code> is one key whose cap is the screen.</p>
+<p>All three are ordinary tiles: they go anywhere on the chain and are addressed like any other.</p>
 <h2 id="showing-text-and-pictures">Showing text and pictures<a class="headerlink" href="#showing-text-and-pictures" title="Permanent link">#</a></h2>
 <p>A display tile shows <strong>text</strong> in a grid of characters, drawn in the tile&rsquo;s own font.</p>
 <p>There are two ways to show a <strong>picture</strong>:</p>
@@ -152,9 +158,9 @@
 </tbody>
 </table>
 <p>Stream a picture you show once. Store the pictures you use as legends.</p>
-<p>A <code>screenkey1</code> has room for several stored pictures. Each numbered place is a <strong>slot</strong>.</p>
+<p><code>screenkey1</code> and <code>disp2</code> each store up to 32 pictures. Each numbered place is a <strong>slot</strong>.</p>
 <h2 id="loading-a-picture-into-a-slot">Loading a picture into a slot<a class="headerlink" href="#loading-a-picture-into-a-slot" title="Permanent link">#</a></h2>
-<p>In the config app&rsquo;s <strong>Configure</strong> screen, select the tile and find the <strong>Picture</strong> section of the inspector.</p>
+<p>In the config app&rsquo;s <strong>Configure</strong> screen, select the tile (<code>screenkey1</code> or <code>disp2</code>) and find the <strong>Picture</strong> section of the inspector.</p>
 <ol>
 <li>Choose an image file. The app shows you what the tile will actually draw — re-sized and encoded for that panel — not the file you picked.</li>
 <li>Set <strong>send as</strong> to <em>a stored picture</em>.</li>
@@ -162,13 +168,16 @@
 <li>Press <strong>Store in slot <em>n</em></strong>.</li>
 </ol>
 <p>The slot is erased when the transfer starts and holds a picture again only once the whole transfer has arrived and its checksum matches. An interrupted store leaves the slot <strong>empty</strong>, never half-drawn. If it fails, the app says so; store it again.</p>
-<p>The <strong>Slots</strong> section lists what is in each one, with <strong>Show</strong> and <strong>Erase</strong> buttons.</p>
-<div class="hint hint-warning">
-<p>What a slot holds cannot be read back — there is no command that asks. The list in the config app is what <em>that page</em> put there, not what the tile reports. Close the tab and it forgets; the pictures stay on the tile.</p>
-</div>
+<h2 id="checking-and-reusing-stored-pictures">Checking and reusing stored pictures<a class="headerlink" href="#checking-and-reusing-stored-pictures" title="Permanent link">#</a></h2>
+<p>The <strong>Slots</strong> section lists the slots, with <strong>Show</strong>, <strong>Load</strong> and <strong>Erase</strong> buttons.</p>
+<ul>
+<li><strong>Check slots</strong> asks the tile what each slot holds: empty, or a picture with its format and size. It takes well under a second. A picture stored from this page is shown by its file name.</li>
+<li><strong>Load</strong> reads a picture back from the tile into the <strong>Picture</strong> editor. From there you can change its colours or format, or store it in another slot, without the original file. Reading is slower than storing: about 8 seconds for a full-colour picture, 1 second for a two-colour one.</li>
+</ul>
+<p>Pictures stay on the tile through power cycles. Slot read-back needs current tile firmware; an older tile answers <strong>Check slots</strong> with an error.</p>
 <h2 id="binding-legend-codes">Binding legend codes<a class="headerlink" href="#binding-legend-codes" title="Permanent link">#</a></h2>
 <p>A stored picture is switched by a number, and that number is what robot code sends. A code names an entry in a map, which says which tile and which slot, so the panel layout or the pictures can change without changing robot code. The <strong>Legend codes</strong> section of the same inspector binds them.</p>
-<p>There are fifteen codes, 1 to 15. Each row picks a slot on this tile:</p>
+<p>There are fifteen codes, 1 to 15, shared by every display tile on the board. Each row picks a slot on the tile you have selected. One code can only point at one tile and slot, so a <code>screenkey1</code> and a <code>disp2</code> that change together need a code each.</p>
 <table>
 <thead>
 <tr>
@@ -217,11 +226,13 @@ python3<span class="w"> </span>tools/bbctl.py<span class="w"> </span>--rumble-bi
   <aside class="onpage" aria-label="On this page">
     <p class="toc-title">On this page</p>
 <ul class="toc-list">
-<li><a href="#the-two-display-tiles">The two display tiles</a>
+<li><a href="#the-display-tiles">The display tiles</a>
 </li>
 <li><a href="#showing-text-and-pictures">Showing text and pictures</a>
 </li>
 <li><a href="#loading-a-picture-into-a-slot">Loading a picture into a slot</a>
+</li>
+<li><a href="#checking-and-reusing-stored-pictures">Checking and reusing stored pictures</a>
 </li>
 <li><a href="#binding-legend-codes">Binding legend codes</a>
 </li>

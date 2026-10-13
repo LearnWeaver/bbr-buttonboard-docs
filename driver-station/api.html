@@ -66,7 +66,7 @@
 <li><a href="../configuring/binding.html">Binding buttons</a></li>
 <li><a href="../configuring/leds.html">LED colours</a></li>
 <li><a href="../configuring/encoders.html">Rotary encoders</a></li>
-<li><a href="../configuring/screen-keys.html">Screen keys and legends</a></li>
+<li><a href="../configuring/screen-keys.html">Display tiles and legends</a></li>
 </ul>
 <p class="nav-group">On the robot</p>
 <ul class="nav-list">
@@ -287,10 +287,26 @@
 <td><code>screen.clear()</code></td>
 <td>Blank the panel</td>
 </tr>
+<tr>
+<td><code>board.disp_store_image(addr, slot, file)</code></td>
+<td>Encode an image for the tile and store it in a slot</td>
+</tr>
+<tr>
+<td><code>board.disp_slot_show(addr, slot)</code></td>
+<td>Show a stored picture: one frame</td>
+</tr>
+<tr>
+<td><code>board.disp_slot_info(addr, slot)</code></td>
+<td>What a slot holds: <code>None</code>, or its <code>fmt</code>, <code>attr</code>, <code>len</code> and <code>crc</code></td>
+</tr>
+<tr>
+<td><code>board.disp_slot_read(addr, slot)</code></td>
+<td>Read a stored picture back, checked against its CRC; seconds for a colour picture</td>
+</tr>
 </tbody>
 </table>
 <div class="hint hint-warning">
-<p>The first display tile is <code>disp1</code>: a 128×32 SSD1306, <strong>21 columns × 4 rows</strong>. Take the geometry from <code>screen.cols</code> / <code>screen.rows</code>, which come from the tile&rsquo;s own descriptor, rather than hard-coding it. No <code>disp1</code> board has been built yet, so develop against <code>MockBoard()</code>; <code>MockBoard(display=False)</code> behaves like firmware without display support, which answers <code>unknown</code>.</p>
+<p>Display tiles differ in size: <code>disp1</code> is <strong>21 columns × 4 rows</strong>, <code>disp2</code> <strong>13 × 8</strong> and <code>screenkey1</code> <strong>10 × 8</strong>. Take the geometry from <code>screen.cols</code> / <code>screen.rows</code>, which come from the tile&rsquo;s own descriptor, rather than hard-coding it. <code>MockBoard()</code> includes display tiles to develop against; <code>MockBoard(display=False)</code> behaves like firmware without display support, which answers <code>unknown</code>.</p>
 </div>
 <h2 id="the-board-itself">The board itself<a class="headerlink" href="#the-board-itself" title="Permanent link">#</a></h2>
 <table>
