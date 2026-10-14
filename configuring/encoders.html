@@ -94,8 +94,16 @@
 <p><strong>FRC.</strong> Each encoder can be bound to one of four <strong>axes</strong>. The axis reports an accumulated position — turn it clockwise and the number goes up, keep turning and it keeps going. There are four axes in total, so two <code>enc2</code> tiles claim all of them.</p>
 <p>An axis does not spring back to centre and has no deadzone.</p>
 <p><strong>Scale</strong> sets how far one click moves the axis. The default, 256, makes every click one step your robot code can see; smaller values need several clicks before anything changes. At 256 the axis reaches its end after about 128 clicks, around six turns of a typical knob. Pick a larger scale for a knob that should reach the end in fewer turns. Changing the scale zeroes the position.</p>
-<p><strong>FTC.</strong> Under <code>xinput</code> an encoder becomes <strong>pulsed buttons</strong> instead: one button pulses per detent clockwise, another per detent anticlockwise, and your OpMode counts them.</p>
-<p>Pulsed buttons are available under <code>frc</code> too, if you would rather count clicks than read a position.</p>
+<p><strong>FTC.</strong> The FTC Driver Station puts a deadzone on every stick, so in <code>xinput</code> an encoder can&rsquo;t use a stick axis. It has two other ways out.</p>
+<ul>
+<li><strong>A trigger count</strong> keeps the position. Choose <strong>LT</strong> or <strong>RT</strong> under <strong>Trigger (xinput)</strong> in the knob&rsquo;s inspector, and the knob counts on that trigger: one step per click, wrapping at 256. The <code>TriggerKnob</code> class turns that back into a running count in your OpMode:</li>
+</ul>
+<p><code>java
+  TriggerKnob knob = new TriggerKnob();          // before the loop
+  int clicks = knob.update(gamepad2.left_trigger);   // every loop, on the board's gamepad</code></p>
+<p>Call <code>update</code> every loop. It stays right as long as the knob turns fewer than 128 clicks between two loops. The count starts at 0 on the first reading, and <code>knob.reset()</code> makes the current position zero. That trigger no longer works as button 15 (LT) or 16 (RT). Each trigger takes one knob, so two knobs can work this way.
+* <strong>Pulsed buttons:</strong> one button pulses per click clockwise, another per click anticlockwise, and your OpMode counts the presses. Set them under <strong>Direction buttons</strong>.</p>
+<p>If a knob has a trigger, it uses that in <code>xinput</code> and ignores its direction buttons there. Pulsed buttons are available under <code>frc</code> too, if you would rather count clicks than read a position.</p>
 <h2 id="the-shaft-push">The shaft push<a class="headerlink" href="#the-shaft-push" title="Permanent link">#</a></h2>
 <p>The push switch on each encoder is an ordinary key. Bind it like any other key to a logical button number.</p>
 <h2 id="zeroing">Zeroing<a class="headerlink" href="#zeroing" title="Permanent link">#</a></h2>
