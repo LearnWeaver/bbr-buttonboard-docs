@@ -105,7 +105,7 @@
 <td><strong>disp1</strong></td>
 <td>128 × 32 monochrome, 21 columns × 4 rows of text</td>
 <td>none</td>
-<td>no</td>
+<td>no, but <a href="#messages-on-legend-codes">messages</a></td>
 </tr>
 <tr>
 <td><strong>disp2</strong></td>
@@ -207,6 +207,17 @@
 <p>A code with no binding does nothing, and so does a binding whose tile is unplugged or whose slot is empty. No error is shown.</p>
 <p><strong>Zero is never a legend.</strong> Zero stops a rumble and leaves every screen unchanged.</p>
 <p>Bindings are part of your saved configuration, so press <strong>Save</strong> when you are happy with them.</p>
+<h2 id="messages-on-legend-codes">Messages on legend codes<a class="headerlink" href="#messages-on-legend-codes" title="Permanent link">#</a></h2>
+<p>A code can also put a prewritten message on any display tile, including a <code>disp1</code>, which cannot store pictures. The message is kept by the main module, so it needs nothing loaded onto the tile.</p>
+<ol>
+<li>Select the display tile, and write the message in its <strong>Rows</strong>, with the colours and double height you want. <strong>Draw</strong> shows it on the panel.</li>
+<li>Under <strong>Messages</strong>, pick a code and press <strong>Save as code</strong>.</li>
+</ol>
+<p>When the robot sends that code, the panel is cleared and the message is written, so any row you left empty is blank. <strong>Load</strong> puts a saved message back in the rows to change, and <strong>Replace code</strong> saves the changes.</p>
+<p>One code can write a message to several tiles and show a picture on another, so a whole panel can change with one call. On any one tile a code shows either a picture or a message, not both.</p>
+<p>The main module can hold about 2 KB of messages alongside the rest of your setup: enough for a full four-row message on every code of a <code>disp1</code>. If a message will not fit, the config app says so and keeps your setup as it was.</p>
+<h2 id="seeing-every-code-at-once">Seeing every code at once<a class="headerlink" href="#seeing-every-code-at-once" title="Permanent link">#</a></h2>
+<p>The <strong>Legends</strong> tab lists all fifteen codes and what each one does: the picture it shows, the messages it writes, drawn as the panel shows them, and the key colours it sets. <strong>Edit</strong> opens the tile that holds that entry. The <em>In the OpMode</em> block at the bottom has the call for every code in use.</p>
 <h2 id="getting-them-there-from-a-terminal">Getting them there from a terminal<a class="headerlink" href="#getting-them-there-from-a-terminal" title="Permanent link">#</a></h2>
 <p>Everything above is also a command on the <a href="../reference/commands.html">serial channel</a>:</p>
 <div class="highlight"><pre><span></span><code>python3<span class="w"> </span>tools/bbctl.py<span class="w"> </span>--rumble-list<span class="w">              </span><span class="c1"># what is bound now</span>
@@ -235,6 +246,10 @@ python3<span class="w"> </span>tools/bbctl.py<span class="w"> </span>--rumble-bi
 <li><a href="#checking-and-reusing-stored-pictures">Checking and reusing stored pictures</a>
 </li>
 <li><a href="#binding-legend-codes">Binding legend codes</a>
+</li>
+<li><a href="#messages-on-legend-codes">Messages on legend codes</a>
+</li>
+<li><a href="#seeing-every-code-at-once">Seeing every code at once</a>
 </li>
 <li><a href="#getting-them-there-from-a-terminal">Getting them there from a terminal</a>
 </li>

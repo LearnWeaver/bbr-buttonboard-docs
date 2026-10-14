@@ -94,14 +94,16 @@
 <p><strong>Chrome or Edge, on a desktop.</strong> The app uses Web Serial, which Firefox, Safari and mobile browsers do not support. It has to be served over HTTPS or from <code>localhost</code>; opening the files directly with <code>file://</code> will not work.</p>
 </div>
 <p>Press <strong>Connect</strong> and pick the board from the browser&rsquo;s port list. The first time, the board has to be selected by hand.</p>
-<h2 id="four-screens">Four screens<a class="headerlink" href="#four-screens" title="Permanent link">#</a></h2>
+<h2 id="five-screens">Five screens<a class="headerlink" href="#five-screens" title="Permanent link">#</a></h2>
 <h3 id="connect">Connect<a class="headerlink" href="#connect" title="Permanent link">#</a></h3>
 <p>Board identity: product, firmware version, serial number, tile count, and whether the stored configuration is valid.</p>
 <p>This is also where the <strong>USB personality</strong> is set — <code>frc</code> for the FRC Driver Station, <code>xinput</code> for FTC. The change is stored immediately but only takes effect on the next USB reset, so unplug and plug back in after switching.</p>
 <h3 id="configure">Configure<a class="headerlink" href="#configure" title="Permanent link">#</a></h3>
 <p>The panel as it physically is. The chain runs down the left; select a tile and it is drawn in its real layout, so you can click the key itself.</p>
 <p>Selecting a key opens the inspector, which does three things: binds it to a logical button, adds it to a group with other keys, and sets its LED colour. See <a href="binding.html">Binding buttons</a> and <a href="leds.html">LED colours</a>.</p>
-<p>Select a display tile and the inspector offers what that tile can do instead: text and a bar on the panel, a <strong>Picture</strong> to send or store, the tile&rsquo;s <strong>Slots</strong>, and the <strong>Legend codes</strong> that let robot code switch between them. See <a href="screen-keys.html">Screen keys and legends</a>.</p>
+<p>Select a display tile and the inspector offers what that tile can do instead: text and a bar on the panel, <strong>Messages</strong> saved under legend codes, a <strong>Picture</strong> to send or store, the tile&rsquo;s <strong>Slots</strong>, and the <strong>Legend codes</strong> that let robot code switch between them. See <a href="screen-keys.html">Display tiles and legends</a>.</p>
+<h3 id="legends">Legends<a class="headerlink" href="#legends" title="Permanent link">#</a></h3>
+<p>Every legend code, 1 to 15, and what it does across the whole board: the picture it shows, the messages it writes and the key colours it sets, with the call the robot sends for it. <strong>Edit</strong> opens the tile that holds an entry. See <a href="screen-keys.html#seeing-every-code-at-once">Seeing every code at once</a>.</p>
 <h3 id="diagnose">Diagnose<a class="headerlink" href="#diagnose" title="Permanent link">#</a></h3>
 <p>The state of the bus.</p>
 <ul>
@@ -127,10 +129,11 @@
   <aside class="onpage" aria-label="On this page">
     <p class="toc-title">On this page</p>
 <ul class="toc-list">
-<li><a href="#four-screens">Four screens</a>
+<li><a href="#five-screens">Five screens</a>
 <ul class="toc-sub">
 <li><a href="#connect">Connect</a></li>
 <li><a href="#configure">Configure</a></li>
+<li><a href="#legends">Legends</a></li>
 <li><a href="#diagnose">Diagnose</a></li>
 <li><a href="#firmware">Firmware</a></li>
 </ul>
