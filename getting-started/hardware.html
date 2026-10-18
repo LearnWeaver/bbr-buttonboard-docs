@@ -129,51 +129,80 @@
 <th>Tile</th>
 <th>What it is</th>
 <th>Keys</th>
+<th>Grid</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>mx9</strong></td>
-<td>3 × 3 grid of Cherry MX hot-swap keys</td>
-<td>9</td>
-</tr>
-<tr>
-<td><strong>mx9rgb</strong></td>
-<td>The same, with an RGB LED under every key</td>
-<td>9</td>
-</tr>
-<tr>
-<td><strong>mx1</strong></td>
-<td>A single MX key</td>
+<td><strong>mx1</strong> / <strong>mx1rgb</strong></td>
+<td>A single Cherry MX hot-swap key</td>
 <td>1</td>
+<td>2 × 1</td>
+</tr>
+<tr>
+<td><strong>mx1 1x1</strong> / <strong>mx1rgb 1x1</strong></td>
+<td>The same key on the smallest board, cables out the back</td>
+<td>1</td>
+<td>1 × 1</td>
+</tr>
+<tr>
+<td><strong>mx3</strong> / <strong>mx3rgb</strong></td>
+<td>Three keys in a row</td>
+<td>3</td>
+<td>3 × 1</td>
+</tr>
+<tr>
+<td><strong>mx4</strong> / <strong>mx4rgb</strong></td>
+<td>Four keys as a WASD cluster</td>
+<td>4</td>
+<td>3 × 2</td>
+</tr>
+<tr>
+<td><strong>mx6rgb</strong></td>
+<td>Six keys in a 3 × 2 grid, an RGB LED under each</td>
+<td>6</td>
+<td>3 × 3</td>
 </tr>
 <tr>
 <td><strong>arc4</strong></td>
 <td>Four arcade buttons, each on a 3-pin JST PH lead</td>
 <td>4</td>
+<td>2 × 1</td>
+</tr>
+<tr>
+<td><strong>enc1</strong></td>
+<td>One rotary encoder with a push-to-click shaft</td>
+<td>1 encoder + 1 key</td>
+<td>2 × 1</td>
 </tr>
 <tr>
 <td><strong>enc2</strong></td>
 <td>Two rotary encoders with push-to-click shafts</td>
 <td>2 encoders + 2 keys</td>
+<td>2 × 2</td>
 </tr>
 <tr>
 <td><strong>disp1</strong></td>
 <td>A 128 × 32 text panel — a readout, not a control</td>
 <td>none</td>
+<td>2 × 1</td>
 </tr>
 <tr>
 <td><strong>disp2</strong></td>
 <td>A 160 × 128 colour display: text, and stored pictures</td>
 <td>none</td>
+<td>2 × 2</td>
 </tr>
 <tr>
 <td><strong>screenkey1</strong></td>
 <td>One key whose cap <strong>is</strong> a 128 × 128 colour screen</td>
 <td>1</td>
+<td>2 × 1</td>
 </tr>
 </tbody>
 </table>
+<p>The <strong>rgb</strong> versions are the same board with a colour LED under every key. See <a href="../configuring/leds.html">LED colours</a>.</p>
+<p>The <strong>splitter</strong>, a small board with no processor, has four connectors so the chain can branch.</p>
 <p>Every tile, with pictures and what each can do, is on <a href="tiles.html">The tiles</a>.</p>
 <p><code>disp1</code>, <code>disp2</code> and <code>screenkey1</code> are the display tiles. On <code>screenkey1</code> the screen is the key&rsquo;s legend. See <a href="../configuring/screen-keys.html">Display tiles and legends</a>.</p>
 <p>Keys on a tile are numbered from <strong>0</strong>. Buttons the Driver Station sees are numbered from <strong>1</strong>. See <a href="../configuring/binding.html">Binding buttons</a>.</p>
