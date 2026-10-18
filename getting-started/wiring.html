@@ -56,6 +56,8 @@
 <p class="nav-group">Getting started</p>
 <ul class="nav-list">
 <li><a href="../getting-started/hardware.html">What you have</a></li>
+<li><a href="../getting-started/tiles.html">The tiles</a></li>
+<li><a href="../getting-started/cases.html">Printing the cases</a></li>
 <li><a href="../getting-started/wiring.html" class="active">Plugging it together</a></li>
 <li><a href="../getting-started/first-run.html">First run</a></li>
 <li><a href="../getting-started/firmware.html">Updating the firmware</a></li>
@@ -91,9 +93,8 @@
       <h1 id="plugging-it-together">Plugging it together<a class="headerlink" href="#plugging-it-together" title="Permanent link">#</a></h1>
 <h2 id="the-chain">The chain<a class="headerlink" href="#the-chain" title="Permanent link">#</a></h2>
 <p>Every board — the main module and every tile — has <strong>two identical connectors</strong>, wired in parallel. Run a cable from one board to the next in any order you like:</p>
-<div class="highlight"><pre><span></span><code>main module ──── mx9 ──── mx9 ──── enc2
-</code></pre></div>
-
+<p><img alt="The main module cabled to an mx4, the mx4 to an mx1, and the mx1 to an enc2, one after another" src="../images/wiring-chain.png" /></p>
+<p>Each arrow is one cable. The arrows only show the order the boards were cabled in; the bus itself runs both ways.</p>
 <ul>
 <li><strong>Order does not matter.</strong></li>
 <li><strong>Both connectors on a board are the same.</strong> There is no &ldquo;in&rdquo; and no &ldquo;out&rdquo;.</li>
@@ -102,11 +103,7 @@
 </ul>
 <h2 id="splitting-the-chain">Splitting the chain<a class="headerlink" href="#splitting-the-chain" title="Permanent link">#</a></h2>
 <p>A <strong>splitter</strong> is a small square board with four connectors wired in parallel. Use one where the cable wants to go in more than one direction, for example along both sides of a panel:</p>
-<div class="highlight"><pre><span></span><code>main module ──── mx9 ──── splitter ──── mx9 ──── enc2
-                             │
-                            mx4
-</code></pre></div>
-
+<p><img alt="The same chain with a splitter after the mx4: one cable carries on to the mx1 and enc2, another branches off to a disp2" src="../images/wiring-split.png" /></p>
 <p>Tiles on a branch work exactly like tiles on the main run.</p>
 <ul>
 <li><strong>No loops.</strong> Never cable back to a board that is already on the bus. Nothing detects a loop.</li>
@@ -155,7 +152,7 @@
 </tbody>
 </table>
     </article>
-    <nav class="pager-row"><a class="pager prev" href="../getting-started/hardware.html"><span class="pager-label">Previous</span><span class="pager-title">What you have</span></a><a class="pager next" href="../getting-started/first-run.html"><span class="pager-label">Next</span><span class="pager-title">First run</span></a></nav>
+    <nav class="pager-row"><a class="pager prev" href="../getting-started/cases.html"><span class="pager-label">Previous</span><span class="pager-title">Printing the cases</span></a><a class="pager next" href="../getting-started/first-run.html"><span class="pager-label">Next</span><span class="pager-title">First run</span></a></nav>
     <footer class="page-footer">
       <a href="https://github.com/LearnWeaver/BBRControlBoard/edit/main/docs/gitbook/getting-started/wiring.md" rel="noopener">Edit this page on GitHub</a>
     </footer>
