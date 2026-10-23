@@ -96,21 +96,14 @@
       <h1 id="plugging-it-together">Plugging it together<a class="headerlink" href="#plugging-it-together" title="Permanent link">#</a></h1>
 <h2 id="the-chain">The chain<a class="headerlink" href="#the-chain" title="Permanent link">#</a></h2>
 <p>Every board — the main module and every tile — has <strong>two identical connectors</strong>, wired in parallel. Run a cable from one board to the next in any order you like:</p>
-<p><img alt="The main module cabled to an mx4, the mx4 to an mx1, and the mx1 to an enc2, one after another" src="../images/wiring-chain.png" /></p>
+<p><img alt="The main module cabled to an mx4, the mx4 to an mx3rgb, and the mx3rgb to an enc1, one after another" src="../images/wiring-chain.png" /></p>
 <p>Each arrow is one cable. The arrows only show the order the boards were cabled in; the bus itself runs both ways.</p>
 <ul>
 <li><strong>Order does not matter.</strong></li>
 <li><strong>Both connectors on a board are the same.</strong> There is no &ldquo;in&rdquo; and no &ldquo;out&rdquo;.</li>
 <li><strong>Cables are straight through.</strong> Pin 1 to pin 1. There is no crossover cable in this system.</li>
 <li><strong>Up to 31 tiles</strong>, and up to about 4 m of cable in total.</li>
-</ul>
-<h2 id="splitting-the-chain">Splitting the chain<a class="headerlink" href="#splitting-the-chain" title="Permanent link">#</a></h2>
-<p>A <strong>splitter</strong> is a small square board with four connectors wired in parallel. Use one where the cable wants to go in more than one direction, for example along both sides of a panel:</p>
-<p><img alt="The same chain with a splitter after the mx4: one cable carries on to the mx1 and enc2, another branches off to a disp2" src="../images/wiring-split.png" /></p>
-<p>Tiles on a branch work exactly like tiles on the main run.</p>
-<ul>
 <li><strong>No loops.</strong> Never cable back to a board that is already on the bus. Nothing detects a loop.</li>
-<li><strong>Count the branches in the 4 m.</strong> The limit is the total of every cable on the bus.</li>
 </ul>
 <h2 id="power">Power<a class="headerlink" href="#power" title="Permanent link">#</a></h2>
 <p>The whole panel runs off the USB cable. There is nothing else to plug in.</p>
@@ -165,8 +158,6 @@
     <p class="toc-title">On this page</p>
 <ul class="toc-list">
 <li><a href="#the-chain">The chain</a>
-</li>
-<li><a href="#splitting-the-chain">Splitting the chain</a>
 </li>
 <li><a href="#power">Power</a>
 </li>

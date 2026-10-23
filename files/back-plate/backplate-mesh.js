@@ -2,9 +2,9 @@
 // no libraries, so node can test it (tools/test_backplate.mjs).
 //
 // The source of truth is hardware/back-plate/back_plate.py. It writes
-// backplate-params.json and back-plate-support.stl beside this file; this
+// backplate-params.json and back-plate-standoff.stl beside this file; this
 // module only rebuilds the plate from those numbers, for any size, and
-// stretches the support for a larger gap.
+// stretches the standoff for a larger gap.
 //
 // A mesh is { pos: Float32Array of xyz per vertex, tri: Uint32Array of three
 // vertex indices per triangle, counter-clockwise seen from outside }.
@@ -57,7 +57,7 @@ function cellRing(h, arcs) {
 
 // The plate: cols x rows cells on the pitch, plate_t thick, a hole_d hole on
 // every cell centre, plate_r on the four outer corners. z = 0 is its
-// underside; a support's ledge meets it there.
+// underside; a standoff's ledge meets it there.
 export function plateMesh(P, cols, rows, holeD = P.hole_d) {
   const h = P.pitch / 2, r = holeD / 2, T = P.plate_t;
   if (!(r > 0 && r < h - 1)) throw new Error('hole does not fit the cell');
@@ -131,13 +131,20 @@ function onPlateEdge(A, B, h, sx, sy, cols, rows) {
   return true;          // on a corner arc: always the plate's edge
 }
 
-// The support for a larger gap: every vertex above stretch_z moves up by the
+// The standoff for a larger gap: every vertex above stretch_z moves up by the
 // extra. Exact because the post is straight there (back_plate.py write_docs).
-export function stretchSupport(P, mesh, gap) {
+export function stretchStandoff(P, mesh, gap) {
   if (!(gap >= P.gap && gap <= P.gap_max)) throw new Error(`gap must be ${P.gap}-${P.gap_max} mm`);
   const pos = Float32Array.from(mesh.pos), d = gap - P.gap;
   for (let i = 2; i < pos.length; i += 3) if (pos[i] > P.stretch_z) pos[i] += d;
   return { pos, tri: mesh.tri };
+}
+
+// How many standoffs a cols x rows plate wants: one in every cell of a plate
+// under 4 cells, else one near each corner plus one per 16 cells past 25.
+export function standoffCount(cols, rows) {
+  const n = cols * rows;
+  return n < 4 ? n : 4 + Math.max(0, Math.ceil((n - 25) / 16));
 }
 
 // Peak strain in a clip prong as the barb passes the plate hole, in percent:

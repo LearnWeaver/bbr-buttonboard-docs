@@ -1,19 +1,19 @@
 // The back-plate generator on the "Back plate for the leads" docs page.
 // Mounts into #back-plate-generator. Geometry is in backplate-mesh.js; the
-// numbers and the support come from hardware/back-plate/back_plate.py.
-import { plateMesh, parseStl, stretchSupport, prongStrain, toStl } from './backplate-mesh.js';
+// numbers and the standoff come from hardware/back-plate/back_plate.py.
+import { plateMesh, parseStl, stretchStandoff, prongStrain, standoffCount, toStl } from './backplate-mesh.js';
 import { BED, MAX_CELLS, useStyles, el, field, download, loadFailed, topView, sizeErrors } from '../generators/ui.js';
 
 const here = (f) => new URL(f, import.meta.url);
 
 async function mount(root) {
   root.textContent = 'Loading the generator…';
-  let P, support;
+  let P, standoff;
   try {
-    const [pr, sr] = await Promise.all([fetch(here('backplate-params.json')), fetch(here('back-plate-support.stl'))]);
+    const [pr, sr] = await Promise.all([fetch(here('backplate-params.json')), fetch(here('back-plate-standoff.stl'))]);
     if (!pr.ok || !sr.ok) throw new Error('could not load the part data');
     P = await pr.json();
-    support = parseStl(new Uint8Array(await sr.arrayBuffer()));
+    standoff = parseStl(new Uint8Array(await sr.arrayBuffer()));
   } catch (e) {
     loadFailed(root, e.message);
     return;
@@ -30,11 +30,11 @@ async function mount(root) {
   const view = el('div', { class: 'gen-view' });
   const facts = el('ul', { class: 'gen-facts', 'aria-live': 'polite' });
   const bPlate = el('button', { type: 'button' }, 'Download plate STL');
-  const bSupport = el('button', { type: 'button', class: 'secondary' }, 'Download support STL');
+  const bStandoff = el('button', { type: 'button', class: 'secondary' }, 'Download standoff STL');
   root.textContent = '';
   root.className = 'gen';
   root.append(el('div', { class: 'gen-controls' }, cols.node, rows.node, gap.node, hole.node), view, facts,
-              el('div', { class: 'gen-buttons' }, bPlate, bSupport));
+              el('div', { class: 'gen-buttons' }, bPlate, bStandoff));
 
   const read = () => {
     const c = Math.round(+cols.input.value), r = Math.round(+rows.input.value);
@@ -49,7 +49,7 @@ async function mount(root) {
     const { c, r, g, h, errs } = read();
     facts.textContent = '';
     view.textContent = '';
-    bPlate.disabled = bSupport.disabled = errs.length > 0;
+    bPlate.disabled = bStandoff.disabled = errs.length > 0;
     if (errs.length) {
       facts.append(el('li', { class: 'gen-bad' }, `Check the values: ${errs.join('; ')}.`));
       return;
@@ -59,22 +59,22 @@ async function mount(root) {
     facts.append(el('li', {}, `Plate ${W} × ${H} × ${P.plate_t} mm, ${c * r} holes.`));
     if (Math.max(W, H) > BED)
       facts.append(el('li', { class: 'gen-warn' }, `Wider than ${BED} mm: check it fits your printer's bed, or print two smaller plates.`));
-    const n = 4 + Math.max(0, Math.ceil((c * r - 25) / 16));
-    facts.append(el('li', {}, c * r < 4 ? `Supports: one in each cell.`
-                                        : `Supports: about ${n}, one near each corner${n > 4 ? ' and the rest spread across the middle' : ''}.`));
+    const n = standoffCount(c, r);
+    facts.append(el('li', {}, c * r < 4 ? `Standoffs: one in each cell.`
+                                        : `Standoffs: about ${n}, one near each corner${n > 4 ? ' and the rest spread across the middle' : ''}.`));
     const st = prongStrain(P, g);
     facts.append(el('li', { class: st > 2.2 ? 'gen-warn' : '' },
-      `Clip strain going in: ${st.toFixed(1)} %${st > 2.2 ? ', at the top of PLA\'s range: print the supports in PETG if PLA ones crack.' : '.'}`));
+      `Clip strain going in: ${st.toFixed(1)} %${st > 2.2 ? ', at the top of PLA\'s range: print the standoffs in PETG if PLA ones crack.' : '.'}`));
   };
 
   bPlate.addEventListener('click', () => {
     const { c, r, h } = read();
     download(toStl(plateMesh(P, c, r, h), `back plate ${c}x${r}`), `back-plate-${c}x${r}.stl`);
   });
-  bSupport.addEventListener('click', () => {
+  bStandoff.addEventListener('click', () => {
     const { g } = read();
-    download(toStl(stretchSupport(P, support, g), `back plate support, gap ${g}`),
-             `back-plate-support-gap${String(g).replace('.', '_')}.stl`);
+    download(toStl(stretchStandoff(P, standoff, g), `back plate standoff, gap ${g}`),
+             `back-plate-standoff-gap${String(g).replace('.', '_')}.stl`);
   });
   for (const f of [cols, rows, gap, hole]) f.input.addEventListener('input', update);
   update();

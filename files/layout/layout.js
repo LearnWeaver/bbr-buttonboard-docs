@@ -9,6 +9,7 @@
 import { catalogue, cellsAt, shape, conflict, place, move, remove, freeCells, fillBlanks, partsList, warnings,
          encode, decode, MAX_CELLS } from './layout-model.js';
 import { useStyles, el, field, loadFailed } from '../generators/ui.js';
+import { standoffCount } from '../back-plate/backplate-mesh.js';
 
 const STORE = 'bb-layout';
 const DRAG_PX = 4;          // movement before a press becomes a drag
@@ -242,8 +243,12 @@ async function mount(root) {
     }
     t.append(el('tr', {}, el('td', {}, `openGrid board, ${L.cols} × ${L.rows}`), el('td', {}, '1'),
                 el('td', {}, el('a', { href: `opengrid-board.html?cols=${L.cols}&rows=${L.rows}` }, 'make it'))));
+    // the back plate is optional: it holds the cables behind the board, on standoffs that snap into its back
+    const plateLink = () => el('a', { href: `back-plate.html?cols=${L.cols}&rows=${L.rows}` }, 'make it');
     t.append(el('tr', {}, el('td', {}, `Back plate, ${L.cols} × ${L.rows} (optional, holds the cables behind)`), el('td', {}, '1'),
-                el('td', {}, el('a', { href: `back-plate.html?cols=${L.cols}&rows=${L.rows}` }, 'make it'))));
+                el('td', {}, plateLink())));
+    t.append(el('tr', {}, el('td', {}, 'Back plate standoffs (with the back plate)'),
+                el('td', {}, String(standoffCount(L.cols, L.rows))), el('td', {}, plateLink())));
     parts.append(el('h4', { style: 'margin:.9rem 0 .2rem' }, 'Parts to print'), t);
   }
 

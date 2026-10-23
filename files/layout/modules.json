@@ -2,17 +2,15 @@
   "about": "Case footprints for the layout planner (getting-started/layout.md). w x h in grid cells as the case sits unturned; `blocks` (optional) are cells a case overhangs, so nothing else can go there; no case in the list has one now. A board whose case is not designed yet has `zip` null and says so in `nocase`. tools/test_generators.mjs checks every other footprint against the Grid column of getting-started/cases.md.",
   "groups": [
     {
-      "name": "Main module and bus",
+      "name": "Main module",
       "modules": [
-        { "id": "mm", "name": "Main module", "fits": "the main module: USB to the robot", "w": 2, "h": 1, "zip": "main-module" },
-        { "id": "split", "name": "Splitter", "fits": "the 4-port bus splitter", "w": 1, "h": 1, "zip": "splitter" }
+        { "id": "mm", "name": "Main module", "fits": "the main module: USB to the robot", "w": 2, "h": 1, "zip": "main-module" }
       ]
     },
     {
       "name": "Keys",
       "modules": [
         { "id": "mx1s", "name": "mx1 1x1", "fits": "one key, 25 mm board: mx1-1x1, mx1rgb-1x1", "w": 1, "h": 1, "zip": "mx1-1x1" },
-        { "id": "mx1", "name": "mx1rgb", "fits": "one key with an RGB LED under it", "w": 2, "h": 1, "zip": "mx1rgb" },
         { "id": "mx3", "name": "mx3rgb", "fits": "three keys in a row", "w": 3, "h": 1, "zip": "mx3rgb" },
         { "id": "mx4", "name": "mx4rgb", "fits": "the WASD cluster, with an RGB LED under each key", "w": 3, "h": 2, "zip": "mx4" },
         { "id": "mx6", "name": "mx6rgb", "fits": "six keys, 3 x 2", "w": 3, "h": 3, "zip": "mx6rgb" },
@@ -22,8 +20,7 @@
     {
       "name": "Encoders",
       "modules": [
-        { "id": "enc1", "name": "enc1", "fits": "one rotary encoder", "w": 2, "h": 1, "zip": "enc1" },
-        { "id": "enc2", "name": "enc2", "fits": "two rotary encoders", "w": 2, "h": 2, "zip": "enc2" }
+        { "id": "enc1", "name": "enc1", "fits": "one rotary encoder", "w": 2, "h": 1, "zip": "enc1" }
       ]
     },
     {
