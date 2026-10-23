@@ -9,6 +9,9 @@
 // A mesh is { pos: Float32Array of xyz per vertex, tri: Uint32Array of three
 // vertex indices per triangle, counter-clockwise seen from outside }.
 
+import { Builder, parseStl, toStl, meshStats } from '../generators/mesh.js';
+export { parseStl, toStl, meshStats };
+
 const SEG = 96;          // segments round each hole: a multiple of 8, so every cell's square corners are vertices
 const ARC_SEG = 6;       // segments round each of the plate's outer corners
 
@@ -50,19 +53,6 @@ function cellRing(h, arcs) {
     }
   }
   return ring.sort((p, q) => p.ang - q.ang);
-}
-
-class Builder {
-  constructor() { this.p = []; this.t = []; this.index = new Map(); }
-  v(x, y, z) {
-    // weld by position, so neighbouring cells share their edge vertices
-    const key = `${Math.round(x * 1e5)},${Math.round(y * 1e5)},${Math.round(z * 1e5)}`;
-    let i = this.index.get(key);
-    if (i === undefined) { i = this.p.length / 3; this.p.push(x, y, z); this.index.set(key, i); }
-    return i;
-  }
-  tri(a, b, c) { if (a !== b && b !== c && a !== c) this.t.push(a, b, c); }
-  mesh() { return { pos: Float32Array.from(this.p), tri: Uint32Array.from(this.t) }; }
 }
 
 // The plate: cols x rows cells on the pitch, plate_t thick, a hole_d hole on
@@ -141,21 +131,6 @@ function onPlateEdge(A, B, h, sx, sy, cols, rows) {
   return true;          // on a corner arc: always the plate's edge
 }
 
-// Binary STL in, mesh out (welded, so the stretch below moves shared vertices once).
-export function parseStl(buf) {
-  const dv = new DataView(buf.buffer ? buf.buffer : buf, buf.byteOffset || 0, buf.byteLength);
-  const n = dv.getUint32(80, true);
-  if (84 + 50 * n !== dv.byteLength) throw new Error('not a binary STL');
-  const b = new Builder();
-  for (let i = 0; i < n; i++) {
-    const o = 84 + 50 * i + 12;
-    const v = [0, 1, 2].map((j) => b.v(dv.getFloat32(o + 12 * j, true), dv.getFloat32(o + 12 * j + 4, true),
-                                       dv.getFloat32(o + 12 * j + 8, true)));
-    b.tri(v[0], v[1], v[2]);
-  }
-  return b.mesh();
-}
-
 // The support for a larger gap: every vertex above stretch_z moves up by the
 // extra. Exact because the post is straight there (back_plate.py write_docs).
 export function stretchSupport(P, mesh, gap) {
@@ -170,52 +145,4 @@ export function stretchSupport(P, mesh, gap) {
 export function prongStrain(P, gap) {
   const L = gap + P.plate_t - P.slit_z0;
   return (300 * P.prong_t * P.barb) / (2 * L * L);
-}
-
-export function toStl(mesh, name = 'back-plate') {
-  const n = mesh.tri.length / 3;
-  const buf = new ArrayBuffer(84 + 50 * n), dv = new DataView(buf);
-  const head = `${name}, generated from hardware/back-plate/back_plate.py`.slice(0, 80);
-  for (let i = 0; i < head.length; i++) dv.setUint8(i, head.charCodeAt(i));
-  dv.setUint32(80, n, true);
-  const P = mesh.pos;
-  for (let t = 0; t < n; t++) {
-    const [a, b, c] = [mesh.tri[3 * t], mesh.tri[3 * t + 1], mesh.tri[3 * t + 2]].map((i) => 3 * i);
-    const ux = P[b] - P[a], uy = P[b + 1] - P[a + 1], uz = P[b + 2] - P[a + 2];
-    const vx = P[c] - P[a], vy = P[c + 1] - P[a + 1], vz = P[c + 2] - P[a + 2];
-    let nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
-    const l = Math.hypot(nx, ny, nz) || 1;
-    const o = 84 + 50 * t;
-    dv.setFloat32(o, nx / l, true); dv.setFloat32(o + 4, ny / l, true); dv.setFloat32(o + 8, nz / l, true);
-    for (const [j, i] of [a, b, c].entries())
-      for (let k = 0; k < 3; k++) dv.setFloat32(o + 12 + 12 * j + 4 * k, P[i + k], true);
-  }
-  return new Uint8Array(buf);
-}
-
-// Signed volume (positive for an outward-facing closed mesh), and the count of
-// edges not shared by exactly one opposite-facing pair: 0 for a watertight one.
-export function meshStats(mesh) {
-  const P = mesh.pos, T = mesh.tri;
-  let vol = 0;
-  const edges = new Map();
-  for (let t = 0; t < T.length; t += 3) {
-    const [a, b, c] = [T[t], T[t + 1], T[t + 2]];
-    const ax = P[3 * a], ay = P[3 * a + 1], az = P[3 * a + 2];
-    const bx = P[3 * b], by = P[3 * b + 1], bz = P[3 * b + 2];
-    const cx = P[3 * c], cy = P[3 * c + 1], cz = P[3 * c + 2];
-    vol += (ax * (by * cz - bz * cy) - ay * (bx * cz - bz * cx) + az * (bx * cy - by * cx)) / 6;
-    for (const [u, w] of [[a, b], [b, c], [c, a]]) {
-      const k = `${u},${w}`;
-      edges.set(k, (edges.get(k) || 0) + 1);
-    }
-  }
-  let open = 0;
-  for (const [k, n] of edges) {
-    const [u, w] = k.split(',');
-    if (n !== 1 || edges.get(`${w},${u}`) !== 1) open++;
-  }
-  let zmin = Infinity, zmax = -Infinity;
-  for (let i = 2; i < P.length; i += 3) { zmin = Math.min(zmin, P[i]); zmax = Math.max(zmax, P[i]); }
-  return { volume: vol, triangles: T.length / 3, openEdges: open, zmin, zmax };
 }
