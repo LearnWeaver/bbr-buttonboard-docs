@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plan your panel · BBR Button Board</title>
+<meta name="description" content="Plan your panel Lay out your panel before you print anything. Set the size of your openGrid board, then drag the cases onto it to see how many cells each one takes and what still f">
+<link rel="canonical" href="https://buttonboard.buildingblockrobotics.com/getting-started/layout.html">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../style.css">
+<script>
+  // Set the theme before first paint so the page never flashes the wrong one.
+  try {
+    var t = localStorage.getItem('bbr-theme');
+    if (t) document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+</script>
+</head>
+<body class="page">
+
+<a class="skip" href="#content">Skip to content</a>
+
+<header class="topbar">
+  <button class="menu-btn" aria-label="Toggle navigation" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+  <a class="brand" href="../index.html">
+    <span class="brand-name">BBR Button Board</span>
+    <span class="brand-tagline">Documentation</span>
+  </a>
+  <div class="search" role="search">
+    <input type="search" id="search-input" placeholder="Search"
+           autocomplete="off" spellcheck="false" aria-label="Search the documentation">
+    <kbd class="search-key">/</kbd>
+    <div id="search-results" class="search-results" hidden></div>
+  </div>
+  <button class="theme-btn" aria-label="Toggle dark mode" title="Toggle dark mode">
+    <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <circle cx="12" cy="12" r="4.5"/>
+      <g class="rays"><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.4 4.4l2.1 2.1M17.5 17.5l2.1 2.1M19.6 4.4l-2.1 2.1M6.5 17.5l-2.1 2.1"/></g>
+    </svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/>
+    </svg>
+  </button>
+</header>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <nav aria-label="Documentation">
+      <ul class="nav-list">
+<li><a href="../index.html">BBR Button Board</a></li>
+</ul>
+<p class="nav-group">Getting started</p>
+<ul class="nav-list">
+<li><a href="../getting-started/hardware.html">What you have</a></li>
+<li><a href="../getting-started/tiles.html">The tiles</a></li>
+<li><a href="../getting-started/layout.html" class="active">Plan your panel</a></li>
+<li><a href="../getting-started/opengrid-board.html">The openGrid board</a></li>
+<li><a href="../getting-started/cases.html">Printing the cases</a></li>
+<li><a href="../getting-started/back-plate.html">Back plate for the leads</a></li>
+<li><a href="../getting-started/wiring.html">Plugging it together</a></li>
+<li><a href="../getting-started/first-run.html">First run</a></li>
+<li><a href="../getting-started/firmware.html">Updating the firmware</a></li>
+</ul>
+<p class="nav-group">Configuring</p>
+<ul class="nav-list">
+<li><a href="../configuring/config-app.html">The config app</a></li>
+<li><a href="../configuring/binding.html">Binding buttons</a></li>
+<li><a href="../configuring/leds.html">LED colours</a></li>
+<li><a href="../configuring/encoders.html">Rotary encoders</a></li>
+<li><a href="../configuring/screen-keys.html">Display tiles and legends</a></li>
+</ul>
+<p class="nav-group">On the robot</p>
+<ul class="nav-list">
+<li><a href="../on-the-robot/legends.html">Changing legends in a match</a></li>
+</ul>
+<p class="nav-group">Driver Station app</p>
+<ul class="nav-list">
+<li><a href="../driver-station/install.html">Install the library</a></li>
+<li><a href="../driver-station/first-script.html">Your first script</a></li>
+<li><a href="../driver-station/api.html">Python API summary</a></li>
+</ul>
+<p class="nav-group">Reference</p>
+<ul class="nav-list">
+<li><a href="../reference/commands.html">Serial command reference</a></li>
+<li><a href="../reference/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+    </nav>
+  </aside>
+
+  <main id="content" class="content">
+    <article class="prose">
+      <h1 id="plan-your-panel">Plan your panel<a class="headerlink" href="#plan-your-panel" title="Permanent link">#</a></h1>
+<p>Lay out your panel before you print anything. Set the size of your openGrid board, then drag the cases onto it to see how many cells each one takes and what still fits. The parts list underneath has the download for every case you used, and a link to make the board at your size.</p>
+<div id="layout-planner"><p>The planner needs JavaScript. Every case's size in cells is in the table on <a href="cases.html">Printing the cases</a>.</p></div>
+
+<script type="module" src="../files/layout/layout.js"></script>
+
+<h2 id="using-it">Using it<a class="headerlink" href="#using-it" title="Permanent link">#</a></h2>
+<ul>
+<li><strong>Place a case:</strong> drag it from the list onto the grid. Or click it in the list, then click a cell.</li>
+<li><strong>Move it:</strong> drag it to another spot. A red outline means it doesn&rsquo;t fit there.</li>
+<li><strong>Turn it:</strong> select it and press <strong>R</strong>, or use <strong>Turn</strong>. Every case can go in any of the four directions, because the snaps underneath are square.</li>
+<li><strong>Remove it:</strong> drag it off the grid, or select it and press <strong>Delete</strong>.</li>
+<li><strong>Fill empty cells with blanks</strong> puts a blank cable tile in every free cell, so the panel reads as one surface.</li>
+<li><strong>Without a mouse:</strong> tab to a case in the list and press Enter, then use the arrow keys on the grid and Enter to place it.</li>
+</ul>
+<p>The layout is kept in the page address, so you can bookmark it or send the link to someone. The planner also remembers your last layout.</p>
+<h2 id="what-it-checks">What it checks<a class="headerlink" href="#what-it-checks" title="Permanent link">#</a></h2>
+<ul>
+<li>A case has to sit entirely on the board, on cells nothing else uses.</li>
+<li>Every panel needs one <strong>main module</strong>. Two main modules make two separate panels.</li>
+</ul>
+<p>It doesn&rsquo;t check your cabling. Plan where the leads run with the <a href="wiring.html">wiring guide</a>, and use the cable tiles for leads on the front, or the <a href="back-plate.html">back plate</a> for leads behind the board.</p>
+    </article>
+    <nav class="pager-row"><a class="pager prev" href="../getting-started/tiles.html"><span class="pager-label">Previous</span><span class="pager-title">The tiles</span></a><a class="pager next" href="../getting-started/opengrid-board.html"><span class="pager-label">Next</span><span class="pager-title">The openGrid board</span></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/LearnWeaver/BBRControlBoard/edit/main/docs/gitbook/getting-started/layout.md" rel="noopener">Edit this page on GitHub</a>
+    </footer>
+  </main>
+
+  <aside class="onpage" aria-label="On this page">
+    <p class="toc-title">On this page</p>
+<ul class="toc-list">
+<li><a href="#using-it">Using it</a>
+</li>
+<li><a href="#what-it-checks">What it checks</a>
+</li>
+</ul>
+  </aside>
+</div>
+
+<div class="scrim" hidden></div>
+<script src="../app.js" defer></script>
+</body>
+</html>

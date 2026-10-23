@@ -20,8 +20,10 @@ async function mount(root) {
   }
   useStyles();
 
-  const cols = field('Columns (cells)', { min: 1, max: MAX_CELLS, step: 1, value: 5 });
-  const rows = field('Rows (cells)', { min: 1, max: MAX_CELLS, step: 1, value: 5 });
+  // the layout planner links here with its grid size: ?cols=5&rows=4
+  const q = new URLSearchParams(location.search), start = (k) => Math.min(MAX_CELLS, Math.max(1, Math.round(+q.get(k)) || 5));
+  const cols = field('Columns (cells)', { min: 1, max: MAX_CELLS, step: 1, value: start('cols') });
+  const rows = field('Rows (cells)', { min: 1, max: MAX_CELLS, step: 1, value: start('rows') });
   const view = el('div', { class: 'gen-view' });
   const facts = el('ul', { class: 'gen-facts', 'aria-live': 'polite' });
   const bBoard = el('button', { type: 'button' }, 'Download board STL');
