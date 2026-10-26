@@ -8,10 +8,13 @@
 // with Delete; the buttons under the grid do the same.
 import { catalogue, cellsAt, shape, conflict, place, move, remove, freeCells, fillBlanks, partsList, warnings,
          encode, decode, MAX_CELLS } from './layout-model.js';
-import { useStyles, el, field, loadFailed } from '../generators/ui.js';
+import { footprint, sizeMm, problems as onePieceProblems, build as buildOnePiece } from './onepiece-model.js';
+import { useStyles, el, field, loadFailed, download, BED } from '../generators/ui.js';
+import { toStl } from '../generators/mesh.js';
 import { standoffCount } from '../back-plate/backplate-mesh.js';
 
 const STORE = 'bb-layout';
+const BED_STORE = 'bb-bed';
 const DRAG_PX = 4;          // movement before a press becomes a drag
 // one colour per group, in modules.json's order; the cable tiles always grey (GREY), since red would read as an error
 const HUES = [[212, 75], [28, 75], [145, 60], [280, 60], [330, 65], [220, 8]];
@@ -61,6 +64,14 @@ const CSS = `
 .lp-parts { width: 100%; border-collapse: collapse; font-size: .85rem; margin-top: .4rem; }
 .lp-parts td, .lp-parts th { padding: .3rem .4rem; border-bottom: 1px solid var(--border); text-align: left; }
 .lp-parts th { color: var(--text-muted); font-weight: 500; }
+.lp-edge { position: absolute; font-size: .6rem; line-height: 1; padding: 1px 3px; border-radius: 3px;
+           background: var(--bg); color: var(--text-muted); border: 1px solid currentColor; }
+.lp-edge-N { top: 2px; left: 50%; transform: translateX(-50%); } .lp-edge-S { bottom: 2px; left: 50%; transform: translateX(-50%); }
+.lp-edge-W { left: 2px; top: 50%; transform: translateY(-50%); } .lp-edge-E { right: 2px; top: 50%; transform: translateY(-50%); }
+.lp-one { margin-top: 1.1rem; padding-top: .2rem; border-top: 1px solid var(--border); }
+.lp-one p { font-size: .85rem; margin: .3rem 0 .6rem; }
+.lp-one .gen-controls { max-width: 22rem; }
+.lp-one .gen-buttons { margin-top: .6rem; }
 ${HUES.map(([h, s], i) => `.lp-g${i} { background: hsla(${h}, ${s}%, 55%, .18); border-color: hsla(${h}, ${s}%, 45%, .9); color: var(--text); }
 .lp-over.lp-g${i} { color: hsla(${h}, ${s}%, 45%, .9); background-color: transparent; }`).join('\n')}
 `;
@@ -107,13 +118,16 @@ function load(cat) {
 
 async function mount(root) {
   root.textContent = 'Loading the planner…';
-  let cat, groups;
+  let cat, groups, onePiece;
   try {
     const r = await fetch(new URL('modules.json', import.meta.url));
     if (!r.ok) throw new Error('could not load the case list');
     const json = await r.json();
     cat = catalogue(json);
     groups = json.groups;
+    const op = await fetch(new URL('one-piece/parts.json', import.meta.url));
+    if (!op.ok) throw new Error('could not load the one-piece case data');
+    onePiece = await op.json();
   } catch (e) {
     loadFailed(root, e.message);
     return;
@@ -139,11 +153,26 @@ async function mount(root) {
   const status = el('div', { class: 'lp-status', 'aria-live': 'polite' });
   const facts = el('ul', { class: 'gen-facts', 'aria-live': 'polite' });
   const parts = el('div');
+  // the one-piece case: the bed it has to fit, and the build, kept until the layout or the bed changes
+  let bed0 = { x: BED, y: BED };
+  try { const b = JSON.parse(localStorage.getItem(BED_STORE)); if (b?.x > 0 && b?.y > 0) bed0 = b; } catch { /* none kept */ }
+  const bedX = field('Printer bed width (mm)', { min: 50, max: 1000, step: 1, value: bed0.x });
+  const bedY = field('Printer bed depth (mm)', { min: 50, max: 1000, step: 1, value: bed0.y });
+  const oneFacts = el('ul', { class: 'gen-facts', 'aria-live': 'polite' });
+  const bMake = el('button', { type: 'button' }, 'Make the one-piece case');
+  const oneButtons = el('div', { class: 'gen-buttons' }, bMake);
+  const one = el('div', { class: 'lp-one' },
+    el('h4', { style: 'margin:.9rem 0 .2rem' }, 'Or print it as one piece'),
+    el('p', {}, 'One tray and one lid for the whole panel, instead of a case per board. The boards sit on the same supports ' +
+                'as in their own cases, the lid has every cut-out, and the tray snaps onto the board in every cell. ' +
+                'It covers the rectangle round everything you placed; cells with nothing on them are left hollow under the lid.'),
+    el('div', { class: 'gen-controls' }, bedX.node, bedY.node), oneFacts, oneButtons);
+  let built = null;           // { key, tray, lid }
   root.textContent = '';
   root.className = 'gen';
   root.append(el('div', { class: 'gen-controls' }, cols.node, rows.node),
               el('div', { class: 'gen-buttons', style: 'margin-top:.6rem' }, bFill, bClear),
-              el('div', { class: 'lp' }, palette, el('div', { class: 'lp-board' }, grid, status, facts, parts)));
+              el('div', { class: 'lp' }, palette, el('div', { class: 'lp-board' }, grid, status, facts, parts, one)));
 
   for (const g of groups) {
     palette.append(el('h4', {}, g.name));
@@ -176,6 +205,7 @@ async function mount(root) {
     box(p, bx, by, bw, bh);
     if (mod.glyph) { p.classList.add('lp-tile'); p.append(glyph(mod.glyph, it.r)); p.setAttribute('aria-label', `${mod.name}, turned ${it.r * 90}°`); }
     else p.append(el('span', {}, mod.name), el('small', {}, `${bw} × ${bh}`));
+    if (mod.edge) p.append(el('span', { class: `lp-edge lp-edge-${'NESW'[('NESW'.indexOf(mod.edge) + it.r) % 4]}` }, mod.edgeWhat || ''));
     return { p, c };
   }
 
@@ -203,6 +233,7 @@ async function mount(root) {
       b.setAttribute('aria-pressed', String(sel?.kind === 'palette' && sel.id === b.dataset.id));
     renderStatus();
     renderFacts();
+    renderOnePiece();
   }
 
   function renderStatus() {
@@ -251,6 +282,57 @@ async function mount(root) {
                 el('td', {}, String(standoffCount(L.cols, L.rows))), el('td', {}, plateLink())));
     parts.append(el('h4', { style: 'margin:.9rem 0 .2rem' }, 'Parts to print'), t);
   }
+
+  const bed = () => ({ x: Math.round(+bedX.input.value), y: Math.round(+bedY.input.value) });
+  const buildKey = () => `${encode(L)}|${bed().x}x${bed().y}`;
+  function renderOnePiece() {
+    oneFacts.textContent = '';
+    oneButtons.textContent = '';
+    oneButtons.append(bMake);
+    const b = bed();
+    const bad = !(b.x >= 50 && b.y >= 50) ? ['Set the size of your printer\'s bed.'] : onePieceProblems(L, cat, onePiece, b);
+    bMake.disabled = bad.length > 0;
+    for (const w of bad) oneFacts.append(el('li', { class: 'gen-warn' }, w));
+    if (bad.length) return;
+    const fp = footprint(L, cat), { w, h } = sizeMm(fp, onePiece);
+    oneFacts.append(el('li', {}, `${fp.cols} × ${fp.rows} cells: ${w} × ${h} mm, ${onePiece.top} mm tall ` +
+                                 `plus the snaps (${onePiece.snap_depth} mm). Fits your bed.`));
+    if (built?.key === buildKey()) {
+      const name = `one-piece-${fp.cols}x${fp.rows}`;
+      oneButtons.textContent = '';
+      oneButtons.append(btnMain('Download tray STL', () => download(toStl(built.tray, `${name} tray`), `${name}-tray.stl`)),
+                        btn('Download lid STL', () => download(toStl(built.lid, `${name} lid`), `${name}-lid.stl`)));
+      oneFacts.append(el('li', {}, 'The lid STL is turned top-down for printing, like every case lid.'));
+    }
+  }
+  const btnMain = (label, fn) => { const b = el('button', { type: 'button' }, label); b.addEventListener('click', fn); return b; };
+  bMake.addEventListener('click', async () => {
+    const key = buildKey();
+    bMake.disabled = true;
+    bMake.textContent = 'Building…';
+    try {
+      const [{ default: Module }, bin] = await Promise.all([
+        import('../vendor/manifold-3d/manifold.js'),
+        fetch(new URL('one-piece/parts.bin', import.meta.url)).then((r) => { if (!r.ok) throw new Error('could not load the case pieces'); return r.arrayBuffer(); }),
+      ]);
+      const M = await Module();
+      M.setup();
+      const r = buildOnePiece(M, L, cat, onePiece, bin);
+      if (r.status.some((s) => s !== 'NoError')) throw new Error(r.status.join(', '));
+      if (key === buildKey()) built = { key, tray: r.tray, lid: r.lid };
+    } catch (e) {
+      oneFacts.append(el('li', { class: 'gen-bad' }, `The case did not build (${e.message}).`));
+      bMake.textContent = 'Make the one-piece case';
+      bMake.disabled = false;
+      return;
+    }
+    bMake.textContent = 'Make the one-piece case';
+    renderOnePiece();
+  });
+  for (const f of [bedX, bedY]) f.input.addEventListener('input', () => {
+    try { localStorage.setItem(BED_STORE, JSON.stringify(bed())); } catch { /* storage blocked */ }
+    renderOnePiece();
+  });
 
   // ---- state changes
   function changed() {

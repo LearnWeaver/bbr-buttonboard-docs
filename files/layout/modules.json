@@ -1,10 +1,10 @@
 {
-  "about": "Case footprints for the layout planner (getting-started/layout.md). w x h in grid cells as the case sits unturned; `blocks` (optional) are cells a case overhangs, so nothing else can go there; no case in the list has one now. A board whose case is not designed yet has `zip` null and says so in `nocase`. tools/test_generators.mjs checks every other footprint against the Grid column of getting-started/cases.md.",
+  "about": "Case footprints for the layout planner (getting-started/layout.md). w x h in grid cells as the case sits unturned; `blocks` (optional) are cells a case overhangs, so nothing else can go there; no case in the list has one now. `edge` (optional) is a side, unturned, that must be on the outside of a one-piece case (layout/onepiece-model.js): the main module's USB end. A board whose case is not designed yet has `zip` null and says so in `nocase`. tools/test_generators.mjs checks every other footprint against the Grid column of getting-started/cases.md.",
   "groups": [
     {
       "name": "Main module",
       "modules": [
-        { "id": "mm", "name": "Main module", "fits": "the main module: USB to the robot", "w": 2, "h": 1, "zip": "main-module" }
+        { "id": "mm", "name": "Main module", "fits": "the main module: USB to the robot", "w": 2, "h": 1, "zip": "main-module", "edge": "W", "edgeWhat": "USB" }
       ]
     },
     {
