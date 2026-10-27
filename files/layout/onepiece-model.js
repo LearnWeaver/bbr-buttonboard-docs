@@ -10,8 +10,17 @@
 // The case covers the smallest rectangle round everything placed, not the
 // whole board: cells in it with nothing on them (or a blank) become empty
 // cells, a floor and a pillar under the lid.
+//
+// The tray's back is one of BACKS: a snap per cell, to go on an openGrid board
+// as the separate cases do; plain and flat; or a full openGrid board built in
+// under the floor, so no separate board is needed and grips or the back plate
+// still snap into it from behind. The built-in board is the full grid size,
+// with no 0.25 mm margin, so two such cases sit side by side on the pitch.
 
 import { cellsAt } from './layout-model.js';
+import { boardMesh } from '../opengrid-board/opengrid-mesh.js';
+
+export const BACKS = ['snaps', 'plain', 'board'];
 
 const SIDES = ['N', 'E', 'S', 'W'];
 const turnSide = (s, r) => SIDES[(SIDES.indexOf(s) + r) % 4];   // r quarter turns clockwise
@@ -25,30 +34,37 @@ export function footprint(layout, cat) {
   return { x0, y0, cols: Math.max(...xs) - x0 + 1, rows: Math.max(...ys) - y0 + 1 };
 }
 
-// Outside size in mm: the grid less the 0.25 mm clearance every case leaves at each edge.
-export function sizeMm(fp, parts) {
-  return { w: fp.cols * parts.pitch - 0.5, h: fp.rows * parts.pitch - 0.5 };
+// Outside size in mm: the grid less the 0.25 mm clearance every case leaves at each edge, or the
+// whole grid with a built-in board.
+export function sizeMm(fp, parts, back = 'snaps') {
+  const m = back === 'board' ? 0 : 0.5;
+  return { w: fp.cols * parts.pitch - m, h: fp.rows * parts.pitch - m };
+}
+
+// Height in mm, from the lowest point of the tray to the top of the lid.
+export function heightMm(parts, back = 'snaps', grid = null) {
+  return parts.top + (back === 'snaps' ? parts.snap_depth : back === 'board' ? grid.thickness : 0);
 }
 
 // Whether a w x h mm part fits a bed, either way round.
 export const fitsBed = (w, h, bed) => (w <= bed.x && h <= bed.y) || (h <= bed.x && w <= bed.y);
 
 // The largest square panel, in cells, that fits the bed.
-export function largestCells(bed, parts) {
-  return Math.floor((Math.min(bed.x, bed.y) + 0.5) / parts.pitch);
+export function largestCells(bed, parts, back = 'snaps') {
+  return Math.floor((Math.min(bed.x, bed.y) + (back === 'board' ? 0 : 0.5)) / parts.pitch);
 }
 
 // Why this layout cannot be made as one piece, as sentences; empty if it can.
-export function problems(layout, cat, parts, bed) {
+export function problems(layout, cat, parts, bed, back = 'snaps') {
   const out = [];
   const fp = footprint(layout, cat);
   if (!fp) return ['Place some cases first.'];
   const missing = [...new Set(layout.items.map((it) => it.id).filter((id) => !parts.cases[id]))];
   if (missing.length) out.push(`No one-piece version of ${missing.map((id) => cat.get(id).name).join(', ')} yet.`);
   if (layout.items.some((it) => cat.get(it.id).blocks?.length)) out.push('A case with an overhang cannot go in a one-piece case.');
-  const { w, h } = sizeMm(fp, parts);
+  const { w, h } = sizeMm(fp, parts, back);
   if (!fitsBed(w, h, bed)) {
-    const n = largestCells(bed, parts);
+    const n = largestCells(bed, parts, back);
     out.push(`At ${w} × ${h} mm it is too big for a ${bed.x} × ${bed.y} mm bed. The largest that fits is ${n} × ${n} cells; ` +
              'print the cases separately, or as two one-piece cases.');
   }
@@ -92,8 +108,10 @@ const toMesh = (m) => {
 
 // The tray and the lid as meshes ({ pos, tri }, as mesh.js), centred on the
 // origin. The lid is turned top-down for printing, as every case's lid STL.
-// M is the manifold-3d module, after setup().
-export function build(M, layout, cat, parts, bin) {
+// M is the manifold-3d module, after setup(); back one of BACKS; grid the
+// openGrid board's parameters (opengrid-params.json), needed for 'board'.
+export function build(M, layout, cat, parts, bin, back = 'snaps', grid = null) {
+  if (!BACKS.includes(back)) throw new Error(`unknown back ${back}`);
   const fp = footprint(layout, cat);
   const piece = pieceReader(M, parts, bin);
   const P = parts.pitch, top = parts.top, seam = parts.seam;
@@ -120,7 +138,7 @@ export function build(M, layout, cat, parts, bin) {
   for (let y = fp.y0; y < fp.y0 + fp.rows; y++) {
     for (let x = fp.x0; x < fp.x0 + fp.cols; x++) {
       const [cx, cy] = centre(x + 0.5, y + 0.5);
-      if (!ownSnaps.has(`${x},${y}`)) trays.push(at(piece(parts.snap), 0, cx, cy));
+      if (back === 'snaps' && !ownSnaps.has(`${x},${y}`)) trays.push(at(piece(parts.snap), 0, cx, cy));
       if (covered.has(`${x},${y}`)) continue;
       trays.push(at(piece(E.tray), 0, cx, cy));
       lids.push(at(piece(E.lid), 0, cx, cy));
@@ -128,10 +146,11 @@ export function build(M, layout, cat, parts, bin) {
     }
   }
 
-  const { w, h } = sizeMm(fp, parts);
+  const { w, h } = sizeMm(fp, parts);       // the tray's own outline: a built-in board is wider
   const rrect = (rw, rh, r, z0, z1) => M.CrossSection.square([rw - 2 * r, rh - 2 * r], true).offset(r, 'Round', 2, 32)
     .extrude(z1 - z0).translate([0, 0, z0]);
-  let tray = M.Manifold.union(trays).intersect(rrect(w, h, parts.corner_r, -parts.snap_depth - 1, top + 1));
+  // without snaps, nothing stays below the floor (the drop tile's own snap included)
+  let tray = M.Manifold.union(trays).intersect(rrect(w, h, parts.corner_r, back === 'snaps' ? -parts.snap_depth - 1 : 0, top + 1));
   // a pry notch in the middle of each end, as the cases have
   const zb = seam - 0.6;
   for (const sgn of [-1, 1]) {
@@ -139,11 +158,16 @@ export function build(M, layout, cat, parts, bin) {
     tray = tray.subtract(M.Manifold.cube([Math.abs(xo - xi), parts.pry_w, top + 1 - zb])
       .translate([Math.min(xo, xi), -parts.pry_w / 2, zb]));
   }
+  if (back === 'board') {
+    const g = boardMesh(grid, fp.cols, fp.rows);
+    const board = new M.Manifold(new M.Mesh({ numProp: 3, vertProperties: g.pos, triVerts: g.tri })).translate([0, 0, -grid.thickness]);
+    tray = M.Manifold.union([tray, board]);
+  }
   const m = parts.rim + parts.lid_clr;
   const lid = M.Manifold.union(lids).intersect(rrect(w - 2 * m, h - 2 * m, parts.corner_r - m, 0, top + 1));
   const out = { tray: toMesh(tray), lid: toMesh(lid.rotate([180, 0, 0])),
                 status: [tray.status(), lid.status()], genus: [tray.genus(), lid.genus()],
                 volume: { tray: tray.volume(), lid: lid.volume() }, clash: tray.intersect(lid).volume(),
-                size: { w, h, cols: fp.cols, rows: fp.rows } };
+                size: { ...sizeMm(fp, parts, back), cols: fp.cols, rows: fp.rows } };
   return out;
 }

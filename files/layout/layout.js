@@ -8,13 +8,16 @@
 // with Delete; the buttons under the grid do the same.
 import { catalogue, cellsAt, shape, conflict, place, move, remove, freeCells, fillBlanks, partsList, warnings,
          encode, decode, MAX_CELLS } from './layout-model.js';
-import { footprint, sizeMm, problems as onePieceProblems, build as buildOnePiece } from './onepiece-model.js';
+import { footprint, sizeMm, heightMm, problems as onePieceProblems, build as buildOnePiece } from './onepiece-model.js';
 import { useStyles, el, field, loadFailed, download, BED } from '../generators/ui.js';
 import { toStl } from '../generators/mesh.js';
+import { leadCheck, leadWarnings } from './leads.js';
 import { standoffCount } from '../back-plate/backplate-mesh.js';
 
 const STORE = 'bb-layout';
 const BED_STORE = 'bb-bed';
+// the back of the one-piece tray (onepiece-model.js BACKS)
+const BACKS = { snaps: 'Snaps, onto an openGrid board', plain: 'Plain and flat', board: 'openGrid board built in' };
 const DRAG_PX = 4;          // movement before a press becomes a drag
 // one colour per group, in modules.json's order; the cable tiles always grey (GREY), since red would read as an error
 const HUES = [[212, 75], [28, 75], [145, 60], [280, 60], [330, 65], [220, 8]];
@@ -68,9 +71,17 @@ const CSS = `
            background: var(--bg); color: var(--text-muted); border: 1px solid currentColor; }
 .lp-edge-N { top: 2px; left: 50%; transform: translateX(-50%); } .lp-edge-S { bottom: 2px; left: 50%; transform: translateX(-50%); }
 .lp-edge-W { left: 2px; top: 50%; transform: translateY(-50%); } .lp-edge-E { right: 2px; top: 50%; transform: translateY(-50%); }
+.lp-port { position: absolute; pointer-events: none; border-radius: 2px; }
+.lp-port-N { top: -1px; height: 4px; } .lp-port-S { bottom: -1px; height: 4px; }
+.lp-port-E { right: -1px; width: 4px; } .lp-port-W { left: -1px; width: 4px; }
+.lp-port-top { background: var(--text-faint); } .lp-port-ok { background: var(--hint-success-bd); }
+.lp-port-bad { background: var(--hint-danger-bd); }
+.lp-cut { border-color: var(--hint-danger-bd) !important; }
 .lp-one { margin-top: 1.1rem; padding-top: .2rem; border-top: 1px solid var(--border); }
 .lp-one p { font-size: .85rem; margin: .3rem 0 .6rem; }
-.lp-one .gen-controls { max-width: 22rem; }
+.lp-one .gen-controls { max-width: 34rem; }
+.gen .lp-one select { font: inherit; font-size: .95rem; color: var(--text); background: var(--bg);
+                      border: 1px solid var(--border-strong); border-radius: 6px; padding: .4rem .5rem; width: 100%; }
 .lp-one .gen-buttons { margin-top: .6rem; }
 ${HUES.map(([h, s], i) => `.lp-g${i} { background: hsla(${h}, ${s}%, 55%, .18); border-color: hsla(${h}, ${s}%, 45%, .9); color: var(--text); }
 .lp-over.lp-g${i} { color: hsla(${h}, ${s}%, 45%, .9); background-color: transparent; }`).join('\n')}
@@ -118,7 +129,7 @@ function load(cat) {
 
 async function mount(root) {
   root.textContent = 'Loading the planner…';
-  let cat, groups, onePiece;
+  let cat, groups, onePiece, gridParams;
   try {
     const r = await fetch(new URL('modules.json', import.meta.url));
     if (!r.ok) throw new Error('could not load the case list');
@@ -128,6 +139,9 @@ async function mount(root) {
     const op = await fetch(new URL('one-piece/parts.json', import.meta.url));
     if (!op.ok) throw new Error('could not load the one-piece case data');
     onePiece = await op.json();
+    const gp = await fetch(new URL('../opengrid-board/opengrid-params.json', import.meta.url));
+    if (!gp.ok) throw new Error('could not load the openGrid board data');
+    gridParams = await gp.json();
   } catch (e) {
     loadFailed(root, e.message);
     return;
@@ -155,18 +169,31 @@ async function mount(root) {
   const parts = el('div');
   // the one-piece case: the bed it has to fit, and the build, kept until the layout or the bed changes
   let bed0 = { x: BED, y: BED };
-  try { const b = JSON.parse(localStorage.getItem(BED_STORE)); if (b?.x > 0 && b?.y > 0) bed0 = b; } catch { /* none kept */ }
+  let back0 = 'snaps';
+  try {
+    const b = JSON.parse(localStorage.getItem(BED_STORE));
+    if (b?.x > 0 && b?.y > 0) bed0 = { x: b.x, y: b.y };
+    if (BACKS[b?.back]) back0 = b.back;
+  } catch { /* none kept */ }
   const bedX = field('Printer bed width (mm)', { min: 50, max: 1000, step: 1, value: bed0.x });
   const bedY = field('Printer bed depth (mm)', { min: 50, max: 1000, step: 1, value: bed0.y });
+  const backSel = el('select', {});
+  for (const [k, label] of Object.entries(BACKS)) {
+    const o = el('option', { value: k }, label);
+    if (k === back0) o.selected = true;
+    backSel.append(o);
+  }
+  const backField = el('label', {}, 'Back of the tray', backSel);
   const oneFacts = el('ul', { class: 'gen-facts', 'aria-live': 'polite' });
   const bMake = el('button', { type: 'button' }, 'Make the one-piece case');
   const oneButtons = el('div', { class: 'gen-buttons' }, bMake);
   const one = el('div', { class: 'lp-one' },
     el('h4', { style: 'margin:.9rem 0 .2rem' }, 'Or print it as one piece'),
     el('p', {}, 'One tray and one lid for the whole panel, instead of a case per board. The boards sit on the same supports ' +
-                'as in their own cases, the lid has every cut-out, and the tray snaps onto the board in every cell. ' +
+                'as in their own cases, and the lid has every cut-out. The tray\'s back can snap onto an openGrid board ' +
+                'like the separate cases, be plain and flat, or have an openGrid board built in. ' +
                 'It covers the rectangle round everything you placed; cells with nothing on them are left hollow under the lid.'),
-    el('div', { class: 'gen-controls' }, bedX.node, bedY.node), oneFacts, oneButtons);
+    el('div', { class: 'gen-controls' }, bedX.node, bedY.node, backField), oneFacts, oneButtons);
   let built = null;           // { key, tray, lid }
   root.textContent = '';
   root.className = 'gen';
@@ -196,7 +223,20 @@ async function mount(root) {
              inside: cx >= rc.left - s / 2 && cx <= rc.right + s / 2 && cy >= rc.top - s / 2 && cy <= rc.bottom + s / 2 };
   };
 
-  function pieceEl(it, mod) {
+  // a mark on the piece's edge for each port: grey goes up through the lid, green out sideways, red blocked
+  function portMarks(p, ports, bx, by, bw, bh) {
+    const P = onePiece.pitch;
+    for (const q of ports) {
+      const along = q.side === 'N' || q.side === 'S';
+      const f0 = (q.a0 - (along ? bx : by) * P) / ((along ? bw : bh) * P), f1 = (q.a1 - (along ? bx : by) * P) / ((along ? bw : bh) * P);
+      const m = el('span', { class: `lp-port lp-port-${q.side} lp-port-${q.top ? 'top' : q.ok ? 'ok' : 'bad'}`,
+                             title: q.top ? 'lead slot, open through the lid' : q.ok ? 'lead exit' : `lead exit, blocked by ${q.into.join(' and ')}` });
+      Object.assign(m.style, along ? { left: `${100 * f0}%`, width: `${100 * (f1 - f0)}%` } : { top: `${100 * f0}%`, height: `${100 * (f1 - f0)}%` });
+      p.append(m);
+    }
+  }
+
+  function pieceEl(it, mod, leads) {
     const p = el('div', { class: `lp-piece lp-g${hue.get(mod.group)}`, 'data-uid': String(it.uid), title: mod.fits });
     const c = cellsAt(mod, it.x, it.y, it.r);
     // the body's own box, inside the overhang-inclusive one
@@ -205,6 +245,10 @@ async function mount(root) {
     box(p, bx, by, bw, bh);
     if (mod.glyph) { p.classList.add('lp-tile'); p.append(glyph(mod.glyph, it.r)); p.setAttribute('aria-label', `${mod.name}, turned ${it.r * 90}°`); }
     else p.append(el('span', {}, mod.name), el('small', {}, `${bw} × ${bh}`));
+    if (leads) {
+      portMarks(p, leads.ports.filter((q) => q.it === it), bx, by, bw, bh);
+      if (leads.cutOff.some((k) => k.it === it)) p.classList.add('lp-cut');
+    }
     if (mod.edge) p.append(el('span', { class: `lp-edge lp-edge-${'NESW'[('NESW'.indexOf(mod.edge) + it.r) % 4]}` }, mod.edgeWhat || ''));
     return { p, c };
   }
@@ -215,9 +259,10 @@ async function mount(root) {
     grid.style.maxWidth = `${L.cols * 76}px`;
     grid.style.backgroundSize = `${100 / L.cols}% ${100 / L.rows}%`;
     grid.textContent = '';
+    const leads = leadCheck(L, cat, onePiece);
     for (const it of L.items) {
       const mod = cat.get(it.id);
-      const { p, c } = pieceEl(it, mod);
+      const { p, c } = pieceEl(it, mod, leads);
       for (const q of c.over) {
         if (q[0] < 0 || q[1] < 0 || q[0] >= L.cols || q[1] >= L.rows) continue;   // off the board: it takes nothing
         const o = el('div', { class: `lp-over lp-g${hue.get(mod.group)}` });
@@ -259,6 +304,7 @@ async function mount(root) {
     const free = freeCells(L, cat).length, total = L.cols * L.rows;
     facts.append(el('li', {}, `${total - free} of ${total} cells taken, ${free} free.`));
     for (const w of warnings(L, cat)) facts.append(el('li', { class: 'gen-warn' }, w));
+    for (const w of leadWarnings(L, cat, onePiece)) facts.append(el('li', { class: 'gen-warn' }, w));
     parts.textContent = '';
     const { parts: list } = partsList(L, cat);
     if (!list.length) return;
@@ -284,21 +330,27 @@ async function mount(root) {
   }
 
   const bed = () => ({ x: Math.round(+bedX.input.value), y: Math.round(+bedY.input.value) });
-  const buildKey = () => `${encode(L)}|${bed().x}x${bed().y}`;
+  const back = () => backSel.value;
+  const buildKey = () => `${encode(L)}|${bed().x}x${bed().y}|${back()}`;
   function renderOnePiece() {
     oneFacts.textContent = '';
     oneButtons.textContent = '';
     oneButtons.append(bMake);
     const b = bed();
-    const bad = !(b.x >= 50 && b.y >= 50) ? ['Set the size of your printer\'s bed.'] : onePieceProblems(L, cat, onePiece, b);
+    const bad = !(b.x >= 50 && b.y >= 50) ? ['Set the size of your printer\'s bed.'] : onePieceProblems(L, cat, onePiece, b, back());
     bMake.disabled = bad.length > 0;
     for (const w of bad) oneFacts.append(el('li', { class: 'gen-warn' }, w));
     if (bad.length) return;
-    const fp = footprint(L, cat), { w, h } = sizeMm(fp, onePiece);
-    oneFacts.append(el('li', {}, `${fp.cols} × ${fp.rows} cells: ${w} × ${h} mm, ${onePiece.top} mm tall ` +
-                                 `plus the snaps (${onePiece.snap_depth} mm). Fits your bed.`));
+    const fp = footprint(L, cat), { w, h } = sizeMm(fp, onePiece, back());
+    const tall = +heightMm(onePiece, back(), gridParams).toFixed(1);
+    oneFacts.append(el('li', {}, `${fp.cols} × ${fp.rows} cells: ${w} × ${h} mm, ${tall} mm tall` +
+                                 { snaps: `, snaps included. Fits your bed.`, plain: '. Fits your bed.',
+                                   board: ` with the board. Fits your bed, and needs no separate openGrid board.` }[back()]));
+    // only what differs from the warnings above: in one piece a blank is hollow, so it may block less
+    const above = new Set(leadWarnings(L, cat, onePiece));
+    for (const w of leadWarnings(L, cat, onePiece, true)) if (!above.has(w)) oneFacts.append(el('li', { class: 'gen-warn' }, w));
     if (built?.key === buildKey()) {
-      const name = `one-piece-${fp.cols}x${fp.rows}`;
+      const name = `one-piece-${fp.cols}x${fp.rows}${back() === 'snaps' ? '' : `-${back()}`}`;
       oneButtons.textContent = '';
       oneButtons.append(btnMain('Download tray STL', () => download(toStl(built.tray, `${name} tray`), `${name}-tray.stl`)),
                         btn('Download lid STL', () => download(toStl(built.lid, `${name} lid`), `${name}-lid.stl`)));
@@ -317,7 +369,7 @@ async function mount(root) {
       ]);
       const M = await Module();
       M.setup();
-      const r = buildOnePiece(M, L, cat, onePiece, bin);
+      const r = buildOnePiece(M, L, cat, onePiece, bin, back(), gridParams);
       if (r.status.some((s) => s !== 'NoError')) throw new Error(r.status.join(', '));
       if (key === buildKey()) built = { key, tray: r.tray, lid: r.lid };
     } catch (e) {
@@ -329,10 +381,12 @@ async function mount(root) {
     bMake.textContent = 'Make the one-piece case';
     renderOnePiece();
   });
-  for (const f of [bedX, bedY]) f.input.addEventListener('input', () => {
-    try { localStorage.setItem(BED_STORE, JSON.stringify(bed())); } catch { /* storage blocked */ }
+  const keep = () => {
+    try { localStorage.setItem(BED_STORE, JSON.stringify({ ...bed(), back: back() })); } catch { /* storage blocked */ }
     renderOnePiece();
-  });
+  };
+  for (const f of [bedX, bedY]) f.input.addEventListener('input', keep);
+  backSel.addEventListener('change', keep);
 
   // ---- state changes
   function changed() {
