@@ -94,24 +94,25 @@
   <main id="content" class="content">
     <article class="prose">
       <h1 id="install-the-library">Install the library<a class="headerlink" href="#install-the-library" title="Permanent link">#</a></h1>
-<p>The Button Board can be driven from a program on the Driver Station laptop — reading robot state from NetworkTables and pushing LED colours and display text back to the panel. <code>bb</code> is the Python library for that.</p>
+<p>The Button Board can be driven from a program on the Driver Station laptop — reading robot state from NetworkTables and pushing LED colours and display text back to the panel. <code>bbr-buttonboard</code> is the Python library for that.</p>
 <div class="hint hint-info">
 <p>You do not need this to use the board. Buttons work through the Driver Station with nothing installed. This is for making the panel react to the robot.</p>
 </div>
 <h2 id="what-you-need">What you need<a class="headerlink" href="#what-you-need" title="Permanent link">#</a></h2>
 <ul>
 <li>Python 3.9 or newer.</li>
-<li><code>pyserial</code>.</li>
 </ul>
-<div class="highlight"><pre><span></span><code>python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>pyserial
+<div class="highlight"><pre><span></span><code>python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>bbr-buttonboard
 </code></pre></div>
 
-<p>The library itself lives in <code>tools/bb/</code> in the repository. Copy that directory next to your script, or put its parent on <code>PYTHONPATH</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">PYTHONPATH</span><span class="o">=</span>/path/to/BBRControlBoard/tools
+<p>That brings <code>pyserial</code> with it, and puts the <code>bbctl</code> console on your PATH. Two extras add what some features need:</p>
+<div class="highlight"><pre><span></span><code>python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"bbr-buttonboard[pictures]"</span><span class="w">       </span><span class="c1"># Pillow, to load images onto display tiles</span>
+python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"bbr-buttonboard[networktables]"</span><span class="w">  </span><span class="c1"># pyntcore, to read robot state</span>
 </code></pre></div>
 
+<p>The source is on GitHub at <a href="https://github.com/BuildingBlockRobotics/BBRButtonBoard">BuildingBlockRobotics/BBRButtonBoard</a>, under the MIT licence.</p>
 <h2 id="check-it-works">Check it works<a class="headerlink" href="#check-it-works" title="Permanent link">#</a></h2>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">bb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Board</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">buttonboard</span><span class="w"> </span><span class="kn">import</span> <span class="n">Board</span>
 
 <span class="k">with</span> <span class="n">Board</span><span class="o">.</span><span class="n">open</span><span class="p">()</span> <span class="k">as</span> <span class="n">board</span><span class="p">:</span>          <span class="c1"># finds the COM port by itself</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">board</span><span class="o">.</span><span class="n">hello</span><span class="p">())</span>
@@ -123,7 +124,7 @@
 <p>If it cannot find the board, pass the port explicitly — <code>Board.open(port="COM7")</code> on Windows, <code>Board.open(port="/dev/ttyACM0")</code> on Linux.</p>
 <h2 id="without-a-board">Without a board<a class="headerlink" href="#without-a-board" title="Permanent link">#</a></h2>
 <p><code>MockBoard</code> lets you write and test a companion app with no hardware attached:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">bb</span><span class="w"> </span><span class="kn">import</span> <span class="n">MockBoard</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">buttonboard</span><span class="w"> </span><span class="kn">import</span> <span class="n">MockBoard</span>
 
 <span class="n">board</span> <span class="o">=</span> <span class="n">MockBoard</span><span class="p">()</span>
 <span class="n">board</span><span class="o">.</span><span class="n">led</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s2">"red"</span><span class="p">)</span>

@@ -225,11 +225,11 @@
 <p>The <strong>Legends</strong> tab lists all fifteen codes and what each one does: the picture it shows, the messages it writes, drawn as the panel shows them, and the key colours it sets. <strong>Edit</strong> opens the tile that holds that entry. The <em>In the OpMode</em> block at the bottom has the call for every code in use.</p>
 <h2 id="getting-them-there-from-a-terminal">Getting them there from a terminal<a class="headerlink" href="#getting-them-there-from-a-terminal" title="Permanent link">#</a></h2>
 <p>Everything above is also a command on the <a href="../reference/commands.html">serial channel</a>:</p>
-<div class="highlight"><pre><span></span><code>python3<span class="w"> </span>tools/bbctl.py<span class="w"> </span>--rumble-list<span class="w">              </span><span class="c1"># what is bound now</span>
-python3<span class="w"> </span>tools/bbctl.py<span class="w"> </span>--rumble-bind<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="m">5</span><span class="w"> </span><span class="m">0</span><span class="w">        </span><span class="c1"># code 3 → tile 5, slot 0</span>
+<div class="highlight"><pre><span></span><code>bbctl<span class="w"> </span>--rumble-list<span class="w">              </span><span class="c1"># what is bound now</span>
+bbctl<span class="w"> </span>--rumble-bind<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="m">5</span><span class="w"> </span><span class="m">0</span><span class="w">        </span><span class="c1"># code 3 → tile 5, slot 0</span>
 </code></pre></div>
 
-<p>Loading a picture is <code>disp &lt;addr&gt; slot &lt;n&gt; begin/data/end</code>, which <code>tools/bb</code> wraps.</p>
+<p>Loading a picture is <code>disp &lt;addr&gt; slot &lt;n&gt; begin/data/end</code>, which the <a href="../driver-station/install.html">Python library</a> wraps as <code>board.disp_store_image()</code>.</p>
 <h2 id="next">Next<a class="headerlink" href="#next" title="Permanent link">#</a></h2>
 <p>Once the pictures are stored and the codes are bound, the robot can switch between them mid-match — see <a href="../on-the-robot/legends.html">Changing legends in a match</a>.</p>
     </article>

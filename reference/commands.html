@@ -294,10 +294,10 @@
 </code></pre></div>
 
 <h2 id="bbctl">bbctl<a class="headerlink" href="#bbctl" title="Permanent link">#</a></h2>
-<p><code>tools/bbctl.py</code> in the repository is a console for this channel. It sends the right newline endings, holds the port open so test mode survives, and reads past event lines to the reply.</p>
-<div class="highlight"><pre><span></span><code>python3<span class="w"> </span>tools/bbctl.py<span class="w">                          </span><span class="c1"># interactive console</span>
-python3<span class="w"> </span>tools/bbctl.py<span class="w"> </span>hello<span class="w"> </span>stats<span class="w">               </span><span class="c1"># run and exit</span>
-python3<span class="w"> </span>tools/bbctl.py<span class="w"> </span>-p<span class="w"> </span>COM7<span class="w"> </span><span class="s2">"test walk 250"</span><span class="w">   </span><span class="c1"># explicit port</span>
+<p><code>bbctl</code> is a console for this channel. It comes with the Python library (<code>pip install bbr-buttonboard</code>, see <a href="../driver-station/install.html">Install the library</a>). It sends the right newline endings, holds the port open so test mode survives, and reads past event lines to the reply.</p>
+<div class="highlight"><pre><span></span><code>bbctl<span class="w">                          </span><span class="c1"># interactive console</span>
+bbctl<span class="w"> </span>hello<span class="w"> </span>stats<span class="w">              </span><span class="c1"># run and exit</span>
+bbctl<span class="w"> </span>-p<span class="w"> </span>COM7<span class="w"> </span><span class="s2">"test walk 250"</span><span class="w">  </span><span class="c1"># explicit port</span>
 </code></pre></div>
     </article>
     <nav class="pager-row"><a class="pager prev" href="../driver-station/api.html"><span class="pager-label">Previous</span><span class="pager-title">Python API summary</span></a><a class="pager next" href="../reference/troubleshooting.html"><span class="pager-label">Next</span><span class="pager-title">Troubleshooting</span></a></nav>
