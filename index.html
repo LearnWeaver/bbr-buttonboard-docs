@@ -110,6 +110,7 @@
 <li><strong>Configured in the browser.</strong> Bind a key by pressing it. No firmware rebuild, no config file.</li>
 <li><strong>Keys that relabel themselves.</strong> A screen key has a colour display inside the cap, so one key can say INTAKE in one part of a match and CLIMB in another. A colour display tile shows the same kind of pictures beside the keys.</li>
 <li><strong>LEDs your robot drives.</strong> Keys on RGB tiles change colour with what the robot is doing. In FTC the OpMode does it directly: bind a <a href="on-the-robot/legends.html#changing-a-keys-colour-the-same-way">rumble code</a> to key colours in the config app, and one <code>rumble()</code> call recolours them, and switches a screen key&rsquo;s legend at the same time. In FRC a companion app on the Driver Station laptop drives them.</li>
+<li><strong>A simple Python API for FRC.</strong> A short script on the Driver Station laptop reads robot state from NetworkTables and sets key colours and display text to match. See <a href="driver-station/install.html">the Driver Station app</a>.</li>
 </ul>
 <h2 id="how-it-fits-together">How it fits together<a class="headerlink" href="#how-it-fits-together" title="Permanent link">#</a></h2>
 <div class="highlight"><pre><span></span><code>Driver Station laptop
