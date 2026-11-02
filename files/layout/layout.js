@@ -16,6 +16,10 @@ import { standoffCount } from '../back-plate/backplate-mesh.js';
 
 const STORE = 'bb-layout';
 const BED_STORE = 'bb-bed';
+// The one-piece case is hidden for now: the section under the parts list is
+// left off the page. Its data still loads, since the lead checks use it.
+// Set true, and restore the section in getting-started/layout.md, to bring it back.
+const ONE_PIECE = false;
 // the back of the one-piece tray (onepiece-model.js BACKS)
 const BACKS = { snaps: 'Snaps, onto an openGrid board', plain: 'Plain and flat', board: 'openGrid board built in' };
 const DRAG_PX = 4;          // movement before a press becomes a drag
@@ -199,7 +203,7 @@ async function mount(root) {
   root.className = 'gen';
   root.append(el('div', { class: 'gen-controls' }, cols.node, rows.node),
               el('div', { class: 'gen-buttons', style: 'margin-top:.6rem' }, bFill, bClear),
-              el('div', { class: 'lp' }, palette, el('div', { class: 'lp-board' }, grid, status, facts, parts, one)));
+              el('div', { class: 'lp' }, palette, el('div', { class: 'lp-board' }, grid, status, facts, parts, ...(ONE_PIECE ? [one] : []))));
 
   for (const g of groups) {
     palette.append(el('h4', {}, g.name));

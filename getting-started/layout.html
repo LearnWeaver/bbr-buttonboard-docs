@@ -109,28 +109,32 @@
 <li><strong>Without a mouse:</strong> tab to a case in the list and press Enter, then use the arrow keys on the grid and Enter to place it.</li>
 </ul>
 <p>The layout is kept in the page address, so you can bookmark it or send the link to someone. The planner also remembers your last layout.</p>
-<h2 id="printing-it-as-one-piece">Printing it as one piece<a class="headerlink" href="#printing-it-as-one-piece" title="Permanent link">#</a></h2>
-<p>Under the parts list, <strong>Or print it as one piece</strong> makes the whole panel as two prints: a tray and a lid. Each board sits on the same supports as in its own case, and the lid has every key hole, window and slot. Set your printer&rsquo;s bed size first: the page only offers a panel that fits the bed, at most 8 × 8 cells on a 250 mm bed or 9 × 9 on a 256 mm one.</p>
-<p>Choose the <strong>back of the tray</strong>:</p>
-<ul>
-<li><strong>Snaps, onto an openGrid board:</strong> a snap in every cell, so the tray goes on the <a href="opengrid-board.html">openGrid board</a> like the separate cases. 18.4 mm tall.</li>
-<li><strong>Plain and flat:</strong> no snaps. Stand it on the table, or fix it down with tape or screws. 15 mm tall.</li>
-<li>
-<p><strong>openGrid board built in:</strong> a full openGrid board under the floor, so you don&rsquo;t print a separate one. Grips and the <a href="back-plate.html">back plate</a> still snap into it from behind. 21.8 mm tall, and the full grid size (a 5 × 5 panel is 140 mm square), so two such cases sit side by side on the grid.</p>
-</li>
-<li>
-<p>It covers the rectangle round the cases you placed, not the whole board. A cell with nothing on it, or a blank, is hollow under the lid, with a pillar to hold the lid up. Cable tiles keep their channels.</p>
-</li>
-<li>The leads run between the boards just as they do with separate cases, so plan them the same way.</li>
-<li>The main module&rsquo;s <strong>USB</strong> end, marked on the grid, has to be on the outside of the panel.</li>
-<li>Print the tray floor-down and the lid top-down; the lid STL is already turned over. Fit the boards and the leads, then press the lid on: it snaps into every board&rsquo;s walls. The notches at each end are for prying it off again.</li>
-</ul>
-<p>One piece takes longer to print and is lost whole if the print fails. Separate cases can be swapped and rearranged.</p>
+<!-- The one-piece case is hidden for now (ONE_PIECE in files/layout/layout.js).
+
+## Printing it as one piece
+
+Under the parts list, **Or print it as one piece** makes the whole panel as two prints: a tray and a lid. Each board sits on the same supports as in its own case, and the lid has every key hole, window and slot. Set your printer's bed size first: the page only offers a panel that fits the bed, at most 8 × 8 cells on a 250 mm bed or 9 × 9 on a 256 mm one.
+
+Choose the **back of the tray**:
+
+* **Snaps, onto an openGrid board:** a snap in every cell, so the tray goes on the [openGrid board](opengrid-board.md) like the separate cases. 18.4 mm tall.
+* **Plain and flat:** no snaps. Stand it on the table, or fix it down with tape or screws. 15 mm tall.
+* **openGrid board built in:** a full openGrid board under the floor, so you don't print a separate one. Grips and the [back plate](back-plate.md) still snap into it from behind. 21.8 mm tall, and the full grid size (a 5 × 5 panel is 140 mm square), so two such cases sit side by side on the grid.
+
+* It covers the rectangle round the cases you placed, not the whole board. A cell with nothing on it, or a blank, is hollow under the lid, with a pillar to hold the lid up. Cable tiles keep their channels.
+* The leads run between the boards just as they do with separate cases, so plan them the same way.
+* The main module's **USB** end, marked on the grid, has to be on the outside of the panel.
+* Print the tray floor-down and the lid top-down; the lid STL is already turned over. Fit the boards and the leads, then press the lid on: it snaps into every board's walls. The notches at each end are for prying it off again.
+
+One piece takes longer to print and is lost whole if the print fails. Separate cases can be swapped and rearranged.
+
+-->
+
 <h2 id="what-it-checks">What it checks<a class="headerlink" href="#what-it-checks" title="Permanent link">#</a></h2>
 <ul>
 <li>A case has to sit entirely on the board, on cells nothing else uses.</li>
 <li>Every panel needs one <strong>main module</strong>. Two main modules make two separate panels.</li>
-<li>Every case&rsquo;s leads have a way out. The marks on each case&rsquo;s edges are where its leads leave: <strong>grey</strong> is a slot open through the lid, so a lead can rise out of it and cross over the top; <strong>green</strong> is a low exit with room beside it; <strong>red</strong> is a low exit blocked by the case or blank next to it. disp1, disp2 and the mx1 1x1 only have low exits, under their boards, so one of them boxed in on every exit side gets a warning. A free cell, a cable tile with a channel there, the board&rsquo;s edge, or a neighbour&rsquo;s own slot lined up with it all give a lead somewhere to go. In a one-piece case a blank is hollow, so it doesn&rsquo;t block.</li>
+<li>Every case&rsquo;s leads have a way out. The marks on each case&rsquo;s edges are where its leads leave: <strong>grey</strong> is a slot open through the lid, so a lead can rise out of it and cross over the top; <strong>green</strong> is a low exit with room beside it; <strong>red</strong> is a low exit blocked by the case or blank next to it. disp1, disp2 and the mx1 1x1 only have low exits, under their boards, so one of them boxed in on every exit side gets a warning. A free cell, a cable tile with a channel there, the board&rsquo;s edge, or a neighbour&rsquo;s own slot lined up with it all give a lead somewhere to go.</li>
 <li>The main module&rsquo;s USB end has room for the plug.</li>
 </ul>
 <p>It doesn&rsquo;t plan the whole run of each lead, or check that the chain reaches every tile in order. Plan that with the <a href="wiring.html">wiring guide</a>, and use the cable tiles for leads on the front, or the <a href="back-plate.html">back plate</a> for leads behind the board.</p>
@@ -145,8 +149,6 @@
     <p class="toc-title">On this page</p>
 <ul class="toc-list">
 <li><a href="#using-it">Using it</a>
-</li>
-<li><a href="#printing-it-as-one-piece">Printing it as one piece</a>
 </li>
 <li><a href="#what-it-checks">What it checks</a>
 </li>
