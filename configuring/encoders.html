@@ -101,7 +101,7 @@
 <p><strong>Scale</strong> sets how far one click moves the axis. The default, 256, makes every click one step your robot code can see; smaller values need several clicks before anything changes. At 256 the axis reaches its end after about 128 clicks, around six turns of a typical knob. Pick a larger scale for a knob that should reach the end in fewer turns. Changing the scale zeroes the position.</p>
 <p><strong>FTC.</strong> The FTC Driver Station puts a deadzone on every stick, so in <code>xinput</code> an encoder can&rsquo;t use a stick axis. It has two other ways out.</p>
 <ul>
-<li><strong>A trigger count</strong> keeps the position. Choose <strong>LT</strong> or <strong>RT</strong> under <strong>Trigger (xinput)</strong> in the knob&rsquo;s inspector, and the knob counts on that trigger: one step per click, wrapping at 256. The <code>TriggerKnob</code> class turns that back into a running count in your OpMode:</li>
+<li><strong>A trigger count</strong> keeps the position. Choose <strong>LT</strong> or <strong>RT</strong> under <strong>Trigger (xinput)</strong> in the knob&rsquo;s inspector, and the knob counts on that trigger: one step per click, wrapping at 256. The <code>TriggerKnob</code> class turns that back into a running count in your OpMode. It comes with the <a href="../on-the-robot/legends.html#adding-the-library">FTC helpers</a>:</li>
 </ul>
 <p><code>java
   TriggerKnob knob = new TriggerKnob();          // before the loop
