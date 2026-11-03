@@ -107,16 +107,16 @@
 <p>A tile that loses power partway through an update is not bricked. It comes back on its old firmware.</p>
 </div>
 <h2 id="the-main-module">The main module<a class="headerlink" href="#the-main-module" title="Permanent link">#</a></h2>
-<p>The main module updates over USB by drag-and-drop.</p>
+<p>The main module updates over USB by drag-and-drop. The <strong>Firmware</strong> screen shows the version it is running, the latest release, and a <strong>Download</strong> link for the latest <code>.uf2</code> file. Download it first.</p>
 <ol>
-<li>Press <strong>Update main module</strong> in the config app. The board reboots into its bootloader, and the COM port disappears. This is expected; the config app reports the lost connection.</li>
+<li>Press <strong>Reboot for UF2 update</strong> in the config app. The board reboots into its bootloader, and the COM port disappears. This is expected; the config app reports the lost connection.</li>
 <li>A USB drive called <strong>RPI-RP2</strong> appears on your computer.</li>
 <li>Drag the <code>.uf2</code> file onto it. The drive disappears and the board restarts on the new firmware.</li>
 </ol>
 <p>Your configuration — bindings, LED colours, USB personality — survives the update.</p>
 <p>If the config app cannot reach the board at all, unplug the board, hold the <strong>BOOTSEL</strong> button, plug it back in, and release. <code>RPI-RP2</code> appears the same way.</p>
 <h2 id="which-versions-am-i-on">Which versions am I on?<a class="headerlink" href="#which-versions-am-i-on" title="Permanent link">#</a></h2>
-<p>The <strong>Connect</strong> screen reports the main module&rsquo;s firmware version, and <strong>Diagnose</strong> reports each tile&rsquo;s. Mixed versions across tiles are fine. Diagnose flags any tile whose protocol is not compatible.</p>
+<p>The <strong>Firmware</strong> screen lists the version of the main module and of every tile, next to the latest release. The main module also shows a short build code (for example <code>0e705bc</code>); quote it if you contact support. <strong>Diagnose</strong> also reports each tile&rsquo;s version. Mixed versions across tiles are fine, and Diagnose flags any tile whose protocol is not compatible.</p>
     </article>
     <nav class="pager-row"><a class="pager prev" href="../getting-started/first-run.html"><span class="pager-label">Previous</span><span class="pager-title">First run</span></a><a class="pager next" href="../configuring/config-app.html"><span class="pager-label">Next</span><span class="pager-title">The config app</span></a></nav>
     <footer class="page-footer">
