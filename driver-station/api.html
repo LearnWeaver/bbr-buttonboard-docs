@@ -81,6 +81,7 @@
 <ul class="nav-list">
 <li><a href="../driver-station/install.html">Install the library</a></li>
 <li><a href="../driver-station/first-script.html">Your first script</a></li>
+<li><a href="../driver-station/drawing.html">Drawing on a display</a></li>
 <li><a href="../driver-station/api.html" class="active">Python API summary</a></li>
 </ul>
 <p class="nav-group">Reference</p>
@@ -318,6 +319,74 @@
 </tr>
 </tbody>
 </table>
+<h3 id="drawing">Drawing<a class="headerlink" href="#drawing" title="Permanent link">#</a></h3>
+<p>A <code>disp2</code> can draw lines, rectangles and text anywhere on its 160 × 128 pixels. The tile does the drawing; the script sends end points, so a drawing that changes costs a few frames rather than a whole picture.</p>
+<table>
+<thead>
+<tr>
+<th>Call</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>board.canvas(addr, background="black")</code></td>
+<td>A drawing surface for a tile that draws. <code>slot=n</code> draws over a stored picture instead of a colour</td>
+</tr>
+<tr>
+<td><code>canvas.layer()</code></td>
+<td>A group of shapes that move together, drawn over the layers made before it</td>
+</tr>
+<tr>
+<td><code>layer.line(x0, y0, x1, y1, colour)</code> / <code>layer.poly(points, colour, closed=False)</code></td>
+<td>Lines</td>
+</tr>
+<tr>
+<td><code>layer.rect(x, y, w, h, colour)</code> / <code>layer.fill(x, y, w, h, colour)</code></td>
+<td>An outline, or a solid rectangle</td>
+</tr>
+<tr>
+<td><code>layer.box(cx, cy, w, h, degrees, colour)</code></td>
+<td>A rectangle about its centre, turned clockwise: a wheel, a robot</td>
+</tr>
+<tr>
+<td><code>layer.circle(cx, cy, r, colour)</code> / <code>layer.arrow(x0, y0, x1, y1, colour)</code></td>
+<td>A circle; a line with a head</td>
+</tr>
+<tr>
+<td><code>layer.text(x, y, s, fg, bg)</code></td>
+<td>Text at a pixel position, 12 × 16 pixels a character</td>
+</tr>
+<tr>
+<td><code>layer.clear()</code></td>
+<td>Empty the layer, to stage its shapes again</td>
+</tr>
+<tr>
+<td><code>canvas.flush()</code></td>
+<td>Send what changed; returns how many frames went out</td>
+</tr>
+<tr>
+<td><code>canvas.forget()</code></td>
+<td>Force the next <code>flush()</code> to clear the panel and redraw everything</td>
+</tr>
+<tr>
+<td><code>board.disp_show_image(addr, file)</code></td>
+<td>Send a two-colour picture straight to the panel, nothing stored</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="n">canvas</span> <span class="o">=</span> <span class="n">board</span><span class="o">.</span><span class="n">canvas</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+<span class="n">frame</span> <span class="o">=</span> <span class="n">canvas</span><span class="o">.</span><span class="n">layer</span><span class="p">()</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="s2">"white"</span><span class="p">)</span>
+<span class="n">wheel</span> <span class="o">=</span> <span class="n">canvas</span><span class="o">.</span><span class="n">layer</span><span class="p">()</span>
+<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="n">wheel</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span><span class="o">.</span><span class="n">box</span><span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="n">heading</span><span class="p">,</span> <span class="s2">"lime"</span><span class="p">)</span>
+    <span class="n">canvas</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>                  <span class="c1"># only what changed is sent</span>
+</code></pre></div>
+
+<p>Colours are the ones LEDs take: a name, <code>"#RRGGBB"</code> or an <code>(r, g, b)</code> triple. Shapes that leave the panel are cut at its edge. The tile does not remember the drawing: the canvas works out what to erase, and after a tile has been unplugged call <code>canvas.forget()</code>. <a href="drawing.html">Drawing on a display</a> explains it all, with three complete examples.</p>
+<div class="hint hint-info">
+<p>Drawing needs firmware 0.3.0 or newer on both the main module and the display tile. A tile that can draw reports <code>"draw": true</code> in <code>board.tiles()</code>. With no board, <code>MockBoard()</code> draws too: <code>board.state.panel(6).save("out.png")</code> writes what the panel would show.</p>
+</div>
 <div class="hint hint-warning">
 <p>Display tiles differ in size: <code>disp1</code> is <strong>21 columns × 4 rows</strong>, <code>disp2</code> <strong>13 × 8</strong> and <code>screenkey1</code> <strong>10 × 8</strong>. Take the geometry from <code>screen.cols</code> / <code>screen.rows</code>, which come from the tile&rsquo;s own descriptor, rather than hard-coding it. <code>MockBoard()</code> includes display tiles to develop against; <code>MockBoard(display=False)</code> behaves like firmware without display support, which answers <code>unknown</code>.</p>
 </div>
@@ -392,7 +461,7 @@
 </tbody>
 </table>
     </article>
-    <nav class="pager-row"><a class="pager prev" href="../driver-station/first-script.html"><span class="pager-label">Previous</span><span class="pager-title">Your first script</span></a><a class="pager next" href="../reference/commands.html"><span class="pager-label">Next</span><span class="pager-title">Serial command reference</span></a></nav>
+    <nav class="pager-row"><a class="pager prev" href="../driver-station/drawing.html"><span class="pager-label">Previous</span><span class="pager-title">Drawing on a display</span></a><a class="pager next" href="../reference/commands.html"><span class="pager-label">Next</span><span class="pager-title">Serial command reference</span></a></nav>
     <footer class="page-footer">
       <a href="https://github.com/LearnWeaver/BBRControlBoard/edit/main/docs/gitbook/driver-station/api.md" rel="noopener">Edit this page on GitHub</a>
     </footer>
@@ -415,6 +484,9 @@
 <li><a href="#encoders">Encoders</a>
 </li>
 <li><a href="#display-tiles">Display tiles</a>
+<ul class="toc-sub">
+<li><a href="#drawing">Drawing</a></li>
+</ul>
 </li>
 <li><a href="#the-board-itself">The board itself</a>
 </li>

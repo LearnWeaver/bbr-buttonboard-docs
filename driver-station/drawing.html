@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Drawing on a display · BBR Button Board</title>
+<meta name="description" content="Drawing on a display A disp2 can draw lines, rectangles and text anywhere on its 160 × 128 pixels: a drive base with its wheels turned, the robot on the field, a map of what has be">
+<link rel="canonical" href="https://buttonboard.buildingblockrobotics.com/driver-station/drawing.html">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../style.css">
+<script>
+  // Set the theme before first paint so the page never flashes the wrong one.
+  try {
+    var t = localStorage.getItem('bbr-theme');
+    if (t) document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+</script>
+</head>
+<body class="page">
+
+<a class="skip" href="#content">Skip to content</a>
+
+<header class="topbar">
+  <button class="menu-btn" aria-label="Toggle navigation" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+  <a class="brand" href="../index.html">
+    <span class="brand-name">BBR Button Board</span>
+    <span class="brand-tagline">Documentation</span>
+  </a>
+  <div class="search" role="search">
+    <input type="search" id="search-input" placeholder="Search"
+           autocomplete="off" spellcheck="false" aria-label="Search the documentation">
+    <kbd class="search-key">/</kbd>
+    <div id="search-results" class="search-results" hidden></div>
+  </div>
+  <button class="theme-btn" aria-label="Toggle dark mode" title="Toggle dark mode">
+    <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <circle cx="12" cy="12" r="4.5"/>
+      <g class="rays"><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.4 4.4l2.1 2.1M17.5 17.5l2.1 2.1M19.6 4.4l-2.1 2.1M6.5 17.5l-2.1 2.1"/></g>
+    </svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/>
+    </svg>
+  </button>
+</header>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <nav aria-label="Documentation">
+      <ul class="nav-list">
+<li><a href="../index.html">BBR Button Board</a></li>
+</ul>
+<p class="nav-group">Getting started</p>
+<ul class="nav-list">
+<li><a href="../getting-started/hardware.html">What you have</a></li>
+<li><a href="../getting-started/tiles.html">The tiles</a></li>
+<li><a href="../getting-started/layout.html">Plan your panel</a></li>
+<li><a href="../getting-started/opengrid-board.html">The openGrid board</a></li>
+<li><a href="../getting-started/cases.html">Printing the cases</a></li>
+<li><a href="../getting-started/back-plate.html">Back plate for the leads</a></li>
+<li><a href="../getting-started/wiring.html">Plugging it together</a></li>
+<li><a href="../getting-started/first-run.html">First run</a></li>
+<li><a href="../getting-started/firmware.html">Updating the firmware</a></li>
+</ul>
+<p class="nav-group">Configuring</p>
+<ul class="nav-list">
+<li><a href="../configuring/config-app.html">The config app</a></li>
+<li><a href="../configuring/binding.html">Binding buttons</a></li>
+<li><a href="../configuring/leds.html">LED colours</a></li>
+<li><a href="../configuring/encoders.html">Rotary encoders</a></li>
+<li><a href="../configuring/screen-keys.html">Display tiles and legends</a></li>
+</ul>
+<p class="nav-group">On the robot</p>
+<ul class="nav-list">
+<li><a href="../on-the-robot/legends.html">Changing legends in a match</a></li>
+</ul>
+<p class="nav-group">Driver Station app</p>
+<ul class="nav-list">
+<li><a href="../driver-station/install.html">Install the library</a></li>
+<li><a href="../driver-station/first-script.html">Your first script</a></li>
+<li><a href="../driver-station/drawing.html" class="active">Drawing on a display</a></li>
+<li><a href="../driver-station/api.html">Python API summary</a></li>
+</ul>
+<p class="nav-group">Reference</p>
+<ul class="nav-list">
+<li><a href="../reference/commands.html">Serial command reference</a></li>
+<li><a href="../reference/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+    </nav>
+  </aside>
+
+  <main id="content" class="content">
+    <article class="prose">
+      <h1 id="drawing-on-a-display">Drawing on a display<a class="headerlink" href="#drawing-on-a-display" title="Permanent link">#</a></h1>
+<p>A <strong>disp2</strong> can draw lines, rectangles and text anywhere on its 160 × 128 pixels: a drive base with its wheels turned, the robot on the field, a map of what has been scored. The tile does the drawing itself. Your script sends the ends of each line, never the pixels, so a picture that changes ten times a second is cheap to keep up to date.</p>
+<div class="hint hint-warning">
+<p>Drawing needs firmware 0.3.0 or newer on both the <strong>main module</strong> and the <strong>disp2</strong>: update them on the config app&rsquo;s Firmware page. Check with <code>board.tiles()</code>: a tile that can draw has <code>"draw": True</code> in its entry. A <code>screenkey1</code> on the same firmware can draw too, on its 128 × 128 panel.</p>
+</div>
+<h2 id="a-first-drawing">A first drawing<a class="headerlink" href="#a-first-drawing" title="Permanent link">#</a></h2>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">buttonboard</span><span class="w"> </span><span class="kn">import</span> <span class="n">Board</span>
+
+<span class="k">with</span> <span class="n">Board</span><span class="o">.</span><span class="n">open</span><span class="p">()</span> <span class="k">as</span> <span class="n">board</span><span class="p">:</span>
+    <span class="n">canvas</span> <span class="o">=</span> <span class="n">board</span><span class="o">.</span><span class="n">canvas</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>                 <span class="c1"># the disp2's address</span>
+
+    <span class="n">base</span> <span class="o">=</span> <span class="n">canvas</span><span class="o">.</span><span class="n">layer</span><span class="p">()</span>
+    <span class="n">base</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="s2">"white"</span><span class="p">)</span>
+    <span class="n">base</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">104</span><span class="p">,</span> <span class="s2">"DRIVE"</span><span class="p">,</span> <span class="s2">"yellow"</span><span class="p">)</span>
+
+    <span class="n">wheel</span> <span class="o">=</span> <span class="n">canvas</span><span class="o">.</span><span class="n">layer</span><span class="p">()</span>
+    <span class="n">wheel</span><span class="o">.</span><span class="n">box</span><span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="s2">"lime"</span><span class="p">)</span>     <span class="c1"># centre, width, height, degrees</span>
+
+    <span class="n">canvas</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>                           <span class="c1"># draws everything</span>
+</code></pre></div>
+
+<p><img alt="What the panel shows" src="../images/draw-first.png" /></p>
+<p>Coordinates are pixels. <code>(0, 0)</code> is the top left corner; <code>x</code> goes right to 159 and <code>y</code> goes down to 127.</p>
+<h2 id="layers-and-only-sending-what-changed">Layers, and only sending what changed<a class="headerlink" href="#layers-and-only-sending-what-changed" title="Permanent link">#</a></h2>
+<p>A <strong>canvas</strong> is the panel. A <strong>layer</strong> is a group of shapes that change together, such as one wheel, the robot, or a label. Layers made later are drawn on top of earlier ones.</p>
+<p>Shapes stay on a layer until you call <code>clear()</code> on it. So something that never changes is drawn once, and something that moves is cleared and drawn again each time round the loop:</p>
+<div class="highlight"><pre><span></span><code><span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="n">heading</span> <span class="o">=</span> <span class="n">read_from_networktables</span><span class="p">(</span><span class="s2">"heading"</span><span class="p">)</span>
+    <span class="n">wheel</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span><span class="o">.</span><span class="n">box</span><span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="n">heading</span><span class="p">,</span> <span class="s2">"lime"</span><span class="p">)</span>
+    <span class="n">canvas</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+</code></pre></div>
+
+<p><code>flush()</code> compares each layer with what it sent last time and sends only the difference. It returns how many messages it sent:</p>
+<ul>
+<li><strong>Nothing changed:</strong> <code>flush()</code> sends nothing and returns 0. A loop that runs fast costs nothing while the robot is still.</li>
+<li><strong>A shape moved:</strong> it is drawn over in the background colour where it was, then drawn where it is. Anything the old shape crossed, such as the frame under the wheel above, is drawn again so it is not left with a gap.</li>
+<li><strong>A solid rectangle changed colour:</strong> it is just drawn over, one message.</li>
+</ul>
+<div class="hint hint-info">
+<p>The panel cannot be read back and the tile keeps no copy of the drawing. Everything the panel shows, your canvas remembers. That is why shapes are erased by drawing over them, and why the canvas has to be told when the panel has gone blank (see <a href="#when-the-tile-has-been-away">below</a>).</p>
+</div>
+<h2 id="shapes">Shapes<a class="headerlink" href="#shapes" title="Permanent link">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>Call</th>
+<th>Draws</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>layer.line(x0, y0, x1, y1, colour)</code></td>
+<td>A line</td>
+</tr>
+<tr>
+<td><code>layer.poly(points, colour, closed=False)</code></td>
+<td>Lines joining a list of <code>(x, y)</code> points; <code>closed=True</code> joins the last to the first</td>
+</tr>
+<tr>
+<td><code>layer.rect(x, y, w, h, colour)</code></td>
+<td>The outline of a rectangle</td>
+</tr>
+<tr>
+<td><code>layer.fill(x, y, w, h, colour)</code></td>
+<td>A solid rectangle</td>
+</tr>
+<tr>
+<td><code>layer.box(cx, cy, w, h, degrees, colour)</code></td>
+<td>The outline of a rectangle centred on <code>(cx, cy)</code>, turned clockwise. A wheel, a robot</td>
+</tr>
+<tr>
+<td><code>layer.circle(cx, cy, r, colour)</code></td>
+<td>A circle, drawn as short straight lines</td>
+</tr>
+<tr>
+<td><code>layer.arrow(x0, y0, x1, y1, colour)</code></td>
+<td>A line with an arrowhead at <code>(x1, y1)</code>. A speed, a direction</td>
+</tr>
+<tr>
+<td><code>layer.text(x, y, text, fg, bg="black")</code></td>
+<td>Text, its top left corner at <code>(x, y)</code></td>
+</tr>
+<tr>
+<td><code>layer.clear()</code></td>
+<td>Empties the layer</td>
+</tr>
+</tbody>
+</table>
+<p>Each call returns the layer, so they chain: <code>layer.clear().box(...).arrow(...)</code>.</p>
+<ul>
+<li><strong>The background</strong> is black unless you say otherwise: <code>board.canvas(6, background="navy")</code> takes any colour.</li>
+<li><strong>Colours</strong> are the ones LEDs take: a name (<code>"red"</code>, <code>"lime"</code>, <code>"orange"</code>, <code>"alliance_blue"</code>&hellip;), <code>"#RRGGBB"</code>, or an <code>(r, g, b)</code> triple.</li>
+<li><strong>Coordinates</strong> may be decimals, which is easier when they come out of trigonometry. They are rounded when sent.</li>
+<li><strong>Off the edge:</strong> a shape that goes past the edge of the panel is cut off at the edge. Nothing is refused.</li>
+<li><strong>Text</strong> is 12 pixels wide and 16 tall per character, so 13 characters fit across a disp2. Each character is a solid block of its background colour. Characters that would go past the edge are dropped.</li>
+</ul>
+<h2 id="drawing-over-a-stored-picture">Drawing over a stored picture<a class="headerlink" href="#drawing-over-a-stored-picture" title="Permanent link">#</a></h2>
+<p>A canvas can draw on top of a picture stored on the tile, such as a picture of the field, instead of a plain colour. Store the picture once (<a href="../configuring/screen-keys.html#loading-a-picture-into-a-slot">Loading a picture into a slot</a>, or <code>board.disp_store_image(6, 0, "field.png")</code>, which needs the <code>[pictures]</code> extra), then name the slot:</p>
+<div class="highlight"><pre><span></span><code><span class="n">canvas</span> <span class="o">=</span> <span class="n">board</span><span class="o">.</span><span class="n">canvas</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="n">slot</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">robot</span> <span class="o">=</span> <span class="n">canvas</span><span class="o">.</span><span class="n">layer</span><span class="p">()</span>
+
+<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">heading</span> <span class="o">=</span> <span class="n">read_pose</span><span class="p">()</span>
+    <span class="n">robot</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span><span class="o">.</span><span class="n">box</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="n">heading</span><span class="p">,</span> <span class="s2">"yellow"</span><span class="p">)</span>
+    <span class="n">canvas</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+</code></pre></div>
+
+<p>The first <code>flush()</code> shows the picture. After that, moving the robot sends two messages, however complicated its shape: one that puts back the part of the picture it was covering, and one that draws it in its new place.</p>
+<h2 id="back-to-text">Back to text<a class="headerlink" href="#back-to-text" title="Permanent link">#</a></h2>
+<p>While a drawing is on the panel, the text grid (<code>board.screen()</code>, <code>disp_text</code>) is not shown, so writing a row does not cut a stripe through the drawing. <code>board.disp_clear(6)</code> blanks the panel and hands it back to the text grid.</p>
+<p>To use both at once, put the text in the drawing with <code>layer.text()</code>.</p>
+<h2 id="when-the-tile-has-been-away">When the tile has been away<a class="headerlink" href="#when-the-tile-has-been-away" title="Permanent link">#</a></h2>
+<p>A tile that is unplugged, or that hears nothing for two seconds, comes back with a blank panel. Your canvas still thinks the drawing is there. Call <code>canvas.forget()</code> and the next <code>flush()</code> clears the panel and draws everything again. The board reports a tile coming back as an event:</p>
+<div class="highlight"><pre><span></span><code><span class="n">board</span><span class="o">.</span><span class="n">on</span><span class="p">(</span><span class="s2">"tile"</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">ev</span><span class="p">:</span> <span class="n">ev</span><span class="p">[</span><span class="s2">"addr"</span><span class="p">]</span> <span class="o">==</span> <span class="mi">6</span> <span class="ow">and</span> <span class="n">canvas</span><span class="o">.</span><span class="n">forget</span><span class="p">())</span>
+</code></pre></div>
+
+<p>If a <code>flush()</code> raises <code>BoardError</code>, call <code>canvas.forget()</code> before trying again, for the same reason: you cannot tell how much of it reached the panel.</p>
+<h2 id="try-it-without-a-board">Try it without a board<a class="headerlink" href="#try-it-without-a-board" title="Permanent link">#</a></h2>
+<p><code>MockBoard</code> draws exactly as the tile does, using the same line stepping and the same letters. You can write and check a drawing with nothing plugged in:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">buttonboard</span><span class="w"> </span><span class="kn">import</span> <span class="n">MockBoard</span>
+
+<span class="n">board</span> <span class="o">=</span> <span class="n">MockBoard</span><span class="p">()</span>                  <span class="c1"># has a disp2 at address 6</span>
+<span class="n">canvas</span> <span class="o">=</span> <span class="n">board</span><span class="o">.</span><span class="n">canvas</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+<span class="c1"># ... draw and flush as above ...</span>
+<span class="n">board</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">panel</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">"panel.png"</span><span class="p">)</span>
+</code></pre></div>
+
+<p><code>panel.png</code> is the panel, three times life size. Nothing else needs to be installed.</p>
+<h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">#</a></h2>
+<p>Four complete programs read the robot over NetworkTables and draw it. They are in the <code>examples</code> folder of <a href="https://github.com/BuildingBlockRobotics/BBRButtonBoard">BuildingBlockRobotics/BBRButtonBoard</a>. Each one runs with <code>--demo</code> for a made-up robot, and <code>--mock --png out.png</code> for no board either.</p>
+<div class="highlight"><pre><span></span><code>python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"bbr-buttonboard[networktables]"</span>
+python3<span class="w"> </span>ds_swerve.py<span class="w"> </span>--team<span class="w"> </span><span class="m">1234</span>
+</code></pre></div>
+
+<h3 id="swerve-drive">Swerve drive<a class="headerlink" href="#swerve-drive" title="Permanent link">#</a></h3>
+<p><img alt="Swerve modules turned to their angles" src="../images/draw-swerve.png" /></p>
+<p><code>ds_swerve.py</code> draws the chassis from above, with each module turned to its angle and an arrow for its speed. The front of the robot is the top of the panel. The robot publishes its module states:</p>
+<div class="highlight"><pre><span></span><code><span class="n">SwerveModuleState</span><span class="o">[]</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">drive</span><span class="p">.</span><span class="na">getModuleStates</span><span class="p">();</span>
+<span class="n">SmartDashboard</span><span class="p">.</span><span class="na">putNumberArray</span><span class="p">(</span><span class="s">"SwerveStates"</span><span class="p">,</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">double</span><span class="o">[]</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">s</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="p">.</span><span class="na">angle</span><span class="p">.</span><span class="na">getDegrees</span><span class="p">(),</span><span class="w"> </span><span class="n">s</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="p">.</span><span class="na">speedMetersPerSecond</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="p">.</span><span class="na">angle</span><span class="p">.</span><span class="na">getDegrees</span><span class="p">(),</span><span class="w"> </span><span class="n">s</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="p">.</span><span class="na">speedMetersPerSecond</span><span class="p">,</span>
+<span class="w">    </span><span class="n">s</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span><span class="p">.</span><span class="na">angle</span><span class="p">.</span><span class="na">getDegrees</span><span class="p">(),</span><span class="w"> </span><span class="n">s</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span><span class="p">.</span><span class="na">speedMetersPerSecond</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="o">[</span><span class="mi">3</span><span class="o">]</span><span class="p">.</span><span class="na">angle</span><span class="p">.</span><span class="na">getDegrees</span><span class="p">(),</span><span class="w"> </span><span class="n">s</span><span class="o">[</span><span class="mi">3</span><span class="o">]</span><span class="p">.</span><span class="na">speedMetersPerSecond</span><span class="p">});</span>
+</code></pre></div>
+
+<h3 id="the-robot-on-the-field">The robot on the field<a class="headerlink" href="#the-robot-on-the-field" title="Permanent link">#</a></h3>
+<p><img alt="The robot's position on the field" src="../images/draw-field.png" /></p>
+<p><code>ds_field.py</code> draws the field and a small robot at its position and heading. It reads what a WPILib <code>Field2d</code> already publishes, so a robot that puts its pose on the dashboard needs no changes:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Field2d</span><span class="w"> </span><span class="n">field</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Field2d</span><span class="p">();</span>
+<span class="n">SmartDashboard</span><span class="p">.</span><span class="na">putData</span><span class="p">(</span><span class="s">"Field"</span><span class="p">,</span><span class="w"> </span><span class="n">field</span><span class="p">);</span><span class="w">       </span><span class="c1">// once</span>
+<span class="n">field</span><span class="p">.</span><span class="na">setRobotPose</span><span class="p">(</span><span class="n">drive</span><span class="p">.</span><span class="na">getPose</span><span class="p">());</span><span class="w">          </span><span class="c1">// in robotPeriodic()</span>
+</code></pre></div>
+
+<p>Pass <code>--image field.png</code> to draw over a picture of the field instead of lines. It is stored on the tile the first time, which takes a few seconds, and only again if the file changes. The default field is 16.54 × 8.07 m; <code>--length</code> and <code>--width</code> change it.</p>
+<h3 id="the-reefscape-reef">The REEFSCAPE reef<a class="headerlink" href="#the-reefscape-reef" title="Permanent link">#</a></h3>
+<p><img alt="The reef with coral scored" src="../images/draw-reef.png" /></p>
+<p><code>ds_reef.py</code> draws the reef from above with three squares on each of the twelve branches, one for each of L2, L3 and L4, filled in as coral is scored. The number in the middle is the count, and the yellow ring and corner label are the branch the robot is going for. The robot publishes 36 booleans, branch A&rsquo;s L2, L3 and L4, then B&rsquo;s, through to L, and optionally the index of its target:</p>
+<div class="highlight"><pre><span></span><code><span class="n">SmartDashboard</span><span class="p">.</span><span class="na">putBooleanArray</span><span class="p">(</span><span class="s">"Reef"</span><span class="p">,</span><span class="w"> </span><span class="n">scored</span><span class="p">);</span><span class="w">          </span><span class="c1">// boolean[36]</span>
+<span class="n">SmartDashboard</span><span class="p">.</span><span class="na">putNumber</span><span class="p">(</span><span class="s">"ReefTarget"</span><span class="p">,</span><span class="w"> </span><span class="n">targetIndex</span><span class="p">);</span><span class="w">     </span><span class="c1">// -1 for none</span>
+</code></pre></div>
+
+<h3 id="the-reef-from-the-side-what-the-robot-will-score-on">The reef from the side: what the robot will score on<a class="headerlink" href="#the-reef-from-the-side-what-the-robot-will-score-on" title="Permanent link">#</a></h3>
+<p><img alt="The reef from the side with L3 lit" src="../images/draw-reef-side.png" /></p>
+<p><code>ds_reef_side.py</code> draws one face of the reef as the drivers see it: the trough (L1), the two angled branches (L2, L3) and the upright one at the top (L4). The level the robot is set up for is lit in yellow, with an arrow and its name, so the drivers can see at a glance what will happen when they score.</p>
+<p>The operator&rsquo;s L2, L3 and L4 buttons go to the robot like any other button. The robot publishes the level it has chosen, 1 to 4, or 0 for none:</p>
+<div class="highlight"><pre><span></span><code><span class="n">SmartDashboard</span><span class="p">.</span><span class="na">putNumber</span><span class="p">(</span><span class="s">"ReefLevel"</span><span class="p">,</span><span class="w"> </span><span class="n">targetLevel</span><span class="p">);</span>
+</code></pre></div>
+
+<p>The panel then shows what the robot will actually do, not just which button was pressed last.</p>
+<p>To try it before the robot code is written, <code>--mx4</code> reads the keys of an <strong>mx4</strong> on the panel instead. The three keys in a row choose L2, L3 and L4, left to right, and the key on its own above them chooses the trough. The last key pressed stays chosen, and on an mx4 with LEDs it lights yellow. <code>--keys</code> does the same with any tile: <code>--keys 3:-1,0,1,2</code> makes the three keys of the tile at address 3 choose L2, L3 and L4 (keys count from 0, and <code>-1</code> leaves L1 out).</p>
+<p>Changing level is about eight messages. Holding a level costs none.</p>
+<h2 id="how-fast-it-is">How fast it is<a class="headerlink" href="#how-fast-it-is" title="Permanent link">#</a></h2>
+<p>Each message to the panel takes about 6 ms of the bus&rsquo;s spare time, so roughly 150 messages a second are available, shared with LED colours and display text. Button presses are never delayed by any of it.</p>
+<table>
+<thead>
+<tr>
+<th>Change</th>
+<th>Messages</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Nothing</td>
+<td>0</td>
+</tr>
+<tr>
+<td>A marker changes colour</td>
+<td>1</td>
+</tr>
+<tr>
+<td>A robot moves over a stored picture</td>
+<td>2</td>
+</tr>
+<tr>
+<td>One swerve module turns</td>
+<td>about 4</td>
+</tr>
+<tr>
+<td>All four swerve modules turn</td>
+<td>about 6</td>
+</tr>
+<tr>
+<td>Clearing and redrawing the whole panel</td>
+<td>one, plus about one per colour of the drawing</td>
+</tr>
+</tbody>
+</table>
+<p>Shapes of the same colour that do not overlap travel together, so a loop at 10 updates a second uses a small part of what is available.</p>
+<h2 id="underneath-the-canvas">Underneath the canvas<a class="headerlink" href="#underneath-the-canvas" title="Permanent link">#</a></h2>
+<p>The canvas is built from these calls. Each sends one message, and none of them clips, erases or remembers anything for you: every point has to be on the panel.</p>
+<table>
+<thead>
+<tr>
+<th>Call</th>
+<th>Sends</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>board.disp_draw_line(addr, colour, [(x0, y0, x1, y1), ...])</code></td>
+<td>Up to 16 separate lines</td>
+</tr>
+<tr>
+<td><code>board.disp_draw_poly(addr, colour, [(x, y), ...])</code></td>
+<td>Lines joining 2 to 32 points</td>
+</tr>
+<tr>
+<td><code>board.disp_draw_fill(addr, colour, [(x, y, w, h), ...])</code></td>
+<td>Up to 16 solid rectangles</td>
+</tr>
+<tr>
+<td><code>board.disp_draw_text(addr, x, y, text, fg, bg)</code></td>
+<td>Text at a pixel position</td>
+</tr>
+<tr>
+<td><code>board.disp_slot_rect(addr, slot, x, y, w, h)</code></td>
+<td>Part of a stored picture, put back</td>
+</tr>
+<tr>
+<td><code>board.disp_show_image(addr, file)</code></td>
+<td>A whole two-colour picture, nothing stored</td>
+</tr>
+</tbody>
+</table>
+<p>The serial commands behind them are listed in the <a href="../reference/commands.html">command reference</a>.</p>
+    </article>
+    <nav class="pager-row"><a class="pager prev" href="../driver-station/first-script.html"><span class="pager-label">Previous</span><span class="pager-title">Your first script</span></a><a class="pager next" href="../driver-station/api.html"><span class="pager-label">Next</span><span class="pager-title">Python API summary</span></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/LearnWeaver/BBRControlBoard/edit/main/docs/gitbook/driver-station/drawing.md" rel="noopener">Edit this page on GitHub</a>
+    </footer>
+  </main>
+
+  <aside class="onpage" aria-label="On this page">
+    <p class="toc-title">On this page</p>
+<ul class="toc-list">
+<li><a href="#a-first-drawing">A first drawing</a>
+</li>
+<li><a href="#layers-and-only-sending-what-changed">Layers, and only sending what changed</a>
+</li>
+<li><a href="#shapes">Shapes</a>
+</li>
+<li><a href="#drawing-over-a-stored-picture">Drawing over a stored picture</a>
+</li>
+<li><a href="#back-to-text">Back to text</a>
+</li>
+<li><a href="#when-the-tile-has-been-away">When the tile has been away</a>
+</li>
+<li><a href="#try-it-without-a-board">Try it without a board</a>
+</li>
+<li><a href="#examples">Examples</a>
+<ul class="toc-sub">
+<li><a href="#swerve-drive">Swerve drive</a></li>
+<li><a href="#the-robot-on-the-field">The robot on the field</a></li>
+<li><a href="#the-reefscape-reef">The REEFSCAPE reef</a></li>
+<li><a href="#the-reef-from-the-side-what-the-robot-will-score-on">The reef from the side: what the robot will score on</a></li>
+</ul>
+</li>
+<li><a href="#how-fast-it-is">How fast it is</a>
+</li>
+<li><a href="#underneath-the-canvas">Underneath the canvas</a>
+</li>
+</ul>
+  </aside>
+</div>
+
+<div class="scrim" hidden></div>
+<script src="../app.js" defer></script>
+</body>
+</html>

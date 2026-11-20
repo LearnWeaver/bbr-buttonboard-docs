@@ -81,6 +81,7 @@
 <ul class="nav-list">
 <li><a href="../driver-station/install.html">Install the library</a></li>
 <li><a href="../driver-station/first-script.html">Your first script</a></li>
+<li><a href="../driver-station/drawing.html">Drawing on a display</a></li>
 <li><a href="../driver-station/api.html">Python API summary</a></li>
 </ul>
 <p class="nav-group">Reference</p>
@@ -221,6 +222,18 @@
 <tr>
 <td><code>disp &lt;addr&gt; slot &lt;n&gt; …</code></td>
 <td>Store, show, erase, check (<code>info</code>) or read back (<code>read</code>) one of the tile&rsquo;s saved pictures</td>
+</tr>
+<tr>
+<td><code>disp &lt;addr&gt; slot &lt;n&gt; rect &lt;x&gt; &lt;y&gt; &lt;w&gt; &lt;h&gt;</code></td>
+<td>Put part of a saved picture back on the panel</td>
+</tr>
+<tr>
+<td><code>disp &lt;addr&gt; draw line\|poly\|fill &lt;rgb565&gt; &lt;hex&gt;</code></td>
+<td>Draw lines or filled rectangles: a colour as four hex digits, then the coordinates as hex bytes</td>
+</tr>
+<tr>
+<td><code>disp &lt;addr&gt; draw text &lt;fg&gt; &lt;bg&gt; &lt;x&gt; &lt;y&gt; &lt;text…&gt;</code></td>
+<td>Draw text at a pixel position</td>
 </tr>
 <tr>
 <td><code>replace &lt;old&gt; &lt;new&gt;</code></td>
