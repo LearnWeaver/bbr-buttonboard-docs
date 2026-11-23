@@ -9,6 +9,7 @@
 import { catalogue, cellsAt, shape, conflict, place, move, remove, freeCells, fillBlanks, partsList, warnings,
          encode, decode, MAX_CELLS } from './layout-model.js';
 import { footprint, sizeMm, heightMm, problems as onePieceProblems, build as buildOnePiece } from './onepiece-model.js';
+import { deckProblems, deckSize, keySites, pockets, buildDeck, trayGaps, TRAY_SIDES, buildCover, coverProblems, pegSites } from './deck-model.js';
 import { useStyles, el, field, loadFailed, download, BED } from '../generators/ui.js';
 import { toStl } from '../generators/mesh.js';
 import { leadCheck, leadWarnings } from './leads.js';
@@ -20,6 +21,13 @@ const BED_STORE = 'bb-bed';
 // left off the page. Its data still loads, since the lead checks use it.
 // Set true, and restore the section in getting-started/layout.md, to bring it back.
 const ONE_PIECE = false;
+// The low-profile deck (deck-model.js): a plate the low-profile cases press onto. Set false to take
+// its section off the page, and its paragraph out of getting-started/layout.md.
+const DECK = true;
+// what the deck covers (deck-model.js COVERS; 'cases' is left off: it comes apart where cells are empty)
+const COVER = { board: 'The whole board', rect: 'Only the rectangle round the cases' };
+// the deck's cable trays (§86), by the edge of the board as drawn on the page
+const TRAY_NAMES = { N: 'Top', E: 'Right', S: 'Bottom', W: 'Left' };
 // the back of the one-piece tray (onepiece-model.js BACKS)
 const BACKS = { snaps: 'Snaps, onto an openGrid board', plain: 'Plain and flat', board: 'openGrid board built in' };
 const DRAG_PX = 4;          // movement before a press becomes a drag
@@ -87,6 +95,7 @@ const CSS = `
 .gen .lp-one select { font: inherit; font-size: .95rem; color: var(--text); background: var(--bg);
                       border: 1px solid var(--border-strong); border-radius: 6px; padding: .4rem .5rem; width: 100%; }
 .lp-one .gen-buttons { margin-top: .6rem; }
+.lp-one + .lp-one { margin-top: .4rem; }
 ${HUES.map(([h, s], i) => `.lp-g${i} { background: hsla(${h}, ${s}%, 55%, .18); border-color: hsla(${h}, ${s}%, 45%, .9); color: var(--text); }
 .lp-over.lp-g${i} { color: hsla(${h}, ${s}%, 45%, .9); background-color: transparent; }`).join('\n')}
 `;
@@ -133,7 +142,7 @@ function load(cat) {
 
 async function mount(root) {
   root.textContent = 'Loading the planner…';
-  let cat, groups, onePiece, gridParams;
+  let cat, groups, onePiece, gridParams, deckData;
   try {
     const r = await fetch(new URL('modules.json', import.meta.url));
     if (!r.ok) throw new Error('could not load the case list');
@@ -146,6 +155,9 @@ async function mount(root) {
     const gp = await fetch(new URL('../opengrid-board/opengrid-params.json', import.meta.url));
     if (!gp.ok) throw new Error('could not load the openGrid board data');
     gridParams = await gp.json();
+    const dk = await fetch(new URL('lowpro/deck.json', import.meta.url));
+    if (!dk.ok) throw new Error('could not load the low-profile deck data');
+    deckData = await dk.json();
   } catch (e) {
     loadFailed(root, e.message);
     return;
@@ -173,11 +185,14 @@ async function mount(root) {
   const parts = el('div');
   // the one-piece case: the bed it has to fit, and the build, kept until the layout or the bed changes
   let bed0 = { x: BED, y: BED };
-  let back0 = 'snaps';
+  let back0 = 'snaps', cover0 = 'board', trays0 = '', lid0 = false;
   try {
     const b = JSON.parse(localStorage.getItem(BED_STORE));
     if (b?.x > 0 && b?.y > 0) bed0 = { x: b.x, y: b.y };
     if (BACKS[b?.back]) back0 = b.back;
+    if (COVER[b?.cover]) cover0 = b.cover;
+    if (typeof b?.trays === 'string') trays0 = TRAY_SIDES.filter((t) => b.trays.includes(t)).join('');
+    lid0 = b?.lid === true;
   } catch { /* none kept */ }
   const bedX = field('Printer bed width (mm)', { min: 50, max: 1000, step: 1, value: bed0.x });
   const bedY = field('Printer bed depth (mm)', { min: 50, max: 1000, step: 1, value: bed0.y });
@@ -197,13 +212,45 @@ async function mount(root) {
                 'as in their own cases, and the lid has every cut-out. The tray\'s back can snap onto an openGrid board ' +
                 'like the separate cases, be plain and flat, or have an openGrid board built in. ' +
                 'It covers the rectangle round everything you placed; cells with nothing on them are left hollow under the lid.'),
-    el('div', { class: 'gen-controls' }, bedX.node, bedY.node, backField), oneFacts, oneButtons);
+    el('div', { class: 'gen-controls' }, ...(DECK ? [] : [bedX.node, bedY.node]), backField), oneFacts, oneButtons);
   let built = null;           // { key, tray, lid }
+  // the low-profile deck: the same bed, and what it covers
+  const coverSel = el('select', {});
+  for (const [k, label] of Object.entries(COVER)) {
+    const o = el('option', { value: k }, label);
+    if (k === cover0) o.selected = true;
+    coverSel.append(o);
+  }
+  const trayBoxes = Object.fromEntries(TRAY_SIDES.map((t) => [t, el('input', { type: 'checkbox' })]));
+  for (const t of TRAY_SIDES) trayBoxes[t].checked = trays0.includes(t);
+  const trayField = el('fieldset', { class: 'lp-trays', style: 'border:0;padding:0;margin:0' },
+    el('legend', {}, 'Cable trays along'),
+    ...TRAY_SIDES.map((t) => el('label', { style: 'margin-right:.8rem' }, trayBoxes[t], ` ${TRAY_NAMES[t]}`)));
+  const lidBox = el('input', { type: 'checkbox' });
+  lidBox.checked = lid0;
+  const lidField = el('label', { style: 'display:block;margin:.4rem 0' }, lidBox,
+    ' A cover over the whole panel too, held by pegs in the trays');
+  const deckFacts = el('ul', { class: 'gen-facts', 'aria-live': 'polite' });
+  const bDeck = el('button', { type: 'button' }, 'Make the deck');
+  const deckButtons = el('div', { class: 'gen-buttons' }, bDeck);
+  const deckSec = el('div', { class: 'lp-one' },
+    el('h4', { style: 'margin:.9rem 0 .2rem' }, 'Low-profile cases: print a deck'),
+    el('p', {}, 'For the low-profile cases, which have no openGrid snaps: a 1.2 mm plate cut to this layout, with a ' +
+                'stud standing on it under every link pocket, so each case presses onto it and the panel is one stiff ' +
+                'piece. It fits this layout: a case only sits flat where it has a pocket over every stud. A drop cable tile gets a hole for its lead.'),
+    el('p', {}, 'Cable trays: tick an edge and the deck grows half a cell there, with a wall as tall as the cases and a lip ' +
+                'leaning over the deck. Leads run on the deck under the lip, round corners, and come up into the cases. ' +
+                'The tray is cut away in front of the main module\'s USB.'),
+    el('p', {}, 'Cover: one plate over the cases and the trays, open round every group of keys, every display and ' +
+                'encoder, and the main module\'s light and CFG holes, so it hides the lids, plugs and leads. It lifts ' +
+                'straight off. The deck gets a hole in the tray tops for each of its pegs, so make the two together.'),
+    el('div', { class: 'gen-controls' }, bedX.node, bedY.node, el('label', {}, 'Deck covers', coverSel)), trayField, lidField, deckFacts, deckButtons);
+  let deckBuilt = null;       // { key, mesh, pockets, cover }
   root.textContent = '';
   root.className = 'gen';
   root.append(el('div', { class: 'gen-controls' }, cols.node, rows.node),
               el('div', { class: 'gen-buttons', style: 'margin-top:.6rem' }, bFill, bClear),
-              el('div', { class: 'lp' }, palette, el('div', { class: 'lp-board' }, grid, status, facts, parts, ...(ONE_PIECE ? [one] : []))));
+              el('div', { class: 'lp' }, palette, el('div', { class: 'lp-board' }, grid, status, facts, parts, ...(DECK ? [deckSec] : []), ...(ONE_PIECE ? [one] : []))));
 
   for (const g of groups) {
     palette.append(el('h4', {}, g.name));
@@ -283,6 +330,7 @@ async function mount(root) {
     renderStatus();
     renderFacts();
     renderOnePiece();
+    renderDeck();
   }
 
   function renderStatus() {
@@ -385,12 +433,79 @@ async function mount(root) {
     bMake.textContent = 'Make the one-piece case';
     renderOnePiece();
   });
+  const cover = () => coverSel.value;
+  const trays = () => TRAY_SIDES.filter((t) => trayBoxes[t].checked).join('');
+  const lid = () => lidBox.checked;
+  const deckKey = () => `${encode(L)}|${bed().x}x${bed().y}|${cover()}|${trays()}|${lid()}`;
+  function renderDeck() {
+    deckFacts.textContent = '';
+    deckButtons.textContent = '';
+    deckButtons.append(bDeck);
+    const b = bed();
+    const bad = !(b.x >= 50 && b.y >= 50) ? ['Set the size of your printer\'s bed.'] : [...deckProblems(L, cat, deckData, b, cover(), trays()), ...(lid() ? coverProblems(L, cat, deckData, cover(), trays()) : [])];
+    bDeck.disabled = bad.length > 0;
+    for (const w of bad) deckFacts.append(el('li', { class: 'gen-warn' }, w));
+    if (bad.length) return;
+    const s = deckSize(L, cat, deckData, cover(), trays()), keys = keySites(L, cat, deckData).length;
+    const tall = +(deckData.deck_t + deckData.link.h).toFixed(1);
+    deckFacts.append(el('li', {}, `${s.cols} × ${s.rows} cells, one piece: ${s.w} × ${s.h} mm, ${deckData.deck_t} mm thick, ` +
+                                  `${tall} mm over the studs. Fits your bed.`),
+                     ...(trays() ? [el('li', {}, `Cable trays along the ${[...trays()].map((t) => TRAY_NAMES[t].toLowerCase()).join(', ')}: ` +
+                                    `${+(deckData.deck_t + deckData.tray.h).toFixed(1)} mm tall, level with the cases` +
+                                    (trayGaps(L, cat, deckData, trays()).length ? ', cut away in front of the USB.' : '.'))] : []),
+                     ...(lid() ? [el('li', {}, `A cover, ${deckData.cover.t} mm, over the whole deck, with ` +
+                                    `${pegSites(L, cat, deckData, cover(), trays()).length} pegs into the trays. ` +
+                                    'It sits 1.5 mm above the cases; the keys, displays and encoders come through it.')] : []),
+                     el('li', {}, `${keys} place${keys === 1 ? '' : 's'} where two cases key together across a joint.`));
+    const feet = pockets(L, cat, deckData).length - 2 * keys;
+    // without a deck: a padded key across every joint and a foot in every other pocket (lowpro.py)
+    deckFacts.append(el('li', {}, `Or no deck: ${keys} padded key${keys === 1 ? '' : 's'} and ${feet} ${feet === 1 ? 'foot' : 'feet'}, ` +
+                                  `which stand the panel ${deckData.pad_t} mm off the desk.`));
+    if (deckBuilt?.key === deckKey()) {
+      const name = `lowpro-deck-${s.cols}x${s.rows}${trays() ? `-trays-${trays().toLowerCase()}` : ''}`;
+      deckButtons.textContent = '';
+      deckButtons.append(btnMain('Download deck STL', () => download(toStl(deckBuilt.mesh, name), `${name}.stl`)));
+      if (deckBuilt.cover) {
+        const cname = name.replace('lowpro-deck', 'lowpro-cover');
+        deckButtons.append(btnMain('Download cover STL', () => download(toStl(deckBuilt.cover, cname), `${cname}.stl`)));
+      }
+      deckFacts.append(el('li', {}, `${deckBuilt.pockets} studs. Print it flat, studs up, no supports` +
+                                    `${trays() ? ': the trays\' lips overhang at 45°' : ''}.`));
+      if (deckBuilt.cover) deckFacts.append(el('li', {}, 'Print the cover top-down, as the STL lies: flat, pegs up, no supports.'));
+    }
+  }
+  bDeck.addEventListener('click', async () => {
+    const key = deckKey();
+    bDeck.disabled = true;
+    bDeck.textContent = 'Building…';
+    try {
+      const { default: Module } = await import('../vendor/manifold-3d/manifold.js');
+      const M = await Module();
+      M.setup();
+      const r = buildDeck(M, L, cat, deckData, cover(), trays(), lid());
+      if (r.status !== 'NoError') throw new Error(r.status);
+      const c = lid() ? buildCover(M, L, cat, deckData, cover(), trays()) : null;
+      if (c && c.status !== 'NoError') throw new Error(`cover: ${c.status}`);
+      if (key === deckKey()) deckBuilt = { key, mesh: r.mesh, pockets: r.pockets, cover: c?.mesh };
+    } catch (e) {
+      deckFacts.append(el('li', { class: 'gen-bad' }, `The deck did not build (${e.message}).`));
+      bDeck.textContent = 'Make the deck';
+      bDeck.disabled = false;
+      return;
+    }
+    bDeck.textContent = 'Make the deck';
+    renderDeck();
+  });
   const keep = () => {
-    try { localStorage.setItem(BED_STORE, JSON.stringify({ ...bed(), back: back() })); } catch { /* storage blocked */ }
+    try { localStorage.setItem(BED_STORE, JSON.stringify({ ...bed(), back: back(), cover: cover(), trays: trays(), lid: lid() })); } catch { /* storage blocked */ }
     renderOnePiece();
+    renderDeck();
   };
   for (const f of [bedX, bedY]) f.input.addEventListener('input', keep);
   backSel.addEventListener('change', keep);
+  coverSel.addEventListener('change', keep);
+  for (const t of TRAY_SIDES) trayBoxes[t].addEventListener('change', keep);
+  lidBox.addEventListener('change', keep);
 
   // ---- state changes
   function changed() {

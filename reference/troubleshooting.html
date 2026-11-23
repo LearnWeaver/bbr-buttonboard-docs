@@ -135,6 +135,12 @@
 <li><strong>No flash:</strong> the key is not bound, the tile is lost, or the board is in bind mode. Check <strong>Configure</strong>.</li>
 <li><strong>Never flashes at all:</strong> it may be turned off. It is the <strong>Status light</strong> checkbox on the <strong>Connect</strong> screen.</li>
 </ul>
+<h2 id="is-a-tile-running">Is a tile running?<a class="headerlink" href="#is-a-tile-running" title="Permanent link">#</a></h2>
+<p>Every tile has a small green light that blinks once a second while its firmware runs. A tile that is powered but not blinking is not running.</p>
+<ul>
+<li><strong>To keep a tile&rsquo;s green light dark</strong> (in a case with a window, say): select the tile on <strong>Configure</strong> and untick <strong>Blink the tile&rsquo;s green status light</strong>, then <strong>Save</strong>. It needs tile firmware newer than 0.3.0; an older tile ignores the setting and keeps blinking.</li>
+<li>A tile blinks again for a moment after it restarts, until the main module sends it its settings.</li>
+</ul>
 <h2 id="the-driver-station-sees-the-wrong-thing">The Driver Station sees the wrong thing<a class="headerlink" href="#the-driver-station-sees-the-wrong-thing" title="Permanent link">#</a></h2>
 <ul>
 <li><strong>FRC expects <code>frc</code>; FTC expects <code>xinput</code>.</strong> Check on the <strong>Connect</strong> screen.</li>
@@ -170,6 +176,8 @@
 <li><a href="#buttons-stick-on-or-fire-on-their-own">Buttons stick on, or fire on their own</a>
 </li>
 <li><a href="#is-the-board-sending-my-presses-at-all">Is the board sending my presses at all?</a>
+</li>
+<li><a href="#is-a-tile-running">Is a tile running?</a>
 </li>
 <li><a href="#the-driver-station-sees-the-wrong-thing">The Driver Station sees the wrong thing</a>
 </li>
