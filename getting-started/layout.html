@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Plan your panel · BBR Button Board</title>
-<meta name="description" content="Plan your panel Lay out your panel before you print anything. Set the size of your openGrid board, then drag the cases onto it to see how many cells each one takes and what still f">
+<meta name="description" content="Plan your panel The planner needs JavaScript. Every case&#x27;s size in cells is in the table on Printing the cases.">
 <link rel="canonical" href="https://buttonboard.buildingblockrobotics.com/getting-started/layout.html">
 <link rel="icon" href="../favicon.ico" sizes="any">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
@@ -18,13 +18,13 @@
   } catch (e) {}
 </script>
 </head>
-<body class="page">
+<body class="page app">
 
 <a class="skip" href="#content">Skip to content</a>
 
 <header class="topbar">
   <button class="menu-btn" aria-label="Toggle navigation" aria-expanded="false">
-    <span></span><span></span><span></span>
+    <span class="bars"><span></span><span></span><span></span></span><span class="menu-label">Docs</span>
   </button>
   <a class="brand" href="../index.html">
     <span class="brand-name">BBR Button Board</span>
@@ -94,35 +94,12 @@
 
   <main id="content" class="content">
     <article class="prose">
-      <h1 id="plan-your-panel">Plan your panel<a class="headerlink" href="#plan-your-panel" title="Permanent link">#</a></h1>
-<p>Lay out your panel before you print anything. Set the size of your openGrid board, then drag the cases onto it to see how many cells each one takes and what still fits. The parts list underneath has the download for every case you used, and a link to make the board at your size.</p>
+      <!-- page: app -->
+<h1 id="plan-your-panel">Plan your panel<a class="headerlink" href="#plan-your-panel" title="Permanent link">#</a></h1>
 <div id="layout-planner"><p>The planner needs JavaScript. Every case's size in cells is in the table on <a href="cases.html">Printing the cases</a>.</p></div>
 
 <script type="module" src="../files/layout/layout.js"></script>
 
-<h2 id="using-it">Using it<a class="headerlink" href="#using-it" title="Permanent link">#</a></h2>
-<ul>
-<li><strong>Place a case:</strong> drag it from the list onto the grid. Or click it in the list, then click a cell.</li>
-<li><strong>Move it:</strong> drag it to another spot. A red outline means it doesn&rsquo;t fit there.</li>
-<li><strong>Turn it:</strong> select it and press <strong>R</strong>, or use <strong>Turn</strong>. Every case can go in any of the four directions, because the snaps underneath are square.</li>
-<li><strong>Remove it:</strong> drag it off the grid, or select it and press <strong>Delete</strong>.</li>
-<li><strong>Fill empty cells with blanks</strong> puts a blank cable tile in every free cell, so the panel reads as one surface.</li>
-<li><strong>Without a mouse:</strong> tab to a case in the list and press Enter, then use the arrow keys on the grid and Enter to place it.</li>
-</ul>
-<p>The layout is kept in the page address, so you can bookmark it or send the link to someone. The planner also remembers your last layout.</p>
-<h2 id="a-deck-for-the-low-profile-cases">A deck for the low-profile cases<a class="headerlink" href="#a-deck-for-the-low-profile-cases" title="Permanent link">#</a></h2>
-<p>The low-profile cases sit 10 mm tall on the desk, with no openGrid board under them. Each has small dovetail pockets in its underside, at the middle of its outside edges. Under the parts list, <strong>Low-profile cases: print a deck</strong> makes one plate for your layout that they all press onto:</p>
-<ul>
-<li>A 1.2 mm plate, with a stud standing on it under every pocket. Where two cases meet, their two studs make one bow-tie that holds both.</li>
-<li><strong>Deck covers</strong>: the whole board, at the size you set above (a 5 × 5 board makes a 140 mm square deck), or only the rectangle round your cases. Either way it is one piece; empty cells are plain plate.</li>
-<li>A <strong>drop</strong> cable tile gets an 11 mm hole in the deck, for a lead coming up from behind. Every other cable tile is a plain link block on the deck.</li>
-<li><strong>Cable trays along</strong> any edge: tick Top, Right, Bottom or Left and the deck grows 14 mm on that side, with a wall as tall as the cases and a lip leaning in over the deck. A lead that leaves a case at the edge goes down onto the deck, is pushed under the lip, runs along (round a corner, where two trays meet) and comes back up into the case it is going to. A tray is cut away in front of the main module&rsquo;s USB, and its ends are open, so a lead can leave the panel there.</li>
-<li><strong>A cover over the whole panel too</strong>: one 1.5 mm plate over the cases and the trays, open round each group of keys, each display and encoder, and the main module&rsquo;s light and CFG holes. It hides the lids, plugs and leads, and pulls straight off. Pegs under its edge press into holes the deck gets in its tray tops, so it needs trays on two sides at least, and the deck and cover are made together. An mx1 1x1 or a disp1, which stand taller than the rest, come up through it in an opening of their own. Print the cover top-down, as the STL lies. It also comes as a STEP, in millimetres, to open in CAD and add labels before you print; an STL carries no units, so CAD can import it at the wrong size.</li>
-<li>Set your printer&rsquo;s bed size first: the page only offers a deck that fits the bed. Print it flat, studs up. It needs no supports, trays included: their lips overhang at 45°.</li>
-<li><strong>No deck?</strong> The section also counts the padded keys and feet the layout takes instead. A padded key joins two cases on a small pad that reaches under both, so a case hanging off its neighbour doesn&rsquo;t lever the key out. A foot goes in every other pocket, so the panel stands level on the pads, 0.8 mm off the desk.</li>
-</ul>
-<p>Lay the cases out on the planner just as you will put them on the deck. Each case has pockets only where its wall is thick enough, and a case cannot sit flat over a stud it has no pocket for. So a deck fits the layout it was made for: the cases lift off and go back, but another case of the same size (an arc4 where an enc1 was) may not fit its studs.</p>
-<p>The studs are 0.1 mm smaller than the pockets on each side. That fit has not been tuned on a print yet: if the cases are loose or will not go on, tell us what printer and material you used.</p>
 <!-- The one-piece case is hidden for now (ONE_PIECE in files/layout/layout.js).
 
 ## Printing it as one piece
@@ -143,15 +120,6 @@ Choose the **back of the tray**:
 One piece takes longer to print and is lost whole if the print fails. Separate cases can be swapped and rearranged.
 
 -->
-
-<h2 id="what-it-checks">What it checks<a class="headerlink" href="#what-it-checks" title="Permanent link">#</a></h2>
-<ul>
-<li>A case has to sit entirely on the board, on cells nothing else uses.</li>
-<li>Every panel needs one <strong>main module</strong>. Two main modules make two separate panels.</li>
-<li>Every case&rsquo;s leads have a way out. The marks on each case&rsquo;s edges are where its leads leave: <strong>grey</strong> is a slot open through the lid, so a lead can rise out of it and cross over the top; <strong>green</strong> is a low exit with room beside it; <strong>red</strong> is a low exit blocked by the case or blank next to it. disp1, disp2 and the mx1 1x1 only have low exits, under their boards, so one of them boxed in on every exit side gets a warning. A free cell, a cable tile with a channel there, the board&rsquo;s edge, or a neighbour&rsquo;s own slot lined up with it all give a lead somewhere to go.</li>
-<li>The main module&rsquo;s USB end has room for the plug.</li>
-</ul>
-<p>It doesn&rsquo;t plan the whole run of each lead, or check that the chain reaches every tile in order. Plan that with the <a href="wiring.html">wiring guide</a>, and use the cable tiles for leads on the front, or the <a href="back-plate.html">back plate</a> for leads behind the board.</p>
     </article>
     <nav class="pager-row"><a class="pager prev" href="../getting-started/tiles.html"><span class="pager-label">Previous</span><span class="pager-title">The tiles</span></a><a class="pager next" href="../getting-started/opengrid-board.html"><span class="pager-label">Next</span><span class="pager-title">The openGrid board</span></a></nav>
     <footer class="page-footer">
@@ -160,15 +128,7 @@ One piece takes longer to print and is lost whole if the print fails. Separate c
   </main>
 
   <aside class="onpage" aria-label="On this page">
-    <p class="toc-title">On this page</p>
-<ul class="toc-list">
-<li><a href="#using-it">Using it</a>
-</li>
-<li><a href="#a-deck-for-the-low-profile-cases">A deck for the low-profile cases</a>
-</li>
-<li><a href="#what-it-checks">What it checks</a>
-</li>
-</ul>
+    
   </aside>
 </div>
 

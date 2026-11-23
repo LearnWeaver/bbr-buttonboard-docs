@@ -103,3 +103,42 @@ export function leadWarnings(layout, cat, parts, onePiece = false) {
     out.push(`The ${cat.get(p.it.id).name}'s USB end runs into ${p.into.join(' and ')}. Turn or move it so the plug has room.`);
   return out;
 }
+
+// Where a lead can run, for the 3D view: every pair of facing ports on two
+// neighbouring cases that share MIN_OVERLAP along their common wall (a slot
+// open through the lid included: the lead still runs through it), as
+// { a, b, side (a's), line, at, z }: the wall in grid mm (x for E/W, y for N/S),
+// the middle of the overlap along it, and the middle of the two openings'
+// shared height. And every other port, with where its lead goes:
+// 'top' (up through the lid), 'open' (a free cell beside it), 'edge' (off the
+// board), or 'blocked'.
+export function leadRoutes(layout, cat, parts) {
+  const P = parts.pitch, { ports } = leadCheck(layout, cat, parts);
+  const owner = new Map(), box = new Map();
+  for (const it of layout.items) {
+    const occ = cellsAt(cat.get(it.id), it.x, it.y, it.r).occ;
+    for (const [x, y] of occ) owner.set(`${x},${y}`, it);
+    const xs = occ.map((q) => q[0]), ys = occ.map((q) => q[1]);
+    box.set(it, { x0: Math.min(...xs), x1: Math.max(...xs) + 1, y0: Math.min(...ys), y1: Math.max(...ys) + 1 });
+  }
+  const lineOf = (p) => { const b = box.get(p.it); return { E: b.x1, W: b.x0, N: b.y0, S: b.y1 }[p.side] * P; };
+  const pairs = [], loose = [], paired = new Set();
+  for (const p of ports) {
+    if (p.usb) { loose.push({ port: p, kind: 'usb' }); continue; }
+    const line = lineOf(p);
+    const q = ports.find((o) => o !== p && o.it !== p.it && !o.usb && o.side === OPPOSITE[p.side] &&
+                                Math.abs(lineOf(o) - line) < 1e-6 && Math.min(p.a1, o.a1) - Math.max(p.a0, o.a0) >= MIN_OVERLAP);
+    if (q) {
+      if (!paired.has(q)) pairs.push({ a: p, b: q, side: p.side, line, at: (Math.max(p.a0, q.a0) + Math.min(p.a1, q.a1)) / 2,
+                                       z: (Math.max(p.z0, q.z0) + Math.min(p.z1, q.z1)) / 2 });
+      paired.add(p);
+      continue;
+    }
+    if (p.top) { loose.push({ port: p, kind: 'top' }); continue; }
+    const b = box.get(p.it), mid = (p.a0 + p.a1) / 2 / P;
+    const [cx, cy] = { E: [b.x1, Math.floor(mid)], W: [b.x0 - 1, Math.floor(mid)], N: [Math.floor(mid), b.y0 - 1], S: [Math.floor(mid), b.y1] }[p.side];
+    const off = cx < 0 || cy < 0 || cx >= layout.cols || cy >= layout.rows;
+    loose.push({ port: p, kind: off ? 'edge' : !owner.get(`${cx},${cy}`) ? 'open' : 'blocked' });
+  }
+  return { pairs, loose };
+}

@@ -9,14 +9,16 @@
 import { catalogue, cellsAt, shape, conflict, place, move, remove, freeCells, fillBlanks, partsList, warnings,
          encode, decode, MAX_CELLS } from './layout-model.js';
 import { footprint, sizeMm, heightMm, problems as onePieceProblems, build as buildOnePiece } from './onepiece-model.js';
-import { deckProblems, deckSize, keySites, pockets, buildDeck, trayGaps, TRAY_SIDES, buildCover, coverProblems, pegSites } from './deck-model.js';
+import { coverPlate, extent, deckProblems, deckSize, keySites, pockets, buildDeck, trayGaps, TRAY_SIDES, buildCover, coverProblems, pegSites } from './deck-model.js';
 import { useStyles, el, field, loadFailed, download, BED } from '../generators/ui.js';
 import { toStl, toStep } from '../generators/mesh.js';
-import { leadCheck, leadWarnings } from './leads.js';
+import { leadCheck, leadWarnings, leadRoutes } from './leads.js';
 import { standoffCount } from '../back-plate/backplate-mesh.js';
 
 const STORE = 'bb-layout';
 const BED_STORE = 'bb-bed';
+const VIEW_STORE = 'bb-view';     // { tab: 'build' | '2d' | 'labels' | 'leads', style: 'opengrid' | 'lowpro', xray }
+const TABS = [['build', 'Build'], ['2d', '2D plan'], ['labels', 'Labels'], ['leads', 'Leads']];
 // The one-piece case is hidden for now: the section under the parts list is
 // left off the page. Its data still loads, since the lead checks use it.
 // Set true, and restore the section in getting-started/layout.md, to bring it back.
@@ -28,7 +30,7 @@ const STEP = 'model/step';
 const STEP_NOTE = 'The STEP is the same part, lying the same way, in millimetres: open it in CAD to add labels. ' +
                   'Each flat area is one face to sketch on; round holes and pegs stay faceted.';
 // what the deck covers (deck-model.js COVERS; 'cases' is left off: it comes apart where cells are empty)
-const COVER = { board: 'The whole board', rect: 'Only the rectangle round the cases' };
+const COVER = { board: 'The whole board', rect: 'Just round the cases' };
 // the deck's cable trays (§86), by the edge of the board as drawn on the page
 const TRAY_NAMES = { N: 'Top', E: 'Right', S: 'Bottom', W: 'Left' };
 // the back of the one-piece tray (onepiece-model.js BACKS)
@@ -95,6 +97,93 @@ const CSS = `
 .lp-one { margin-top: 1.1rem; padding-top: .2rem; border-top: 1px solid var(--border); }
 .lp-one p { font-size: .85rem; margin: .3rem 0 .6rem; }
 .lp-one .gen-controls { max-width: 34rem; }
+.lp-seg { display: inline-flex; gap: 2px; padding: 3px; border-radius: 9px; background: var(--bg-subtle); border: 1px solid var(--border); }
+.gen .lp-seg button { border: 0; background: transparent; color: var(--text-muted); padding: .4rem .75rem; border-radius: 7px; font-size: .85rem; font-weight: 500; }
+.gen .lp-seg button[aria-pressed="true"] { background: var(--bg); color: var(--text); box-shadow: 0 1px 2px rgba(0,0,0,.12); }
+.lp-3d { position: relative; width: 100%; border-radius: 10px; overflow: hidden;
+         border: 1px solid var(--border-strong); background: #1b1e24; touch-action: none; user-select: none; }
+.lp-3d canvas { display: block; }
+.lp-3d:fullscreen { height: 100vh; border: 0; border-radius: 0; }
+.lp-3d-cam { position: absolute; top: .5rem; right: .5rem; display: flex; gap: 2px; padding: 2px; border-radius: 8px; background: #262a32; }
+.gen .lp-3d-cam button { border: 0; background: transparent; color: #d9dce2; padding: .35rem .6rem; border-radius: 6px; font-size: .8rem; }
+.gen .lp-3d-cam button:hover { background: #343944; }
+.lp-3d-hint { position: absolute; left: .5rem; bottom: .5rem; padding: .3rem .55rem; border-radius: 6px; background: #262a32;
+              color: #c9cdd4; font-size: .78rem; pointer-events: none; }
+.lp-3d-msg { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #c9cdd4; font-size: .9rem; }
+/* the planner as an app: header, then cases | view | details, filling the window under the site's top bar */
+.gen.lp-app { border: 0; border-radius: 0; padding: 0; margin: 0; background: var(--bg-subtle);
+              display: flex; flex-direction: column; height: calc(100vh - var(--topbar-h)); min-height: 600px; }
+.lp-head { display: flex; align-items: center; gap: .9rem 1.2rem; flex-wrap: wrap; padding: .6rem 1.1rem;
+           background: var(--bg); border-bottom: 1px solid var(--border); }
+.lp-title { display: flex; flex-direction: column; min-width: 0; }
+.prose .lp-title h2 { margin: 0; padding: 0; border: 0; font-size: 1.05rem; line-height: 1.3; }
+.lp-sub { font-size: .75rem; color: var(--text-muted); }
+.lp-gap { flex: 1; }
+.lp-tabs { display: flex; gap: 3px; flex-wrap: wrap; }
+.gen .lp-tabs button { border: 0; background: transparent; color: var(--text-muted); padding: .45rem .85rem; border-radius: 8px; font-size: .88rem; font-weight: 500; }
+.gen .lp-tabs button:hover { background: var(--bg-subtle); color: var(--text); }
+.gen .lp-tabs button[aria-current="page"] { background: var(--text); color: var(--bg); }
+.gen .lp-toggle { border: 1px solid var(--border-strong); background: var(--bg); color: var(--text); padding: .4rem .75rem;
+                  border-radius: 8px; font-size: .84rem; font-weight: 500; }
+.gen .lp-toggle:hover { border-color: var(--accent); }
+.gen .lp-toggle[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.lp-body { flex: 1; min-height: 0; display: grid; grid-template-columns: 15.5rem minmax(0, 1fr) 20rem; }
+.lp-left, .lp-right { overflow-y: auto; background: var(--bg); padding: .9rem .8rem; }
+.lp-left { border-right: 1px solid var(--border); }
+.lp-right { border-left: 1px solid var(--border); display: flex; flex-direction: column; gap: .75rem; }
+.prose .lp-app h3 { margin: 0 0 .45rem; padding: 0; font-size: .92rem; border: 0; }
+.prose .lp-app p { margin: 0 0 .5rem; }
+.lp-hint { font-size: .8rem; color: var(--text-muted); }
+.gen.lp-app .lp-palette { max-height: none; overflow: visible; padding: 0; }
+.lp-center { min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: .6rem; padding: .75rem 1rem; }
+.lp-tools { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+.gen .lp-size { display: inline-flex; flex-direction: row; align-items: center; gap: .35rem; font-size: .84rem; color: var(--text-muted); }
+.gen .lp-size input { width: 3.4rem; padding: .3rem .4rem; font-size: .88rem; }
+.lp-stage { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
+.lp-stage .lp-grid { margin: 0 auto; }
+.gen.lp-app .lp-3d { height: 100%; }
+.gen.lp-app .lp-status { margin: 0; min-height: 1.3rem; font-size: .82rem; }
+.lp-card { border: 1px solid var(--border); border-radius: 10px; padding: .75rem .8rem; background: var(--bg); }
+.lp-right > .lp-card:first-child { background: var(--bg-subtle); }
+.lp-chips { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .4rem; margin-bottom: .6rem; }
+.lp-chip { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: .35rem .55rem; font-size: .75rem; color: var(--text-muted); }
+.lp-chip b { display: block; color: var(--text); font-size: .85rem; font-weight: 600; }
+.lp-card .gen-buttons button { padding: .4rem .75rem; font-size: .84rem; }
+.lp-card ul { list-style: none; margin: 0; padding: 0; }
+.lp-card li { position: relative; padding: .15rem 0 .15rem 1rem; font-size: .82rem; line-height: 1.4; }
+.lp-warn::before, .lp-ok::before { content: ''; position: absolute; left: 0; top: .55rem; width: .5rem; height: .5rem; border-radius: 50%; }
+.lp-warn::before { background: var(--hint-warning-bd); } .lp-ok::before { background: var(--hint-success-bd); }
+.lp-legend li { padding-left: 0; display: flex; align-items: center; gap: .5rem; }
+.lp-swatch { width: .9rem; height: .55rem; border-radius: 2px; flex: none; }
+.lp-label-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .35rem; margin-bottom: .4rem; }
+.gen .lp-label-grid input { padding: .35rem .45rem; font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; font-weight: 600; }
+.lp-labels { display: flex; flex-direction: column; gap: .75rem; }
+.lp-parts { width: 100%; border-collapse: collapse; font-size: .8rem; }
+.prose .lp-parts td { padding: .3rem .2rem; border: 0; border-bottom: 1px solid var(--border); background: none; }
+.prose .lp-parts td:nth-child(2) { color: var(--text-muted); white-space: nowrap; }
+.prose .lp-parts td:last-child { text-align: right; }
+.lp-more { margin-top: .7rem; font-size: .82rem; }
+.lp-more summary { cursor: pointer; font-weight: 600; }
+.lp-more[open] summary { margin-bottom: .5rem; }
+.lp-form { display: flex; flex-direction: column; gap: .45rem; margin-bottom: .6rem; }
+.lp-row { display: grid; grid-template-columns: 3.4rem minmax(0, 1fr); align-items: center; gap: .5rem; }
+.lp-row-k { color: var(--text-muted); }
+.lp-row-stack { grid-template-columns: 1fr; gap: .25rem; }
+.lp-row-v { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .6rem; min-width: 0; }
+.gen .lp-row-v input[type=number] { width: 4.2rem; padding: .3rem .4rem; font-size: .84rem; }
+.gen .lp-row-v select { width: 100%; padding: .3rem .4rem; font-size: .84rem; }
+.gen .lp-check { display: inline-flex; flex-direction: row; align-items: center; gap: .3rem; font-size: .82rem; color: var(--text); }
+.gen .lp-check input { width: auto; margin: 0; }
+.lp-deck-facts { margin-bottom: .5rem !important; }
+.lp-more .gen-buttons button { padding: .4rem .7rem; font-size: .82rem; }
+@media (max-width: 1100px) {
+  .gen.lp-app { height: auto; }
+  .lp-body { grid-template-columns: 1fr; }
+  .lp-left .lp-palette { display: flex; gap: .4rem; overflow-x: auto; }
+  .lp-left .lp-palette h4 { display: none; }
+  .gen .lp-left .lp-item { width: auto; flex: none; }
+  .gen.lp-app .lp-3d { height: 60vh; }
+}
 .gen .lp-one select { font: inherit; font-size: .95rem; color: var(--text); background: var(--bg);
                       border: 1px solid var(--border-strong); border-radius: 6px; padding: .4rem .5rem; width: 100%; }
 .lp-one .gen-buttons { margin-top: .6rem; }
@@ -177,13 +266,100 @@ async function mount(root) {
   const cursor = { x: 0, y: 0 };   // where the keyboard places a case picked from the list
 
   // ---- skeleton
-  const cols = field('Columns (cells)', { min: 1, max: MAX_CELLS, step: 1, value: L.cols });
-  const rows = field('Rows (cells)', { min: 1, max: MAX_CELLS, step: 1, value: L.rows });
-  const bFill = el('button', { type: 'button', class: 'secondary' }, 'Fill empty cells with blanks');
-  const bClear = el('button', { type: 'button', class: 'secondary' }, 'Clear');
+  const num = (label, value) => { const input = el('input', { type: 'number', min: 1, max: MAX_CELLS, step: 1, value, 'aria-label': label }); return { input }; };
+  const cols = num('Board columns', L.cols), rows = num('Board rows', L.rows);
+  const bFill = el('button', { type: 'button', class: 'lp-toggle', title: 'Put a blank cable tile in every free cell' }, 'Fill with blanks');
+  const bClear = el('button', { type: 'button', class: 'lp-toggle' }, 'Clear');
   const palette = el('div', { class: 'lp-palette', role: 'list', 'aria-label': 'Cases' });
   const grid = el('div', { class: 'lp-grid', role: 'application', 'aria-label': 'Panel grid', tabindex: '0' });
   const status = el('div', { class: 'lp-status', 'aria-live': 'polite' });
+  const labelSec = el('div', { class: 'lp-labels', hidden: '' });
+  // the 3D view (view3d.js), loaded the first time it is asked for; the layout and its rules stay here
+  let view = { tab: 'build', style: 'opengrid', xray: false, showCover: true };
+  try {
+    const v = JSON.parse(localStorage.getItem(VIEW_STORE));
+    if (v) view = { ...view, ...v, tab: TABS.some(([k]) => k === v.tab) ? v.tab : v.mode === '2d' ? '2d' : 'build' };
+  } catch { /* none kept */ }
+  let v3 = null, v3Loading = null;
+  // the case models and the label font, shared by the 3D view and the key labels; loaded when first needed
+  let kitP = null;
+  const loadKit = () => (kitP ??= Promise.all([
+    import('./view3d.js').then((m) => m.loadModels()), import('../vendor/three/FontLoader.js'), import('./labels.js'),
+    fetch(new URL('../vendor/three/droid_sans_bold_labels.typeface.json', import.meta.url)).then((r) => { if (!r.ok) throw new Error('could not load the label font'); return r.json(); }),
+  ]).then(([models, { Font }, labels, fj]) => ({ models, font: new Font(fj), labels })));
+  const inset = onePiece.rim + onePiece.lid_clr;      // case outline to the lid's visible edge (mm_case RIM + LID_CLR)
+  const is3d = () => view.tab !== '2d' && v3;
+  const leadsOn = () => view.tab === 'leads';
+  // the cover over the panel in 3D: the key labels are on it then, not on the lids under it
+  const coverOn = () => view.style === 'lowpro' && view.tab === 'build' && view.showCover && lidBox?.checked;
+  const box3d = el('div', { class: 'lp-3d', role: 'application', 'aria-label': 'Panel in 3D: drag to turn the view', tabindex: '0' });
+  const hint3d = el('div', { class: 'lp-3d-hint' });
+  const seg = (label, items, cur, pick) => {
+    const g = el('div', { class: 'lp-seg', role: 'group', 'aria-label': label });
+    for (const [k, text] of items) {
+      const b = el('button', { type: 'button', 'aria-pressed': String(k === cur()) }, text);
+      b.addEventListener('click', () => { pick(k); for (const o of g.children) o.setAttribute('aria-pressed', String(o === b)); });
+      g.append(b);
+    }
+    return g;
+  };
+  const keepView = () => { try { localStorage.setItem(VIEW_STORE, JSON.stringify(view)); } catch { /* storage blocked */ } };
+  const styleSeg = seg('Case style', [['opengrid', 'openGrid'], ['lowpro', 'Low profile']], () => view.style, (k) => { view.style = k; keepView(); labelUid = null; render(); });
+  const tabBar = el('nav', { class: 'lp-tabs', 'aria-label': 'Planner views' });
+  for (const [k, text] of TABS) {
+    const b = el('button', { type: 'button', 'data-tab': k }, text);
+    b.addEventListener('click', () => { view.tab = k; keepView(); labelUid = null; showView(); });
+    tabBar.append(b);
+  }
+  const xrayBtn = el('button', { type: 'button', class: 'lp-toggle', 'aria-pressed': String(view.xray) }, 'X-ray');
+  const coverBtn = el('button', { type: 'button', class: 'lp-toggle', 'aria-pressed': String(view.showCover), title: 'Show the cover over the panel' }, 'Cover');
+  coverBtn.addEventListener('click', () => { view.showCover = !view.showCover; coverBtn.setAttribute('aria-pressed', String(view.showCover)); keepView(); render(); });
+  xrayBtn.addEventListener('click', () => { view.xray = !view.xray; xrayBtn.setAttribute('aria-pressed', String(view.xray)); keepView(); render(); });
+  // the low-profile cases' ports, from the model data, in the shape leads.js reads (one-piece/parts.json's);
+  // a link block has no port data of its own, and stands in for the cable tile whose windows it copies
+  const lpParts = () => {
+    const cases = {};
+    for (const [id, c] of Object.entries(v3models.index.cases.lowpro))
+      cases[id] = { ports: c.ports || v3models.index.cases.opengrid[id]?.ports || onePiece.cases[id]?.ports };
+    return { pitch: onePiece.pitch, seam: 8.5, cases };
+  };
+  let v3models = null;
+  const routes = () => (leadsOn() && v3models ? leadRoutes(L, cat, view.style === 'lowpro' ? lpParts() : onePiece) : null);
+  const cam = el('div', { class: 'lp-3d-cam', role: 'group', 'aria-label': 'Camera' });
+  for (const [k, text] of [['iso', '3D'], ['top', 'Top'], ['front', 'Front']]) {
+    const b = el('button', { type: 'button' }, text);
+    b.addEventListener('click', () => v3?.view(k));
+    cam.append(b);
+  }
+  if (box3d.requestFullscreen) {
+    const b = el('button', { type: 'button' }, 'Full screen');
+    b.addEventListener('click', () => (document.fullscreenElement ? document.exitFullscreen() : box3d.requestFullscreen()));
+    cam.append(b);
+  }
+  box3d.append(cam);
+  async function showView() {
+    const three = view.tab !== '2d';
+    grid.hidden = three;
+    box3d.hidden = !three;
+    xrayBtn.hidden = view.tab !== 'build';
+    for (const b of tabBar.children) b.setAttribute('aria-current', b.dataset.tab === view.tab ? 'page' : 'false');
+    if (three && !v3) {
+      if (!v3Loading) {
+        const msg = el('div', { class: 'lp-3d-msg' }, 'Loading the case models…');
+        box3d.append(msg);
+        v3Loading = Promise.all([import('./view3d.js'), loadKit()])
+          .then(([m, kit]) => {
+            v3models = kit.models;
+            v3 = m.createView(box3d, { ...kit.models, cat, boardT: gridParams.thickness, deckT: deckData.deck_t, font: kit.font, inset });
+            box3d.prepend(v3.canvas);
+            msg.remove();
+          })
+          .catch((e) => { msg.textContent = `The 3D view did not load (${e.message}). The 2D view still works.`; });
+      }
+      await v3Loading;
+    }
+    render();
+  }
   const facts = el('ul', { class: 'gen-facts', 'aria-live': 'polite' });
   const parts = el('div');
   // the one-piece case: the bed it has to fit, and the build, kept until the layout or the bed changes
@@ -226,34 +402,48 @@ async function mount(root) {
   }
   const trayBoxes = Object.fromEntries(TRAY_SIDES.map((t) => [t, el('input', { type: 'checkbox' })]));
   for (const t of TRAY_SIDES) trayBoxes[t].checked = trays0.includes(t);
-  const trayField = el('fieldset', { class: 'lp-trays', style: 'border:0;padding:0;margin:0' },
-    el('legend', {}, 'Cable trays along'),
-    ...TRAY_SIDES.map((t) => el('label', { style: 'margin-right:.8rem' }, trayBoxes[t], ` ${TRAY_NAMES[t]}`)));
   const lidBox = el('input', { type: 'checkbox' });
   lidBox.checked = lid0;
-  const lidField = el('label', { style: 'display:block;margin:.4rem 0' }, lidBox,
-    ' A cover over the whole panel too, held by pegs in the trays');
-  const deckFacts = el('ul', { class: 'gen-facts', 'aria-live': 'polite' });
+  const deckFacts = el('ul', { class: 'lp-deck-facts', 'aria-live': 'polite' });
+  const coverNotes = el('ul', { class: 'lp-deck-facts', 'aria-live': 'polite' });
   const bDeck = el('button', { type: 'button' }, 'Make the deck');
   const deckButtons = el('div', { class: 'gen-buttons' }, bDeck);
-  const deckSec = el('div', { class: 'lp-one' },
-    el('h4', { style: 'margin:.9rem 0 .2rem' }, 'Low-profile cases: print a deck'),
-    el('p', {}, 'For the low-profile cases, which have no openGrid snaps: a 1.2 mm plate cut to this layout, with a ' +
-                'stud standing on it under every link pocket, so each case presses onto it and the panel is one stiff ' +
-                'piece. It fits this layout: a case only sits flat where it has a pocket over every stud. A drop cable tile gets a hole for its lead.'),
-    el('p', {}, 'Cable trays: tick an edge and the deck grows half a cell there, with a wall as tall as the cases and a lip ' +
-                'leaning over the deck. Leads run on the deck under the lip, round corners, and come up into the cases. ' +
-                'The tray is cut away in front of the main module\'s USB.'),
-    el('p', {}, 'Cover: one plate over the cases and the trays, open round every group of keys, every display and ' +
-                'encoder, and the main module\'s light and CFG holes, so it hides the lids, plugs and leads. It lifts ' +
-                'straight off. The deck gets a hole in the tray tops for each of its pegs, so make the two together.'),
-    el('div', { class: 'gen-controls' }, bedX.node, bedY.node, el('label', {}, 'Deck covers', coverSel)), trayField, lidField, deckFacts, deckButtons);
+  for (const f of [bedX, bedY]) f.input.setAttribute('aria-label', f === bedX ? 'Printer bed width, mm' : 'Printer bed depth, mm');
+  const row = (label, ...kids) => el('div', { class: 'lp-row' }, el('span', { class: 'lp-row-k' }, label), el('div', { class: 'lp-row-v' }, ...kids));
+  const deckSec = el('details', { class: 'lp-more' },
+    el('summary', {}, 'Deck, trays and cover'),
+    el('div', { class: 'lp-form' },
+      el('div', { class: 'lp-row lp-row-stack' }, el('span', { class: 'lp-row-k' }, '3D printer bed size'),
+         el('div', { class: 'lp-row-v' }, bedX.input, el('span', {}, '×'), bedY.input, el('span', {}, 'mm'))),
+      row('Deck', coverSel),
+      row('Trays', ...TRAY_SIDES.map((t) => el('label', { class: 'lp-check' }, trayBoxes[t], TRAY_NAMES[t]))),
+      row('Cover', el('label', { class: 'lp-check' }, lidBox, 'Over the whole panel'))),
+    deckFacts, coverNotes, deckButtons);
   let deckBuilt = null;       // { key, mesh, pockets, cover }
+  const sub = el('span', { class: 'lp-sub' });
+  const bCopy = el('button', { type: 'button', class: 'lp-toggle' }, 'Copy link');
+  bCopy.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(location.href); flash('Link copied: it opens this layout, labels and all.'); }
+    catch { flash('Copy the address bar: it holds this layout.'); }
+  });
+  const selCard = el('section', { class: 'lp-card', 'aria-live': 'polite' });
+  const leadsCard = el('section', { class: 'lp-card' });
+  const checks = el('section', { class: 'lp-card' }, el('h3', {}, 'Checks'), facts);
+  const printCard = el('section', { class: 'lp-card' }, el('h3', {}, 'Print files'), parts, ...(DECK ? [deckSec] : []), ...(ONE_PIECE ? [one] : []));
+  const stage = el('div', { class: 'lp-stage' }, grid, box3d);
   root.textContent = '';
-  root.className = 'gen';
-  root.append(el('div', { class: 'gen-controls' }, cols.node, rows.node),
-              el('div', { class: 'gen-buttons', style: 'margin-top:.6rem' }, bFill, bClear),
-              el('div', { class: 'lp' }, palette, el('div', { class: 'lp-board' }, grid, status, facts, parts, ...(DECK ? [deckSec] : []), ...(ONE_PIECE ? [one] : []))));
+  root.className = 'gen lp-app';
+  root.append(
+    el('div', { class: 'lp-head' },
+       el('div', { class: 'lp-title' }, el('h2', {}, 'Plan your panel'), sub),
+       tabBar, el('div', { class: 'lp-gap' }), styleSeg, bCopy),
+    el('div', { class: 'lp-body' },
+       el('aside', { class: 'lp-left', 'aria-label': 'Cases' }, el('h3', {}, 'Cases'), el('p', { class: 'lp-hint' }, 'Drag one onto the board.'), palette),
+       el('div', { class: 'lp-center' },
+          el('div', { class: 'lp-tools' },
+             el('label', { class: 'lp-size' }, 'Board', cols.input, '×', rows.input), bFill, bClear, el('div', { class: 'lp-gap' }), coverBtn, xrayBtn),
+          stage, status),
+       el('aside', { class: 'lp-right', 'aria-label': 'Details' }, selCard, labelSec, leadsCard, checks, printCard)));
 
   for (const g of groups) {
     palette.append(el('h4', {}, g.name));
@@ -272,6 +462,7 @@ async function mount(root) {
   const pct = (v, n) => `${(100 * v) / n}%`;
   const box = (e, x, y, w, h) => Object.assign(e.style, { left: pct(x, L.cols), top: pct(y, L.rows), width: pct(w, L.cols), height: pct(h, L.rows) });
   const cellAt = (cx, cy) => {
+    if (is3d()) return v3.cellAt(cx, cy);
     const rc = grid.getBoundingClientRect(), s = rc.width / L.cols;
     return { x: Math.floor((cx - rc.left) / s), y: Math.floor((cy - rc.top) / s),
              inside: cx >= rc.left - s / 2 && cx <= rc.right + s / 2 && cy >= rc.top - s / 2 && cy <= rc.bottom + s / 2 };
@@ -310,7 +501,7 @@ async function mount(root) {
   // ---- render
   function render() {
     grid.style.aspectRatio = `${L.cols} / ${L.rows}`;
-    grid.style.maxWidth = `${L.cols * 76}px`;
+    grid.style.width = `min(100%, ${L.cols * 76}px, calc((100vh - 15rem) * ${L.cols / L.rows}))`;
     grid.style.backgroundSize = `${100 / L.cols}% ${100 / L.rows}%`;
     grid.textContent = '';
     const leads = leadCheck(L, cat, onePiece);
@@ -331,57 +522,75 @@ async function mount(root) {
     for (const b of palette.querySelectorAll('.lp-item'))
       b.setAttribute('aria-pressed', String(sel?.kind === 'palette' && sel.id === b.dataset.id));
     renderStatus();
+    renderLabels();
+    renderLeads();
+    deckSec.hidden = view.style !== 'lowpro';
     renderFacts();
     renderOnePiece();
     renderDeck();
+    if (is3d()) {
+      v3.update(L, { sel: sel?.kind === 'piece' ? sel.uid : null, style: view.style, xray: view.tab === 'build' && view.xray, routes: routes(), lidLabels: !coverOn() });
+      hint3d.textContent = sel?.kind === 'palette' ? 'Green fits. Click to drop, R turns it.'
+        : sel?.kind === 'piece' ? 'Drag to move, off the board to remove. R turns.'
+        : 'Drag to orbit · right-drag to pan · scroll to zoom';
+    }
   }
 
+  // the one-line hint under the view, and the card at the top of the right-hand panel
   function renderStatus() {
-    status.textContent = '';
+    status.textContent = sel?.kind === 'palette' ? 'Click a free slot to drop it. R turns it, Esc puts it back.'
+      : sel?.kind === 'piece' ? 'Arrow keys move it, R turns it, Delete removes it.'
+      : 'Drag a case from the list onto the board, or click one and then a slot.';
+    selCard.textContent = '';
     if (sel?.kind === 'palette') {
       const m = cat.get(sel.id);
-      status.append(`${m.name}: click a cell to place it (or arrow keys and Enter). `,
-                    btn('Turn (R)', () => { sel.r = (sel.r + 1) % 4; renderStatus(); }),
-                    btn('Cancel (Esc)', () => { sel = null; hidePreview(); render(); }));
+      selCard.append(el('h3', {}, `Placing ${m.name}`), el('div', { class: 'lp-chips' }, chip('Size', `${m.w} × ${m.h} cells`)),
+                     el('div', { class: 'gen-buttons' }, btn('Turn', () => { sel.r = (sel.r + 1) % 4; renderStatus(); }),
+                                                         btn('Put it back', () => { sel = null; hidePreview(); render(); })));
     } else if (sel?.kind === 'piece') {
       const it = L.items.find((i) => i.uid === sel.uid);
       if (!it) { sel = null; return renderStatus(); }
-      status.append(`${cat.get(it.id).name} selected. Arrow keys move it. `,
-                    btn('Turn (R)', () => turnSelected()), btn('Remove (Del)', () => { remove(L, it.uid); sel = null; changed(); }));
+      const m = cat.get(it.id), s2 = shape(m, it.r);
+      selCard.append(el('h3', {}, m.name),
+                     el('div', { class: 'lp-chips' }, chip('Slot', `col ${it.x + 1}, row ${it.y + 1}`), chip('Size', `${s2.w * 28} × ${s2.h * 28} mm`)),
+                     el('div', { class: 'gen-buttons' }, btn('Turn 90°', () => turnSelected()), btn('Remove', () => { remove(L, it.uid); sel = null; changed(); })));
     } else {
-      status.append('Drag a case onto the grid, or pick one and click a cell.');
+      const free = freeCells(L, cat).length;
+      selCard.append(el('h3', {}, 'Your panel'),
+                     el('div', { class: 'lp-chips' }, chip('Cases', String(L.items.length)), chip('Free cells', String(free))),
+                     el('p', { class: 'lp-hint' }, 'Click a case to select it.'));
     }
+    sub.textContent = `${L.cols} × ${L.rows} cells · ${L.cols * 28} × ${L.rows * 28} mm · ${view.style === 'lowpro' ? 'low profile, on a deck' : 'openGrid, on the board'}`;
   }
+  const chip = (k, v) => el('div', { class: 'lp-chip' }, el('span', {}, k), el('b', {}, v));
   const btn = (label, fn) => { const b = el('button', { type: 'button', class: 'secondary' }, label); b.addEventListener('click', fn); return b; };
 
   function renderFacts() {
     facts.textContent = '';
-    const free = freeCells(L, cat).length, total = L.cols * L.rows;
-    facts.append(el('li', {}, `${total - free} of ${total} cells taken, ${free} free.`));
-    for (const w of warnings(L, cat)) facts.append(el('li', { class: 'gen-warn' }, w));
-    for (const w of leadWarnings(L, cat, onePiece)) facts.append(el('li', { class: 'gen-warn' }, w));
+    const warns = [...warnings(L, cat), ...leadWarnings(L, cat, onePiece)];
+    for (const w of warns) facts.append(el('li', { class: 'lp-warn' }, w));
+    if (!warns.length) facts.append(el('li', { class: 'lp-ok' }, L.items.length ? 'Everything fits, and every case\'s leads have somewhere to go.' : 'Nothing placed yet.'));
     parts.textContent = '';
     const { parts: list } = partsList(L, cat);
     if (!list.length) return;
     const t = el('table', { class: 'lp-parts' });
-    t.append(el('tr', {}, el('th', {}, 'Print'), el('th', {}, 'Count'), el('th', {}, 'Download')));
-    const shown = new Set();
+    const shown = new Set(), lp = view.style === 'lowpro';
     for (const m of list) {
-      const dl = !m.zip ? el('span', { class: 'gen-warn', title: m.nocase }, 'not designed yet')
-               : shown.has(m.zip) ? el('span', {}, 'same zip') : el('a', { href: zipUrl(m.zip), download: '' }, `case-${m.zip}.zip`);
-      shown.add(m.zip);
-      t.append(el('tr', {}, el('td', {}, m.group === 'Cable tiles' ? `Cable tile, ${m.name.toLowerCase()}` : `${m.name} case`),
-                  el('td', {}, String(m.count)), el('td', {}, dl)));
+      const dl = lp ? ''
+               : !m.zip ? el('span', { class: 'lp-hint', title: m.nocase }, 'not yet')
+               : shown.has(m.zip) ? el('span', { class: 'lp-hint' }, 'above') : el('a', { href: zipUrl(m.zip), download: '' }, 'zip');
+      if (m.zip) shown.add(m.zip);
+      t.append(el('tr', {}, el('td', {}, m.group === 'Cable tiles' ? `${m.name} tile` : m.name), el('td', {}, `× ${m.count}`), el('td', {}, dl)));
     }
-    t.append(el('tr', {}, el('td', {}, `openGrid board, ${L.cols} × ${L.rows}`), el('td', {}, '1'),
-                el('td', {}, el('a', { href: `opengrid-board.html?cols=${L.cols}&rows=${L.rows}` }, 'make it'))));
-    // the back plate is optional: it holds the cables behind the board, on standoffs that snap into its back
-    const plateLink = () => el('a', { href: `back-plate.html?cols=${L.cols}&rows=${L.rows}` }, 'make it');
-    t.append(el('tr', {}, el('td', {}, `Back plate, ${L.cols} × ${L.rows} (optional, holds the cables behind)`), el('td', {}, '1'),
-                el('td', {}, plateLink())));
-    t.append(el('tr', {}, el('td', {}, 'Back plate standoffs (with the back plate)'),
-                el('td', {}, String(standoffCount(L.cols, L.rows))), el('td', {}, plateLink())));
-    parts.append(el('h4', { style: 'margin:.9rem 0 .2rem' }, 'Parts to print'), t);
+    if (!lp) {
+      t.append(el('tr', {}, el('td', {}, `openGrid board ${L.cols} × ${L.rows}`), el('td', {}, '× 1'),
+                  el('td', {}, el('a', { href: `opengrid-board.html?cols=${L.cols}&rows=${L.rows}` }, 'make'))));
+      // the back plate is optional: it holds the cables behind the board, on standoffs that snap into its back
+      t.append(el('tr', {}, el('td', { title: 'Optional: holds the cables behind the board' }, 'Back plate (optional)'), el('td', {}, `+ ${standoffCount(L.cols, L.rows)} standoffs`),
+                  el('td', {}, el('a', { href: `back-plate.html?cols=${L.cols}&rows=${L.rows}` }, 'make'))));
+    }
+    parts.append(t);
+    if (lp) parts.append(el('p', { class: 'lp-hint', style: 'margin-top:.5rem' }, 'The low-profile case files are not on the site yet; the openGrid ones are.'));
   }
 
   const bed = () => ({ x: Math.round(+bedX.input.value), y: Math.round(+bedY.input.value) });
@@ -442,7 +651,44 @@ async function mount(root) {
   const trays = () => TRAY_SIDES.filter((t) => trayBoxes[t].checked).join('');
   const lid = () => lidBox.checked;
   const deckKey = () => `${encode(L)}|${bed().x}x${bed().y}|${cover()}|${trays()}|${lid()}`;
+  // the low-profile deck in 3D: the planner's own deck (deck-model.js) with its trays, and the cover when ticked
+  let manifoldP = null, deck3dKey = '';
+  const manifold = () => (manifoldP ??= import('../vendor/manifold-3d/manifold.js').then(async ({ default: Module }) => {
+    const M = await Module(); M.setup(); return M;
+  }));
+  // the key labels on the cover (cover-labels.js): where each goes, and the ones with no room
+  async function coverLabels(M, cv, tr) {
+    const [kit, { placeCoverLabels }] = await Promise.all([loadKit(), import('./cover-labels.js')]);
+    const plate = coverPlate(M, L, cat, deckData, cv, tr);
+    const r = placeCoverLabels(M, kit.font, plate);
+    coverNotes.textContent = '';
+    for (const x of r.refused) coverNotes.append(el('li', { class: 'lp-warn' }, `Cover: no room for "${x.text}". Shorten it.`));
+    return { ...r, top: plate.z0 + plate.t, font: kit.font };
+  }
+  async function deck3d() {
+    const lp = view.style === 'lowpro';
+    coverBtn.hidden = !(lp && lid() && view.tab === 'build');
+    if (!is3d()) return;
+    if (!lp || !L.items.length) { if (deck3dKey) { deck3dKey = ''; v3.setDeck(null); } return; }
+    const cv = cover(), tr = cv === 'cases' ? '' : trays();
+    const withCover = lid() && view.showCover && view.tab === 'build' && !coverProblems(L, cat, deckData, cv, tr).length;
+    const key = `${encode(L)}|${cv}|${tr}|${withCover}|${view.tab}`;
+    if (key === deck3dKey) return;
+    deck3dKey = key;
+    try {
+      const M = await manifold();
+      if (key !== deck3dKey) return;
+      const d = buildDeck(M, L, cat, deckData, cv, tr, withCover);
+      const c = withCover ? buildCover(M, L, cat, deckData, cv, tr, false) : null;
+      const cl = withCover ? await coverLabels(M, cv, tr) : null;
+      if (key !== deck3dKey) return;
+      const fp = extent(L, cat, cv), P = deckData.pitch;
+      v3.setDeck({ deck: d.mesh, cover: c?.mesh || null, labels: cl?.placed || [], top: cl?.top,
+                   ox: (fp.x0 + fp.cols / 2) * P - (L.cols * P) / 2, oz: (fp.y0 + fp.rows / 2) * P - (L.rows * P) / 2 });
+    } catch { v3.setDeck(null); }
+  }
   function renderDeck() {
+    deck3d();
     deckFacts.textContent = '';
     deckButtons.textContent = '';
     deckButtons.append(bDeck);
@@ -453,32 +699,26 @@ async function mount(root) {
     if (bad.length) return;
     const s = deckSize(L, cat, deckData, cover(), trays()), keys = keySites(L, cat, deckData).length;
     const tall = +(deckData.deck_t + deckData.link.h).toFixed(1);
-    deckFacts.append(el('li', {}, `${s.cols} × ${s.rows} cells, one piece: ${s.w} × ${s.h} mm, ${deckData.deck_t} mm thick, ` +
-                                  `${tall} mm over the studs. Fits your bed.`),
-                     ...(trays() ? [el('li', {}, `Cable trays along the ${[...trays()].map((t) => TRAY_NAMES[t].toLowerCase()).join(', ')}: ` +
-                                    `${+(deckData.deck_t + deckData.tray.h).toFixed(1)} mm tall, level with the cases` +
-                                    (trayGaps(L, cat, deckData, trays()).length ? ', cut away in front of the USB.' : '.'))] : []),
-                     ...(lid() ? [el('li', {}, `A cover, ${deckData.cover.t} mm, over the whole deck, with ` +
-                                    `${pegSites(L, cat, deckData, cover(), trays()).length} pegs into the trays. ` +
-                                    'It sits 1.5 mm above the cases; the keys, displays and encoders come through it.')] : []),
-                     el('li', {}, `${keys} place${keys === 1 ? '' : 's'} where two cases key together across a joint.`));
+    void tall;
+    deckFacts.append(el('li', { class: 'lp-ok' }, `${s.w} × ${s.h} mm, fits your bed`),
+                     ...(trays() ? [el('li', {}, `Trays ${[...trays()].map((t) => TRAY_NAMES[t].toLowerCase()).join(', ')}` +
+                                    (trayGaps(L, cat, deckData, trays()).length ? ', cut for the USB' : ''))] : []),
+                     ...(lid() ? [el('li', {}, `Cover with ${pegSites(L, cat, deckData, cover(), trays()).length} pegs`)] : []));
     const feet = pockets(L, cat, deckData).length - 2 * keys;
     // without a deck: a padded key across every joint and a foot in every other pocket (lowpro.py)
-    deckFacts.append(el('li', {}, `Or no deck: ${keys} padded key${keys === 1 ? '' : 's'} and ${feet} ${feet === 1 ? 'foot' : 'feet'}, ` +
-                                  `which stand the panel ${deckData.pad_t} mm off the desk.`));
+    deckFacts.append(el('li', { class: 'lp-hint' }, `No deck? ${keys} padded key${keys === 1 ? '' : 's'} and ${feet} ${feet === 1 ? 'foot' : 'feet'} instead.`));
     if (deckBuilt?.key === deckKey()) {
       const name = `lowpro-deck-${s.cols}x${s.rows}${trays() ? `-trays-${trays().toLowerCase()}` : ''}`;
       deckButtons.textContent = '';
       deckButtons.append(btnMain('Download deck STL', () => download(toStl(deckBuilt.mesh, name), `${name}.stl`)));
       if (deckBuilt.cover) {
         const cname = name.replace('lowpro-deck', 'lowpro-cover');
-        deckButtons.append(btnMain('Download cover STL', () => download(toStl(deckBuilt.cover, cname), `${cname}.stl`)),
-                           btn('Download cover STEP', () => download(toStep(deckBuilt.cover, cname), `${cname}.step`, STEP)));
+        const text = deckBuilt.text, both = (fn) => () => { fn(deckBuilt.cover, cname); if (text) setTimeout(() => fn(text, `${cname}-text`), 300); };
+        deckButtons.append(btnMain(text ? 'Cover + labels STL' : 'Cover STL', both((m, n) => download(toStl(m, n), `${n}.stl`))),
+                           btn(text ? 'Cover + labels STEP' : 'Cover STEP', both((m, n) => download(toStep(m, n), `${n}.step`, STEP))));
       }
-      deckFacts.append(el('li', {}, `${deckBuilt.pockets} studs. Print it flat, studs up, no supports` +
-                                    `${trays() ? ': the trays\' lips overhang at 45°' : ''}.`));
-      if (deckBuilt.cover) deckFacts.append(el('li', {}, 'Print the cover top-down, as the STL lies: flat, pegs up, no supports.'),
-                                            el('li', {}, STEP_NOTE));
+      deckFacts.append(el('li', { class: 'lp-hint' }, deckBuilt.text ? 'Print flat as the STLs lie. Load the cover and its labels as one object, the labels in a second filament.'
+                                                                     : 'Print flat as the STLs lie, no supports.'));
     }
   }
   bDeck.addEventListener('click', async () => {
@@ -491,9 +731,14 @@ async function mount(root) {
       M.setup();
       const r = buildDeck(M, L, cat, deckData, cover(), trays(), lid());
       if (r.status !== 'NoError') throw new Error(r.status);
-      const c = lid() ? buildCover(M, L, cat, deckData, cover(), trays()) : null;
+      let letters = null;
+      if (lid() && L.items.some((it) => it.labels?.some((t) => t))) {
+        const [cl, THREE, { lettersSolid }] = await Promise.all([coverLabels(M, cover(), trays()), import('../vendor/three/three.module.min.js'), import('./label-export.js')]);
+        letters = lettersSolid(M, THREE, cl.font, cl.placed, cl.top);
+      }
+      const c = lid() ? buildCover(M, L, cat, deckData, cover(), trays(), true, letters) : null;
       if (c && c.status !== 'NoError') throw new Error(`cover: ${c.status}`);
-      if (key === deckKey()) deckBuilt = { key, mesh: r.mesh, pockets: r.pockets, cover: c?.mesh };
+      if (key === deckKey()) deckBuilt = { key, mesh: r.mesh, pockets: r.pockets, cover: c?.mesh, text: c?.text };
     } catch (e) {
       deckFacts.append(el('li', { class: 'gen-bad' }, `The deck did not build (${e.message}).`));
       bDeck.textContent = 'Make the deck';
@@ -505,8 +750,7 @@ async function mount(root) {
   });
   const keep = () => {
     try { localStorage.setItem(BED_STORE, JSON.stringify({ ...bed(), back: back(), cover: cover(), trays: trays(), lid: lid() })); } catch { /* storage blocked */ }
-    renderOnePiece();
-    renderDeck();
+    render();          // the deck, the cover and whose labels show in 3D follow
   };
   for (const f of [bedX, bedY]) f.input.addEventListener('input', keep);
   backSel.addEventListener('change', keep);
@@ -515,10 +759,124 @@ async function mount(root) {
   lidBox.addEventListener('change', keep);
 
   // ---- state changes
-  function changed() {
+  // ---- key labels (labels.js): a word beside each key of the selected MX case, cut into its lid
+  const KEYED = new Set(['mx1s', 'mx3', 'mx4', 'mx6', 'mx9']);
+  let labelUid = null;        // the set of label editors shown, so typing does not rebuild them
+  // In the Labels view, an editor for every case with keys; elsewhere, for the selected one. Rebuilt only when
+  // that set changes, so typing keeps the focus.
+  function renderLabels() {
+    const sp = sel?.kind === 'piece' ? L.items.find((i) => i.uid === sel.uid) : null;
+    const items = view.tab === 'labels' ? L.items.filter((i) => KEYED.has(i.id))
+      : view.tab !== 'leads' && sp && KEYED.has(sp.id) ? [sp] : [];
+    labelSec.hidden = !items.length && view.tab !== 'labels';
+    const key = `${view.tab}|${view.style}|${items.map((i) => i.uid).join(',')}`;
+    if (key === labelUid) return labelNotes();
+    labelUid = key;
+    labelSec.textContent = '';
+    if (view.tab === 'labels' && !items.length) {
+      labelSec.append(el('section', { class: 'lp-card' }, el('h3', {}, 'Labels'), el('p', { class: 'lp-hint' }, 'Place a key case (mx1 1x1, mx3rgb, mx4rgb, mx6rgb, mx9rgb) to label its keys.')));
+      return;
+    }
+    loadKit().then((kit) => {
+      if (labelUid !== key) return;
+      for (const it of items) labelSec.append(labelEditor(it, kit));
+      labelNotes();
+    }).catch((e) => { labelSec.textContent = `The labels did not load (${e.message}).`; });
+  }
+  function labelEditor(it, kit) {
+    const n = kit.models.index.cases.opengrid[it.id].keys.length, names = kit.labels.keyNames(it.id, n);
+    const inputs = el('div', { class: 'lp-label-grid' });
+    for (let i = 0; i < n; i++) {
+      const inp = el('input', { type: 'text', maxlength: String(kit.labels.MAX_LEN), value: it.labels?.[i] || '', placeholder: names[i],
+                                'aria-label': `${cat.get(it.id).name} ${names[i]} label`, spellcheck: 'false' });
+      inp.addEventListener('focus', () => {
+        if (sel?.kind === 'piece' && sel.uid === it.uid) return;
+        sel = { kind: 'piece', uid: it.uid };
+        renderStatus();
+        if (is3d()) v3.update(L, { sel: it.uid, style: view.style, xray: view.tab === 'build' && view.xray, routes: routes(), lidLabels: !coverOn() });
+      });
+      inp.addEventListener('input', () => {
+        const v = kit.labels.cleanLabel(inp.value);
+        if (v !== inp.value) inp.value = v;
+        it.labels = Array.from({ length: n }, (_, k) => (k === i ? v : it.labels?.[k] || ''));
+        saveLayout();
+        if (is3d()) v3.update(L, { sel: sel?.kind === 'piece' ? sel.uid : null, style: view.style, xray: view.tab === 'build' && view.xray, routes: routes(), lidLabels: !coverOn() });
+        labelNotes();
+        renderDeck();
+      });
+      inputs.append(inp);
+    }
+    const bStl = el('button', { type: 'button', class: 'lp-toggle' }, 'Lid STL');
+    const bStep = el('button', { type: 'button', class: 'lp-toggle' }, 'Lid STEP');
+    bStl.title = bStep.title = 'The lid with the words cut in, and the words as a second part, for a two-colour print';
+    bStl.addEventListener('click', () => exportLid(it, 'stl', bStl));
+    bStep.addEventListener('click', () => exportLid(it, 'step', bStep));
+    return el('section', { class: 'lp-card', 'data-uid': String(it.uid) },
+      el('h3', {}, `${cat.get(it.id).name} labels`), inputs,
+      el('ul', { class: 'lp-label-notes', 'aria-live': 'polite' }), el('div', { class: 'gen-buttons' }, bStl, bStep));
+  }
+  function labelNotes() {
+    if (!kitP) return;
+    kitP.then((kit) => {
+      for (const card of labelSec.querySelectorAll('[data-uid]')) {
+        const it = L.items.find((i) => i.uid === +card.dataset.uid), notes = card.querySelector('.lp-label-notes');
+        if (!it) continue;
+        const spec = kit.models.index.cases[view.style][it.id];
+        const names = kit.labels.keyNames(it.id, spec.keys.length);
+        notes.textContent = '';
+        for (const r of kit.labels.placeLabels(spec, it.labels, kit.font, inset).refused)
+          notes.append(el('li', { class: 'lp-warn' }, `${names[r.i]}: "${r.text}" has no room. Shorten it, or label the keycap.`));
+      }
+    });
+  }
+  // the Leads view: what the colours mean, and anything with nowhere to go
+  function renderLeads() {
+    leadsCard.hidden = !leadsOn();
+    if (!leadsOn()) return;
+    leadsCard.textContent = '';
+    const r = routes();
+    const key = (c, t) => el('li', {}, el('span', { class: 'lp-swatch', style: `background:${c}` }), t);
+    leadsCard.append(el('h3', {}, 'Leads'),
+      el('ul', { class: 'lp-legend' }, key('#f08a24', 'Lead between two cases'), key('#a9afb9', 'Slot open through the lid'),
+         key('#3fbf7f', 'Opening into a free cell'), key('#f5a524', 'Opening at the panel edge'), key('#e5484d', 'Opening blocked')));
+    if (r) leadsCard.append(el('p', { class: 'lp-hint' }, `${r.pairs.length} lead${r.pairs.length === 1 ? '' : 's'} where two cases\' openings meet.`));
+  }
+  async function exportLid(it, kind, button) {
+    const was = button.textContent;
+    button.disabled = true;
+    button.textContent = 'Building…';
+    try {
+      const [kit, THREE, { labelledLid }, { default: Module }] = await Promise.all([
+        loadKit(), import('../vendor/three/three.module.min.js'), import('./label-export.js'), import('../vendor/manifold-3d/manifold.js')]);
+      const M = await Module();
+      M.setup();
+      const r = labelledLid(M, THREE, kit.font, kit.models.index, kit.models.bin, view.style, it.id, it.labels, inset);
+      const name = `${view.style === 'lowpro' ? 'lp-' : ''}${it.id}-lid`;
+      if (!r.text) { flash('Type a label first: there is nothing to cut.'); return; }
+      if (r.offLid.length) flash(`Left off, over a hole or slot in the lid: ${r.offLid.map((p) => p.text).join(', ')}.`);
+      if (kind === 'stl') {
+        download(toStl(r.lid, `${name} labelled`), `${name}-labelled.stl`);
+        setTimeout(() => download(toStl(r.text, `${name} text`), `${name}-text.stl`), 300);
+      } else {
+        download(toStep(r.lid, `${name}-labelled`), `${name}-labelled.step`, 'model/step');
+        setTimeout(() => download(toStep(r.text, `${name}-text`), `${name}-text.step`, 'model/step'), 300);
+      }
+    } catch (e) {
+      flash(`The labelled lid did not build (${e.message}).`);
+    } finally {
+      button.disabled = false;
+      button.textContent = was;
+    }
+  }
+
+  function saveLayout() {
     const text = encode(L);
     try { history.replaceState(null, '', `#${text}`); } catch { /* sandboxed */ }
     try { localStorage.setItem(STORE, text); } catch { /* storage blocked */ }
+  }
+
+  function changed() {
+    saveLayout();
     render();
   }
 
@@ -535,17 +893,18 @@ async function mount(root) {
   // ---- preview outline
   let preview = null;
   function showPreview(id, x, y, r, ignore) {
+    if (is3d()) return v3.preview(id, x, y, r, !!conflict(L, cat, id, x, y, r, ignore));
     const mod = cat.get(id), s = shape(mod, r);
     if (!preview) { preview = el('div', { class: 'lp-preview' }); }
     grid.append(preview);
     box(preview, x, y, s.w, s.h);
     preview.classList.toggle('lp-bad', !!conflict(L, cat, id, x, y, r, ignore));
   }
-  function hidePreview() { preview?.remove(); }
+  function hidePreview() { preview?.remove(); v3?.hidePreview(); }
 
   // ---- pointer: drag from the list, drag a placed case, or click
   // (the browser's own drag, of a thumbnail or a text selection, would cancel the pointer events)
-  for (const t of [palette, grid]) t.addEventListener('dragstart', (e) => e.preventDefault());
+  for (const t of [palette, grid, box3d]) t.addEventListener('dragstart', (e) => e.preventDefault());
   function startPress(e, info) {
     if (e.button !== undefined && e.button !== 0) return;
     drag = { ...info, sx: e.clientX, sy: e.clientY, moved: false, pid: e.pointerId };
@@ -564,10 +923,33 @@ async function mount(root) {
     const c = cellAt(e.clientX, e.clientY);
     startPress(e, { id: it.id, r: it.r, uid: it.uid, gx: c.x - it.x, gy: c.y - it.y, src: p });
   });
+  // in 3D a press on a case drags it, as on the grid; anywhere else it turns the view (OrbitControls, on the canvas)
+  let press3d = null;
+  box3d.addEventListener('pointerdown', (e) => {
+    press3d = { x: e.clientX, y: e.clientY };
+    if (!is3d() || e.target !== v3.canvas) return;
+    const uid = v3.pickPiece(e.clientX, e.clientY);
+    if (uid === null) return;
+    e.stopPropagation();          // capture phase: the orbit controls never see it
+    const it = L.items.find((i) => i.uid === uid);
+    const c = v3.cellAt(e.clientX, e.clientY);
+    startPress(e, { id: it.id, r: it.r, uid, gx: c.x - it.x, gy: c.y - it.y, src: box3d });
+  }, true);
+  box3d.addEventListener('click', (e) => {
+    if (!is3d() || sel?.kind !== 'palette' || e.target !== v3.canvas) return;
+    if (press3d && Math.hypot(e.clientX - press3d.x, e.clientY - press3d.y) >= DRAG_PX) return;   // that was a turn of the view
+    const c = cellAt(e.clientX, e.clientY);
+    const it = place(L, cat, sel.id, c.x, c.y, sel.r);
+    if (!it) return flash(`It doesn't fit there: ${conflict(L, cat, sel.id, c.x, c.y, sel.r)}.`);
+    sel = { kind: 'piece', uid: it.uid };
+    hidePreview();
+    changed();
+  });
+  box3d.addEventListener('pointerleave', () => { if (!drag) hidePreview(); });
   window.addEventListener('pointermove', (e) => {
     if (!drag) {
       // hover preview while a case is picked from the list
-      if (sel?.kind === 'palette' && e.target.closest?.('.lp-grid') === grid) {
+      if (sel?.kind === 'palette' && (e.target.closest?.('.lp-grid') === grid || (is3d() && e.target === v3.canvas))) {
         const c = cellAt(e.clientX, e.clientY);
         showPreview(sel.id, c.x, c.y, sel.r);
       }
@@ -579,8 +961,9 @@ async function mount(root) {
       const mod = cat.get(drag.id);
       drag.ghost = pieceEl({ uid: 0, id: drag.id, x: 0, y: 0, r: drag.r }, mod).p;
       drag.ghost.classList.add('lp-ghost');
+      if (is3d()) drag.ghost.style.visibility = 'hidden';     // the see-through case in the scene shows where it goes
       document.body.append(drag.ghost);
-      if (drag.uid) drag.src.classList.add('lp-dragging');
+      if (drag.uid && drag.src !== box3d) drag.src.classList.add('lp-dragging');
     }
     const s = cellPx(), sh = shape(cat.get(drag.id), drag.r);
     Object.assign(drag.ghost.style, { width: `${sh.w * s}px`, height: `${sh.h * s}px`,
@@ -692,7 +1075,7 @@ async function mount(root) {
     cols.input.value = L.cols; rows.input.value = L.rows;
     render();
   });
-  render();
+  showView();
 }
 
 const root = document.getElementById('layout-planner');

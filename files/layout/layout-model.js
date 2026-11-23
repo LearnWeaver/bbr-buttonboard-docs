@@ -127,8 +127,15 @@ export function warnings(layout, cat) {
 }
 
 // The layout as text for the page's address, so it can be shared: 5x5:mm,0,0:enc1,2,0,1
+// A case with key labels (labels.js) carries them as a fifth field, one per key in its KEYS order, '~' between,
+// '_' for a space: mx3,0,1,0,INTAKE~~CLIMB_UP
+const LABEL_CHARS = /[^A-Z0-9 .+\-/&!?]/g;
 export function encode(layout) {
-  return [`${layout.cols}x${layout.rows}`, ...layout.items.map((i) => [i.id, i.x, i.y, ...(i.r ? [i.r] : [])].join(','))].join(':');
+  return [`${layout.cols}x${layout.rows}`, ...layout.items.map((i) => {
+    const labels = (i.labels || []).map((s) => String(s).replace(/ /g, '_'));
+    while (labels.length && !labels[labels.length - 1]) labels.pop();
+    return [i.id, i.x, i.y, ...(i.r || labels.length ? [i.r] : []), ...(labels.length ? [labels.join('~')] : [])].join(',');
+  })].join(':');
 }
 
 // Back from text. Anything unknown, malformed, or clashing is dropped, so a
@@ -139,10 +146,11 @@ export function decode(text, cat) {
   const clamp = (n) => Math.min(MAX_CELLS, Math.max(1, n));
   const layout = { cols: m ? clamp(+m[1]) : 5, rows: m ? clamp(+m[2]) : 5, items: [] };
   for (const part of rest) {
-    const [id, x, y, r = '0'] = part.split(',');
+    const [id, x, y, r = '0', labels] = part.split(',');
     // x and y may be -1: an overhang can hang off the board's top or left edge
     if (!cat.has(id) || ![x, y].every((v) => /^-?\d+$/.test(v)) || !/^\d+$/.test(r)) continue;
-    place(layout, cat, id, +x, +y, +r % 4);
+    const it = place(layout, cat, id, +x, +y, +r % 4);
+    if (it && labels) it.labels = labels.split('~').map((s) => s.replace(/_/g, ' ').toUpperCase().replace(LABEL_CHARS, '').slice(0, 12));
   }
   return layout;
 }

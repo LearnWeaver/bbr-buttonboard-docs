@@ -117,7 +117,9 @@ a:hover { text-decoration: underline; }
   width: 2.1rem; height: 2.1rem; padding: 0 .35rem;
   background: none; border: 1px solid var(--border); border-radius: 8px; cursor: pointer;
 }
-.menu-btn span { display: block; height: 1.5px; background: var(--text); border-radius: 2px; }
+.menu-btn .bars { display: flex; flex-direction: column; justify-content: center; gap: 4px; width: 100%; }
+.menu-btn .bars span { display: block; height: 1.5px; background: var(--text); border-radius: 2px; }
+.menu-label { display: none; }
 
 .theme-btn {
   flex: none;
@@ -516,6 +518,27 @@ code {
   .pager-row { flex-direction: column; }
   .pager.next { margin-left: 0; }
 }
+
+/* ------------------------------------------------------------- app pages */
+/* A page marked as an app (build_docs.py APP_MARK) takes the whole width; the docs navigation is a drawer
+   behind the "Docs" button, as on a phone. */
+
+.app .shell { display: block; max-width: none; }
+.app .onpage, .app .page-footer { display: none; }
+.app .content { padding: 0; }
+.app .prose { max-width: none; }
+.app .prose > h1:first-child { display: none; }
+.app .pager-row { max-width: 60rem; margin: 2rem auto; padding: 0 1.25rem; }
+.app .menu-btn { display: flex; flex-direction: row; align-items: center; gap: .5rem; width: auto; padding: 0 .7rem; }
+.app .menu-btn .bars { width: 1rem; }
+.app .menu-label { display: inline; font-size: .85rem; font-weight: 600; color: var(--text); }
+.app .sidebar {
+  position: fixed; z-index: 30; left: 0; top: var(--topbar-h);
+  width: min(19rem, 82vw); height: calc(100vh - var(--topbar-h));
+  max-height: none; background: var(--bg);
+  transform: translateX(-102%); transition: transform .18s ease;
+}
+.app.nav-open .sidebar { transform: none; box-shadow: var(--shadow); }
 
 @media (prefers-reduced-motion: reduce) {
   .sidebar, .copy-btn, .headerlink { transition: none; }

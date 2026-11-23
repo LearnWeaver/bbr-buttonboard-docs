@@ -164,15 +164,17 @@ export function coverProblems(layout, cat, deck, cover = 'board', trays = '') {
   return out;
 }
 
-// The cover as a mesh, in the deck's frame, turned top-down for printing (its top on z = 0, pegs up).
-export function buildCover(M, layout, cat, deck, cover = 'board', trays = '') {
-  const { t, key_cut: kc, key_r: kr, clr, tall_clr: tc, peg_d: pd, peg_l: pl } = deck.cover;
+// The cover's plate seen from above, in the deck's frame (mm, y north, about the deck's centre): `solid`, its
+// outline less every opening (CrossSection); its top at z0 + t; and every MX key on the panel, { uid, i, x, y,
+// text }, i in the case's KEYS order and text that key's label (layout item .labels), for cover-labels.js.
+export function coverPlate(M, layout, cat, deck, cover = 'board', trays = '') {
+  const { t, key_cut: kc, key_r: kr, clr, tall_clr: tc } = deck.cover;
   const P = deck.pitch, r = deck.corner_r, z0 = deck.deck_t + deck.tray.h;
   const { X0, X1, Y0, Y1, mm } = frameOf(layout, cat, deck, cover, trays);
   const rr = (w, h, rad) => M.CrossSection.square([w - 2 * rad, h - 2 * rad], true).offset(rad, 'Round', 2, 32);
   const outline = rr(X1 - X0, Y1 - Y0, r).translate([(X0 + X1) / 2, (Y0 + Y1) / 2]);
   // every opening, case-local (y north, about the case centre), turned clockwise with the case and moved to it
-  const cuts = [];
+  const cuts = [], keys = [];
   for (const it of layout.items) {
     const spec = deck.cases[it.id]?.cover, mod = cat.get(it.id);
     if (!spec) continue;
@@ -180,17 +182,35 @@ export function buildCover(M, layout, cat, deck, cover = 'board', trays = '') {
     const [cx, cy] = mm(it.x + w / 2, it.y + h / 2);
     const place = (cs) => cs.rotate(-90 * q).translate([cx, cy]);
     if (spec.tall) cuts.push(place(rr(mod.w * P - deck.gap + 2 * tc, mod.h * P - deck.gap + 2 * tc, 2.0 + tc)));
-    for (const [x, y] of spec.keys) cuts.push(place(rr(kc, kc, kr).translate([x, y])));
+    spec.keys.forEach(([x, y], i) => {
+      cuts.push(place(rr(kc, kc, kr).translate([x, y])));
+      let [kx, ky] = [x, y];
+      for (let k = 0; k < q; k++) [kx, ky] = [ky, -kx];             // a clockwise quarter turn, y north
+      keys.push({ uid: it.uid, i, x: cx + kx, y: cy + ky, text: it.labels?.[i] || '' });
+    });
     for (const poly of spec.holes) cuts.push(place(M.CrossSection.ofPolygons([poly], 'NonZero').offset(clr, 'Round', 2, 32)));
   }
+  const solid = cuts.length ? outline.subtract(M.CrossSection.union(cuts)) : outline;
+  return { outline, solid, cuts, keys, z0, t, keyCut: kc };
+}
+
+// The cover as a mesh, in the deck's frame, turned top-down for printing (its top on z = 0, pegs up), or with
+// print = false as it sits on the deck (the 3D view). letters: a Manifold of key labels (cover-labels.js) to
+// inlay in its top; what is kept of them comes back as `text`, turned the same way.
+export function buildCover(M, layout, cat, deck, cover = 'board', trays = '', print = true, letters = null) {
+  const { peg_d: pd, peg_l: pl } = deck.cover;
+  const { X0, X1, Y0, Y1 } = frameOf(layout, cat, deck, cover, trays);
+  const { outline, cuts, z0, t } = coverPlate(M, layout, cat, deck, cover, trays);
   let plate = outline.extrude(t).translate([0, 0, z0]);
   if (cuts.length) plate = plate.subtract(M.CrossSection.union(cuts).extrude(t + 2).translate([0, 0, z0 - 1]));
   const pegs = pegSites(layout, cat, deck, cover, trays).map(([x, y]) =>
     M.Manifold.cylinder(pl + 0.01, pd / 2, pd / 2, 48).translate([x, y, z0 - pl]));
-  const solid = M.Manifold.union([plate, ...pegs]);
-  const flat = solid.rotate([180, 0, 0]).translate([0, 0, z0 + t]);
-  return { mesh: toMesh(flat), status: solid.status(), genus: solid.genus(), volume: solid.volume(), pegs: pegs.length,
-           size: { w: X1 - X0, h: Y1 - Y0 } };
+  let solid = M.Manifold.union([plate, ...pegs]);
+  const text = letters ? letters.intersect(plate) : null;
+  if (text) solid = solid.subtract(text);
+  const pose = (m) => (print ? m.rotate([180, 0, 0]).translate([0, 0, z0 + t]) : m);
+  return { mesh: toMesh(pose(solid)), text: text && !text.isEmpty() ? toMesh(pose(text)) : null, status: solid.status(),
+           genus: solid.genus(), volume: solid.volume(), pegs: pegs.length, size: { w: X1 - X0, h: Y1 - Y0 } };
 }
 
 const toMesh = (m) => {
