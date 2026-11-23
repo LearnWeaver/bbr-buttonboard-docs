@@ -11,7 +11,7 @@ import { catalogue, cellsAt, shape, conflict, place, move, remove, freeCells, fi
 import { footprint, sizeMm, heightMm, problems as onePieceProblems, build as buildOnePiece } from './onepiece-model.js';
 import { deckProblems, deckSize, keySites, pockets, buildDeck, trayGaps, TRAY_SIDES, buildCover, coverProblems, pegSites } from './deck-model.js';
 import { useStyles, el, field, loadFailed, download, BED } from '../generators/ui.js';
-import { toStl } from '../generators/mesh.js';
+import { toStl, toStep } from '../generators/mesh.js';
 import { leadCheck, leadWarnings } from './leads.js';
 import { standoffCount } from '../back-plate/backplate-mesh.js';
 
@@ -24,6 +24,9 @@ const ONE_PIECE = false;
 // The low-profile deck (deck-model.js): a plate the low-profile cases press onto. Set false to take
 // its section off the page, and its paragraph out of getting-started/layout.md.
 const DECK = true;
+const STEP = 'model/step';
+const STEP_NOTE = 'The STEP is the same part, lying the same way, in millimetres: open it in CAD to add labels. ' +
+                  'Each flat area is one face to sketch on; round holes and pegs stay faceted.';
 // what the deck covers (deck-model.js COVERS; 'cases' is left off: it comes apart where cells are empty)
 const COVER = { board: 'The whole board', rect: 'Only the rectangle round the cases' };
 // the deck's cable trays (§86), by the edge of the board as drawn on the page
@@ -405,8 +408,10 @@ async function mount(root) {
       const name = `one-piece-${fp.cols}x${fp.rows}${back() === 'snaps' ? '' : `-${back()}`}`;
       oneButtons.textContent = '';
       oneButtons.append(btnMain('Download tray STL', () => download(toStl(built.tray, `${name} tray`), `${name}-tray.stl`)),
-                        btn('Download lid STL', () => download(toStl(built.lid, `${name} lid`), `${name}-lid.stl`)));
-      oneFacts.append(el('li', {}, 'The lid STL is turned top-down for printing, like every case lid.'));
+                        btn('Download lid STL', () => download(toStl(built.lid, `${name} lid`), `${name}-lid.stl`)),
+                        btn('Download lid STEP', () => download(toStep(built.lid, `${name}-lid`), `${name}-lid.step`, STEP)));
+      oneFacts.append(el('li', {}, 'The lid STL is turned top-down for printing, like every case lid.'),
+                      el('li', {}, STEP_NOTE));
     }
   }
   const btnMain = (label, fn) => { const b = el('button', { type: 'button' }, label); b.addEventListener('click', fn); return b; };
@@ -467,11 +472,13 @@ async function mount(root) {
       deckButtons.append(btnMain('Download deck STL', () => download(toStl(deckBuilt.mesh, name), `${name}.stl`)));
       if (deckBuilt.cover) {
         const cname = name.replace('lowpro-deck', 'lowpro-cover');
-        deckButtons.append(btnMain('Download cover STL', () => download(toStl(deckBuilt.cover, cname), `${cname}.stl`)));
+        deckButtons.append(btnMain('Download cover STL', () => download(toStl(deckBuilt.cover, cname), `${cname}.stl`)),
+                           btn('Download cover STEP', () => download(toStep(deckBuilt.cover, cname), `${cname}.step`, STEP)));
       }
       deckFacts.append(el('li', {}, `${deckBuilt.pockets} studs. Print it flat, studs up, no supports` +
                                     `${trays() ? ': the trays\' lips overhang at 45°' : ''}.`));
-      if (deckBuilt.cover) deckFacts.append(el('li', {}, 'Print the cover top-down, as the STL lies: flat, pegs up, no supports.'));
+      if (deckBuilt.cover) deckFacts.append(el('li', {}, 'Print the cover top-down, as the STL lies: flat, pegs up, no supports.'),
+                                            el('li', {}, STEP_NOTE));
     }
   }
   bDeck.addEventListener('click', async () => {

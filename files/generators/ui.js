@@ -1,5 +1,5 @@
 // Page plumbing shared by the docs site's part generators: the panel's look,
-// number fields, and saving an STL. Uses the site's theme tokens, so light and
+// number fields, and saving an STL or a STEP. Uses the site's theme tokens, so light and
 // dark follow the rest of the page.
 
 const CSS = `
@@ -50,8 +50,8 @@ export function field(label, attrs) {
   return { input, node: el('label', {}, label, input) };
 }
 
-export function download(bytes, name) {
-  const url = URL.createObjectURL(new Blob([bytes], { type: 'model/stl' }));
+export function download(bytes, name, type = 'model/stl') {
+  const url = URL.createObjectURL(new Blob([bytes], { type }));
   const a = el('a', { href: url, download: name });
   document.body.append(a);
   a.click();
