@@ -222,7 +222,8 @@
       ]
      ]
     ],
-    "tall": false
+    "outline": null,
+    "lid_labels": false
    }
   },
   "mx1s": {
@@ -251,7 +252,11 @@
      ]
     ],
     "holes": [],
-    "tall": true
+    "outline": [
+     27.5,
+     27.5
+    ],
+    "lid_labels": false
    }
   },
   "mx3": {
@@ -303,7 +308,11 @@
      ]
     ],
     "holes": [],
-    "tall": false
+    "outline": [
+     71.5,
+     27.5
+    ],
+    "lid_labels": true
    }
   },
   "mx4": {
@@ -379,7 +388,11 @@
      ]
     ],
     "holes": [],
-    "tall": false
+    "outline": [
+     83.5,
+     55.5
+    ],
+    "lid_labels": true
    }
   },
   "mx6": {
@@ -473,7 +486,8 @@
      ]
     ],
     "holes": [],
-    "tall": false
+    "outline": null,
+    "lid_labels": false
    }
   },
   "mx9": {
@@ -549,7 +563,8 @@
      ]
     ],
     "holes": [],
-    "tall": false
+    "outline": null,
+    "lid_labels": false
    }
   },
   "enc1": {
@@ -913,7 +928,8 @@
       ]
      ]
     ],
-    "tall": false
+    "outline": null,
+    "lid_labels": false
    }
   },
   "disp1": {
@@ -942,7 +958,11 @@
    "cover": {
     "keys": [],
     "holes": [],
-    "tall": true
+    "outline": [
+     55.5,
+     27.5
+    ],
+    "lid_labels": false
    }
   },
   "disp2": {
@@ -1010,7 +1030,8 @@
       ]
      ]
     ],
-    "tall": false
+    "outline": null,
+    "lid_labels": false
    }
   },
   "arc4": {
@@ -1084,7 +1105,8 @@
       ]
      ]
     ],
-    "tall": false
+    "outline": null,
+    "lid_labels": false
    }
   },
   "blank": {
@@ -1534,6 +1556,7 @@
   "key_r": 1.0,
   "clr": 0.75,
   "tall_clr": 0.3,
+  "chip": 20.0,
   "peg_d": 3.2,
   "peg_l": 2.5,
   "hole_d": 3.3,
@@ -1545,7 +1568,7 @@
    "layout": "3x4:mm,0,0:straight,2,0:mx3,0,1:mx4,0,2",
    "sides": "NEW",
    "pegs": 5,
-   "volume": 17281.39,
+   "volume": 11116.88,
    "deck_volume": 29799.58
   },
   {
@@ -1554,6 +1577,13 @@
    "pegs": 3,
    "volume": 14619.76,
    "deck_volume": 23187.32
+  },
+  {
+   "layout": "4x4:mm,0,0:mx1s,2,0:mx1s,3,0:mx3,0,1:mx3,3,1,3:mx4,0,2",
+   "sides": "NESW",
+   "pegs": 7,
+   "volume": 14009.02,
+   "deck_volume": 43382.72
   }
  ]
 }

@@ -35,6 +35,7 @@ const COVER = { board: 'The whole board', rect: 'Just round the cases' };
 const TRAY_NAMES = { N: 'Top', E: 'Right', S: 'Bottom', W: 'Left' };
 // the back of the one-piece tray (onepiece-model.js BACKS)
 const BACKS = { snaps: 'Snaps, onto an openGrid board', plain: 'Plain and flat', board: 'openGrid board built in' };
+const COVER_APART = 'The openings cut this cover into separate pieces. Add trays on more sides, or move the cases.';
 const DRAG_PX = 4;          // movement before a press becomes a drag
 // one colour per group, in modules.json's order; the cable tiles always grey (GREY), since red would read as an error
 const HUES = [[212, 75], [28, 75], [145, 60], [280, 60], [330, 65], [220, 8]];
@@ -304,6 +305,8 @@ async function mount(root) {
     return g;
   };
   const keepView = () => { try { localStorage.setItem(VIEW_STORE, JSON.stringify(view)); } catch { /* storage blocked */ } };
+  // whose labels show on the lids: null for every case, or under the cover the ones it opens round
+  const lidLabels = () => (coverOn() ? Object.keys(deckData.cases).filter((id) => deckData.cases[id].cover?.lid_labels) : null);
   const styleSeg = seg('Case style', [['opengrid', 'openGrid'], ['lowpro', 'Low profile']], () => view.style, (k) => { view.style = k; keepView(); labelUid = null; render(); });
   const tabBar = el('nav', { class: 'lp-tabs', 'aria-label': 'Planner views' });
   for (const [k, text] of TABS) {
@@ -529,7 +532,7 @@ async function mount(root) {
     renderOnePiece();
     renderDeck();
     if (is3d()) {
-      v3.update(L, { sel: sel?.kind === 'piece' ? sel.uid : null, style: view.style, xray: view.tab === 'build' && view.xray, routes: routes(), lidLabels: !coverOn() });
+      v3.update(L, { sel: sel?.kind === 'piece' ? sel.uid : null, style: view.style, xray: view.tab === 'build' && view.xray, routes: routes(), lidLabels: lidLabels() });
       hint3d.textContent = sel?.kind === 'palette' ? 'Green fits. Click to drop, R turns it.'
         : sel?.kind === 'piece' ? 'Drag to move, off the board to remove. R turns.'
         : 'Drag to orbit · right-drag to pan · scroll to zoom';
@@ -670,6 +673,7 @@ async function mount(root) {
     const plate = coverPlate(M, L, cat, deckData, cv, tr);
     const r = placeCoverLabels(M, kit.font, plate);
     coverNotes.textContent = '';
+    if (plate.pieces !== 1) coverNotes.append(el('li', { class: 'lp-warn' }, COVER_APART));
     for (const x of r.refused) coverNotes.append(el('li', { class: 'lp-warn' }, `Cover: no room for "${x.text}". Shorten it.`));
     return { ...r, top: plate.z0 + plate.t, font: kit.font };
   }
@@ -742,10 +746,11 @@ async function mount(root) {
       let letters = null;
       if (lid() && L.items.some((it) => it.labels?.some((t) => t))) {
         const [cl, THREE, { lettersSolid }] = await Promise.all([coverLabels(M, cover(), trays()), import('../vendor/three/three.module.min.js'), import('./label-export.js')]);
-        letters = lettersSolid(M, THREE, cl.font, cl.placed, cl.top);
+        if (cl.placed.length) letters = lettersSolid(M, THREE, cl.font, cl.placed, cl.top);
       }
       const c = lid() ? buildCover(M, L, cat, deckData, cover(), trays(), true, letters) : null;
       if (c && c.status !== 'NoError') throw new Error(`cover: ${c.status}`);
+      if (c && c.pieces !== 1) throw new Error(COVER_APART);
       if (key === deckKey()) deckBuilt = { key, mesh: r.mesh, pockets: r.pockets, cover: c?.mesh, text: c?.text };
     } catch (e) {
       deckFacts.append(el('li', { class: 'gen-bad' }, `The deck did not build (${e.message}).`));
@@ -801,14 +806,14 @@ async function mount(root) {
         if (sel?.kind === 'piece' && sel.uid === it.uid) return;
         sel = { kind: 'piece', uid: it.uid };
         renderStatus();
-        if (is3d()) v3.update(L, { sel: it.uid, style: view.style, xray: view.tab === 'build' && view.xray, routes: routes(), lidLabels: !coverOn() });
+        if (is3d()) v3.update(L, { sel: it.uid, style: view.style, xray: view.tab === 'build' && view.xray, routes: routes(), lidLabels: lidLabels() });
       });
       inp.addEventListener('input', () => {
         const v = kit.labels.cleanLabel(inp.value);
         if (v !== inp.value) inp.value = v;
         it.labels = Array.from({ length: n }, (_, k) => (k === i ? v : it.labels?.[k] || ''));
         saveLayout();
-        if (is3d()) v3.update(L, { sel: sel?.kind === 'piece' ? sel.uid : null, style: view.style, xray: view.tab === 'build' && view.xray, routes: routes(), lidLabels: !coverOn() });
+        if (is3d()) v3.update(L, { sel: sel?.kind === 'piece' ? sel.uid : null, style: view.style, xray: view.tab === 'build' && view.xray, routes: routes(), lidLabels: lidLabels() });
         labelNotes();
         renderDeck();
       });

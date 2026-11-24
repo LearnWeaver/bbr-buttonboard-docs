@@ -299,7 +299,7 @@ export function createView(container, { index, bin, cat, boardT = 6.8, deckT = 1
   let lastKey = '', ghostKey = '';
   return {
     canvas: renderer.domElement,
-    update(L, { sel = null, style: st = style, xray = false, routes = null, lidLabels = true } = {}) {
+    update(L, { sel = null, style: st = style, xray = false, routes = null, lidLabels = null } = {}) {
       const resized = L.cols !== size.cols || L.rows !== size.rows;
       const restyled = st !== style;
       style = st; size = { cols: L.cols, rows: L.rows };
@@ -313,7 +313,7 @@ export function createView(container, { index, bin, cat, boardT = 6.8, deckT = 1
         pieces.clear();
         for (const it of L.items) {
           if (!cat.get(it.id)) continue;
-          const g = place(caseGroup(it.id, LOOK[style], faintCases ? 'xray' : it.uid === sel ? 'sel' : 'case', lidLabels ? it.labels : null), it.id, it.x, it.y, it.r);
+          const g = place(caseGroup(it.id, LOOK[style], faintCases ? 'xray' : it.uid === sel ? 'sel' : 'case', !lidLabels || lidLabels.includes(it.id) ? it.labels : null), it.id, it.x, it.y, it.r);
           g.userData.uid = it.uid;
           pieces.add(g);
         }

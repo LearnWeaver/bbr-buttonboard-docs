@@ -181,17 +181,20 @@ export function coverPlate(M, layout, cat, deck, cover = 'board', trays = '') {
     const q = it.r % 4, w = q % 2 ? mod.h : mod.w, h = q % 2 ? mod.w : mod.h;
     const [cx, cy] = mm(it.x + w / 2, it.y + h / 2);
     const place = (cs) => cs.rotate(-90 * q).translate([cx, cy]);
-    if (spec.tall) cuts.push(place(rr(mod.w * P - deck.gap + 2 * tc, mod.h * P - deck.gap + 2 * tc, 2.0 + tc)));
+    if (spec.outline) cuts.push(place(rr(spec.outline[0] + 2 * tc, spec.outline[1] + 2 * tc, 2.0 + tc)));
     spec.keys.forEach(([x, y], i) => {
       cuts.push(place(rr(kc, kc, kr).translate([x, y])));
       let [kx, ky] = [x, y];
       for (let k = 0; k < q; k++) [kx, ky] = [ky, -kx];             // a clockwise quarter turn, y north
-      keys.push({ uid: it.uid, i, x: cx + kx, y: cy + ky, text: it.labels?.[i] || '' });
+      keys.push({ uid: it.uid, i, x: cx + kx, y: cy + ky, text: spec.lid_labels ? '' : it.labels?.[i] || '' });   // an open case's are on its lid
     });
     for (const poly of spec.holes) cuts.push(place(M.CrossSection.ofPolygons([poly], 'NonZero').offset(clr, 'Round', 2, 32)));
   }
-  const solid = cuts.length ? outline.subtract(M.CrossSection.union(cuts)) : outline;
-  return { outline, solid, cuts, keys, z0, t, keyCut: kc };
+  // less the scraps left where rounded case corners meet; more than one piece left and the cover comes apart
+  const pieces = (cuts.length ? outline.subtract(M.CrossSection.union(cuts)) : outline).decompose()
+    .filter((c) => c.area() >= deck.cover.chip);
+  const solid = M.CrossSection.union(pieces);
+  return { outline, solid, pieces: pieces.length, cuts, keys, z0, t, keyCut: kc };
 }
 
 // The cover as a mesh, in the deck's frame, turned top-down for printing (its top on z = 0, pegs up), or with
@@ -200,9 +203,8 @@ export function coverPlate(M, layout, cat, deck, cover = 'board', trays = '') {
 export function buildCover(M, layout, cat, deck, cover = 'board', trays = '', print = true, letters = null) {
   const { peg_d: pd, peg_l: pl } = deck.cover;
   const { X0, X1, Y0, Y1 } = frameOf(layout, cat, deck, cover, trays);
-  const { outline, cuts, z0, t } = coverPlate(M, layout, cat, deck, cover, trays);
-  let plate = outline.extrude(t).translate([0, 0, z0]);
-  if (cuts.length) plate = plate.subtract(M.CrossSection.union(cuts).extrude(t + 2).translate([0, 0, z0 - 1]));
+  const { solid: flat, pieces, z0, t } = coverPlate(M, layout, cat, deck, cover, trays);
+  const plate = flat.extrude(t).translate([0, 0, z0]);
   const pegs = pegSites(layout, cat, deck, cover, trays).map(([x, y]) =>
     M.Manifold.cylinder(pl + 0.01, pd / 2, pd / 2, 48).translate([x, y, z0 - pl]));
   let solid = M.Manifold.union([plate, ...pegs]);
@@ -210,7 +212,7 @@ export function buildCover(M, layout, cat, deck, cover = 'board', trays = '', pr
   if (text) solid = solid.subtract(text);
   const pose = (m) => (print ? m.rotate([180, 0, 0]).translate([0, 0, z0 + t]) : m);
   return { mesh: toMesh(pose(solid)), text: text && !text.isEmpty() ? toMesh(pose(text)) : null, status: solid.status(),
-           genus: solid.genus(), volume: solid.volume(), pegs: pegs.length, size: { w: X1 - X0, h: Y1 - Y0 } };
+           genus: solid.genus(), volume: solid.volume(), pieces, pegs: pegs.length, size: { w: X1 - X0, h: Y1 - Y0 } };
 }
 
 const toMesh = (m) => {
