@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Low-profile cases · BBR Button Board</title>
+<meta name="description" content="Low-profile cases The low-profile cases are a thinner alternative to the openGrid cases, for a panel that sits on a desk. There is no openGrid board underneath. The cases join dire">
+<link rel="canonical" href="https://buttonboard.buildingblockrobotics.com/getting-started/lowpro-cases.html">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../style.css">
+<script>
+  // Set the theme before first paint so the page never flashes the wrong one.
+  try {
+    var t = localStorage.getItem('bbr-theme');
+    if (t) document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+</script>
+</head>
+<body class="page">
+
+<a class="skip" href="#content">Skip to content</a>
+
+<header class="topbar">
+  <button class="menu-btn" aria-label="Toggle navigation" aria-expanded="false">
+    <span class="bars"><span></span><span></span><span></span></span><span class="menu-label">Docs</span>
+  </button>
+  <a class="brand" href="../index.html">
+    <span class="brand-name">BBR Button Board</span>
+    <span class="brand-tagline">Documentation</span>
+  </a>
+  <div class="search" role="search">
+    <input type="search" id="search-input" placeholder="Search"
+           autocomplete="off" spellcheck="false" aria-label="Search the documentation">
+    <kbd class="search-key">/</kbd>
+    <div id="search-results" class="search-results" hidden></div>
+  </div>
+  <button class="theme-btn" aria-label="Toggle dark mode" title="Toggle dark mode">
+    <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <circle cx="12" cy="12" r="4.5"/>
+      <g class="rays"><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.4 4.4l2.1 2.1M17.5 17.5l2.1 2.1M19.6 4.4l-2.1 2.1M6.5 17.5l-2.1 2.1"/></g>
+    </svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/>
+    </svg>
+  </button>
+</header>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <nav aria-label="Documentation">
+      <ul class="nav-list">
+<li><a href="../index.html">BBR Button Board</a></li>
+</ul>
+<p class="nav-group">Getting started</p>
+<ul class="nav-list">
+<li><a href="../getting-started/hardware.html">What you have</a></li>
+<li><a href="../getting-started/tiles.html">The tiles</a></li>
+<li><a href="../getting-started/layout.html">Plan your panel</a></li>
+<li><a href="../getting-started/opengrid-board.html">The openGrid board</a></li>
+<li><a href="../getting-started/cases.html">Printing the cases</a></li>
+<li><a href="../getting-started/lowpro-cases.html" class="active">Low-profile cases</a></li>
+<li><a href="../getting-started/back-plate.html">Back plate for the leads</a></li>
+<li><a href="../getting-started/wiring.html">Plugging it together</a></li>
+<li><a href="../getting-started/first-run.html">First run</a></li>
+<li><a href="../getting-started/firmware.html">Updating the firmware</a></li>
+</ul>
+<p class="nav-group">Configuring</p>
+<ul class="nav-list">
+<li><a href="../configuring/config-app.html">The config app</a></li>
+<li><a href="../configuring/binding.html">Binding buttons</a></li>
+<li><a href="../configuring/leds.html">LED colours</a></li>
+<li><a href="../configuring/encoders.html">Rotary encoders</a></li>
+<li><a href="../configuring/screen-keys.html">Display tiles and legends</a></li>
+<li><a href="../configuring/usb-modes.html">USB modes</a></li>
+<li><a href="../configuring/keyboard.html">Keyboard and media keys</a></li>
+<li><a href="../configuring/midi.html">MIDI</a></li>
+<li><a href="../configuring/sim.html">Flight and driving sims</a></li>
+</ul>
+<p class="nav-group">On the robot</p>
+<ul class="nav-list">
+<li><a href="../on-the-robot/legends.html">Changing legends in a match</a></li>
+</ul>
+<p class="nav-group">Driver Station app</p>
+<ul class="nav-list">
+<li><a href="../driver-station/install.html">Install the library</a></li>
+<li><a href="../driver-station/first-script.html">Your first script</a></li>
+<li><a href="../driver-station/drawing.html">Drawing on a display</a></li>
+<li><a href="../driver-station/api.html">Python API summary</a></li>
+</ul>
+<p class="nav-group">Reference</p>
+<ul class="nav-list">
+<li><a href="../reference/commands.html">Serial command reference</a></li>
+<li><a href="../reference/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+    </nav>
+  </aside>
+
+  <main id="content" class="content">
+    <article class="prose">
+      <h1 id="low-profile-cases">Low-profile cases<a class="headerlink" href="#low-profile-cases" title="Permanent link">#</a></h1>
+<p>The low-profile cases are a thinner alternative to the <a href="cases.html">openGrid cases</a>, for a panel that sits on a desk. There is no openGrid board underneath. The cases join directly to each other, and the keys sit <strong>10 mm</strong> off the desk instead of 21.8 mm.</p>
+<p><img alt="Height from the desk: openGrid, low profile with link keys, and low profile on a deck" src="../images/lowpro-height.png" /></p>
+<p>Each case takes the same grid cells as its openGrid version, 28 mm a side, so a layout from <a href="layout.html">Plan your panel</a> works either way. Most cases are 10 mm tall. Three stand a little higher, because of what the board carries: the <code>mx1</code> 1x1 (12.4 mm), the <code>disp1</code> (12.0 mm) and the screen key&rsquo;s module case (12.0 mm).</p>
+<h2 id="joining-the-cases">Joining the cases<a class="headerlink" href="#joining-the-cases" title="Permanent link">#</a></h2>
+<p>Every case has small dovetail <strong>pockets</strong> in its underside, at the middle of the cell edges round its outside. Three things fit them. Pick one for the whole panel:</p>
+<ul>
+<li><strong>Link keys.</strong> A small bow-tie that presses into two facing pockets from below and holds two cases together. The panel is exactly as thick as the cases. To rearrange, pull the keys out.</li>
+<li><strong>Padded keys and feet.</strong> The same key on a thin 0.8 mm pad, which spreads the load so a case hanging off its neighbour doesn&rsquo;t lever the key out. Every other pocket takes a <strong>foot</strong>, so the panel stands level. The planner tells you how many of each your layout needs.</li>
+<li><strong>A deck.</strong> One flat plate, 1.2 mm thick, cut to your layout, with studs that the cases press onto. It is the stiffest option, and the one to use for a panel you pick up and move. Make it in <a href="layout.html">Plan your panel</a>: choose <strong>Low profile</strong> under <strong>Case style</strong>, then open <strong>Deck, trays and cover</strong>.</li>
+</ul>
+<p><img alt="The underside of a panel on padded keys (orange) and feet" src="../images/lowpro-pads-underside.jpg" /></p>
+<h3 id="the-decks-extras">The deck&rsquo;s extras<a class="headerlink" href="#the-decks-extras" title="Permanent link">#</a></h3>
+<p>In the planner&rsquo;s <strong>Deck, trays and cover</strong> section:</p>
+<ul>
+<li><strong>Deck:</strong> the whole board, or just the rectangle round the cases.</li>
+<li><strong>Trays:</strong> a cable channel along any edge of the deck, half a cell wide, where leads lie under a lip instead of looping round outside the panel. A tray leaves a gap for the main module&rsquo;s USB.</li>
+<li><strong>Cover:</strong> one 1.5 mm plate over the whole panel, which hides the lids, the latches and the leads in the trays. It has openings for the keys, displays and knobs. Labels you typed for the keys are printed onto it, for a two-colour print.</li>
+</ul>
+<p>Set your printer&rsquo;s bed size first: the planner only makes a deck that fits it.</p>
+<h2 id="downloads">Downloads<a class="headerlink" href="#downloads" title="Permanent link">#</a></h2>
+<p>Each zip has the parts as <strong>STEP</strong>, for editing in CAD, and as <strong>STL</strong>, ready to slice. It also has the design notes for the whole range.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Case</th>
+<th>Fits</th>
+<th>Grid</th>
+<th>Download</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../files/cases/case-lowpro-main-module.zip"><img alt="Main module" src="../files/cases/case-lowpro-main-module.png" /></a></td>
+<td>Main module</td>
+<td>the main module</td>
+<td>2 × 1</td>
+<td><a href="../files/cases/case-lowpro-main-module.zip">case-lowpro-main-module.zip</a></td>
+</tr>
+<tr>
+<td><a href="../files/cases/case-lowpro-mx1-1x1.zip"><img alt="mx1 1x1" src="../files/cases/case-lowpro-mx1-1x1.png" /></a></td>
+<td>mx1 1x1</td>
+<td>the 25 mm single key. Stands 12.4 mm tall</td>
+<td>1 × 1</td>
+<td><a href="../files/cases/case-lowpro-mx1-1x1.zip">case-lowpro-mx1-1x1.zip</a></td>
+</tr>
+<tr>
+<td><a href="../files/cases/case-lowpro-mx3rgb.zip"><img alt="mx3rgb" src="../files/cases/case-lowpro-mx3rgb.png" /></a></td>
+<td>mx3rgb</td>
+<td>three keys in a row. 6 mm short at each end, to tuck the leads into</td>
+<td>3 × 1</td>
+<td><a href="../files/cases/case-lowpro-mx3rgb.zip">case-lowpro-mx3rgb.zip</a></td>
+</tr>
+<tr>
+<td><a href="../files/cases/case-lowpro-mx4.zip"><img alt="mx4" src="../files/cases/case-lowpro-mx4.png" /></a></td>
+<td>mx4</td>
+<td>the WASD cluster, <code>mx4</code> and <code>mx4rgb</code></td>
+<td>3 × 2</td>
+<td><a href="../files/cases/case-lowpro-mx4.zip">case-lowpro-mx4.zip</a></td>
+</tr>
+<tr>
+<td><a href="../files/cases/case-lowpro-mx6rgb.zip"><img alt="mx6rgb" src="../files/cases/case-lowpro-mx6rgb.png" /></a></td>
+<td>mx6rgb</td>
+<td>six keys in a 3 × 2 grid</td>
+<td>3 × 3</td>
+<td><a href="../files/cases/case-lowpro-mx6rgb.zip">case-lowpro-mx6rgb.zip</a></td>
+</tr>
+<tr>
+<td><a href="../files/cases/case-lowpro-mx9rgb.zip"><img alt="mx9rgb" src="../files/cases/case-lowpro-mx9rgb.png" /></a></td>
+<td>mx9rgb</td>
+<td>nine keys in a 3 × 3 grid</td>
+<td>3 × 3</td>
+<td><a href="../files/cases/case-lowpro-mx9rgb.zip">case-lowpro-mx9rgb.zip</a></td>
+</tr>
+<tr>
+<td><a href="../files/cases/case-lowpro-arc4.zip"><img alt="arc4" src="../files/cases/case-lowpro-arc4.png" /></a></td>
+<td>arc4</td>
+<td>the arc4 board only. Arcade buttons are too deep for a 10 mm case: mount them in a panel and run their leads back</td>
+<td>2 × 1</td>
+<td><a href="../files/cases/case-lowpro-arc4.zip">case-lowpro-arc4.zip</a></td>
+</tr>
+<tr>
+<td><a href="../files/cases/case-lowpro-enc1.zip"><img alt="enc1" src="../files/cases/case-lowpro-enc1.png" /></a></td>
+<td>enc1</td>
+<td>one rotary encoder, standing up through the lid</td>
+<td>2 × 1</td>
+<td><a href="../files/cases/case-lowpro-enc1.zip">case-lowpro-enc1.zip</a></td>
+</tr>
+<tr>
+<td><a href="../files/cases/case-lowpro-disp1.zip"><img alt="disp1" src="../files/cases/case-lowpro-disp1.png" /></a></td>
+<td>disp1</td>
+<td>the 128 × 32 text panel. Stands 12.0 mm tall</td>
+<td>2 × 1</td>
+<td><a href="../files/cases/case-lowpro-disp1.zip">case-lowpro-disp1.zip</a></td>
+</tr>
+<tr>
+<td><a href="../files/cases/case-lowpro-disp2.zip"><img alt="disp2" src="../files/cases/case-lowpro-disp2.png" /></a></td>
+<td>disp2</td>
+<td>the 1.8&rdquo; colour display</td>
+<td>2 × 2</td>
+<td><a href="../files/cases/case-lowpro-disp2.zip">case-lowpro-disp2.zip</a></td>
+</tr>
+<tr>
+<td><a href="../files/cases/case-lowpro-screenkey1.zip"><img alt="screenkey1" src="../files/cases/case-lowpro-screenkey1.png" /></a></td>
+<td>screenkey1</td>
+<td>two cases: the board (2 × 1) and the screen module (2 × 2), joined by the module&rsquo;s lead. The module case stands 12.0 mm with the supplied 8 mm standoffs, 10 mm with 6 mm ones</td>
+<td>2 × 1 + 2 × 2</td>
+<td><a href="../files/cases/case-lowpro-screenkey1.zip">case-lowpro-screenkey1.zip</a></td>
+</tr>
+<tr>
+<td><a href="../files/cases/case-lowpro-links.zip"><img alt="Link keys and feet" src="../files/cases/case-lowpro-links.png" /></a></td>
+<td>Link keys and feet</td>
+<td>the plain link key, the padded key and the foot</td>
+<td>—</td>
+<td><a href="../files/cases/case-lowpro-links.zip">case-lowpro-links.zip</a></td>
+</tr>
+<tr>
+<td><a href="../files/cases/case-lowpro-link-blocks.zip"><img alt="Link blocks" src="../files/cases/case-lowpro-link-blocks.png" /></a></td>
+<td>Link blocks</td>
+<td>blank cells with no board, which join the cases round them and carry leads through. Straight, corner and three 2 × 1 blocks, one of them for the end of a <code>disp2</code></td>
+<td>1 × 1, 2 × 1</td>
+<td><a href="../files/cases/case-lowpro-link-blocks.zip">case-lowpro-link-blocks.zip</a></td>
+</tr>
+</tbody>
+</table>
+<p>The deck, trays and cover are made for your layout in <a href="layout.html">Plan your panel</a>, so they are not in a zip.</p>
+<h2 id="printing">Printing<a class="headerlink" href="#printing" title="Permanent link">#</a></h2>
+<ul>
+<li><strong>Base:</strong> floor down.</li>
+<li><strong>Lid:</strong> top down. The STL is already flipped, so no supports are needed.</li>
+<li><strong>Link keys, padded keys and feet:</strong> flat, pad down. No supports.</li>
+<li><strong>Deck and cover:</strong> flat, as the STLs lie.</li>
+<li>The keys are held by their fit alone, 0.1 mm a side. If they are loose or will not go in, scale them slightly in the slicer, or change <code>LINK_CLR</code> in the design notes and rebuild.</li>
+</ul>
+<h2 id="putting-a-panel-together">Putting a panel together<a class="headerlink" href="#putting-a-panel-together" title="Permanent link">#</a></h2>
+<ol>
+<li>Put each board in its base and press the lid on until the latches click, as for the <a href="cases.html#putting-a-case-together">openGrid cases</a>.</li>
+<li>Plug the leads in between neighbouring cases. The planner&rsquo;s <strong>Leads</strong> view shows where each one goes.</li>
+<li>Join the cases: press link keys up into the pockets from below, or press the cases down onto the deck.</li>
+<li>Push the switches through the lids into the sockets, and fit the keycaps.</li>
+</ol>
+<div class="hint hint-info">
+<p><strong>The disp2&rsquo;s leads leave through its ends, at desk level.</strong> A case pressed right against a used end blocks the lead. Join a <code>disp2</code> to its neighbours on its other two sides, or put the <code>2x1 disp2</code> link block against that end: it has a window that takes the lead through.</p>
+</div>
+    </article>
+    <nav class="pager-row"><a class="pager prev" href="../getting-started/cases.html"><span class="pager-label">Previous</span><span class="pager-title">Printing the cases</span></a><a class="pager next" href="../getting-started/back-plate.html"><span class="pager-label">Next</span><span class="pager-title">Back plate for the leads</span></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/LearnWeaver/BBRControlBoard/edit/main/docs/gitbook/getting-started/lowpro-cases.md" rel="noopener">Edit this page on GitHub</a>
+    </footer>
+  </main>
+
+  <aside class="onpage" aria-label="On this page">
+    <p class="toc-title">On this page</p>
+<ul class="toc-list">
+<li><a href="#joining-the-cases">Joining the cases</a>
+<ul class="toc-sub">
+<li><a href="#the-decks-extras">The deck’s extras</a></li>
+</ul>
+</li>
+<li><a href="#downloads">Downloads</a>
+</li>
+<li><a href="#printing">Printing</a>
+</li>
+<li><a href="#putting-a-panel-together">Putting a panel together</a>
+</li>
+</ul>
+  </aside>
+</div>
+
+<div class="scrim" hidden></div>
+<script src="../app.js" defer></script>
+</body>
+</html>

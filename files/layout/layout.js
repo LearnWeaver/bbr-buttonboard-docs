@@ -575,11 +575,15 @@ async function mount(root) {
     if (!list.length) return;
     const t = el('table', { class: 'lp-parts' });
     const shown = new Set(), lp = view.style === 'lowpro';
+    // low profile: the case's own zip (case_downloads.py's lowpro- names); a cable tile is a link block there
+    const zipOf = (m) => !lp ? m.zip
+                       : m.group === 'Cable tiles' ? 'lowpro-link-blocks'
+                       : m.zip && deckData.cases[m.id] ? `lowpro-${m.zip}` : null;
     for (const m of list) {
-      const dl = lp ? ''
-               : !m.zip ? el('span', { class: 'lp-hint', title: m.nocase }, 'not yet')
-               : shown.has(m.zip) ? el('span', { class: 'lp-hint' }, 'above') : el('a', { href: zipUrl(m.zip), download: '' }, 'zip');
-      if (m.zip) shown.add(m.zip);
+      const zip = zipOf(m);
+      const dl = !zip ? el('span', { class: 'lp-hint', title: m.nocase }, 'not yet')
+               : shown.has(zip) ? el('span', { class: 'lp-hint' }, 'above') : el('a', { href: zipUrl(zip), download: '' }, 'zip');
+      if (zip) shown.add(zip);
       t.append(el('tr', {}, el('td', {}, m.group === 'Cable tiles' ? `${m.name} tile` : m.name), el('td', {}, `× ${m.count}`), el('td', {}, dl)));
     }
     if (!lp) {
@@ -589,8 +593,12 @@ async function mount(root) {
       t.append(el('tr', {}, el('td', { title: 'Optional: holds the cables behind the board' }, 'Back plate (optional)'), el('td', {}, `+ ${standoffCount(L.cols, L.rows)} standoffs`),
                   el('td', {}, el('a', { href: `back-plate.html?cols=${L.cols}&rows=${L.rows}` }, 'make'))));
     }
+    if (lp) {
+      // what joins them: keys and feet, or the deck below
+      t.append(el('tr', {}, el('td', { title: 'Or press the cases onto a deck, below' }, 'Link keys and feet'), el('td', {}, ''),
+                  el('td', {}, el('a', { href: zipUrl('lowpro-links'), download: '' }, 'zip'))));
+    }
     parts.append(t);
-    if (lp) parts.append(el('p', { class: 'lp-hint', style: 'margin-top:.5rem' }, 'The low-profile case files are not on the site yet; the openGrid ones are.'));
   }
 
   const bed = () => ({ x: Math.round(+bedX.input.value), y: Math.round(+bedY.input.value) });
