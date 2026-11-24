@@ -72,6 +72,10 @@
 <li><a href="../configuring/leds.html">LED colours</a></li>
 <li><a href="../configuring/encoders.html" class="active">Rotary encoders</a></li>
 <li><a href="../configuring/screen-keys.html">Display tiles and legends</a></li>
+<li><a href="../configuring/usb-modes.html">USB modes</a></li>
+<li><a href="../configuring/keyboard.html">Keyboard and media keys</a></li>
+<li><a href="../configuring/midi.html">MIDI</a></li>
+<li><a href="../configuring/sim.html">Flight and driving sims</a></li>
 </ul>
 <p class="nav-group">On the robot</p>
 <ul class="nav-list">
@@ -110,6 +114,7 @@
 <p>Call <code>update</code> every loop. It stays right as long as the knob turns fewer than 128 clicks between two loops. The count starts at 0 on the first reading, and <code>knob.reset()</code> makes the current position zero. That trigger no longer works as button 15 (LT) or 16 (RT). Each trigger takes one knob, so two knobs can work this way.
 * <strong>Pulsed buttons:</strong> one button pulses per click clockwise, another per click anticlockwise, and your OpMode counts the presses. Set them under <strong>Direction buttons</strong>.</p>
 <p>If a knob has a trigger, it uses that in <code>xinput</code> and ignores its direction buttons there. Pulsed buttons are available under <code>frc</code> too, if you would rather count clicks than read a position.</p>
+<p><strong>Other modes.</strong> In <code>desk</code> a knob presses its direction buttons, so it can be a volume knob or a scroll wheel; see <a href="keyboard.html#knobs">Keyboard and media keys</a>. In <code>midi</code> it can send a relative controller; see <a href="midi.html#knobs">MIDI</a>. In <code>sim</code> there are eight axes rather than four, and a knob that is not on an axis is two buttons; see <a href="sim.html#knobs-and-axes">Flight and driving sims</a>.</p>
 <h2 id="the-shaft-push">The shaft push<a class="headerlink" href="#the-shaft-push" title="Permanent link">#</a></h2>
 <p>The push switch on the encoder is an ordinary key. Bind it like any other key to a logical button number.</p>
 <h2 id="zeroing">Zeroing<a class="headerlink" href="#zeroing" title="Permanent link">#</a></h2>

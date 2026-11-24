@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Keyboard and media keys · BBR Button Board</title>
+<meta name="description" content="Keyboard and media keys In desk mode the board is a keyboard, a set of media keys and a mouse. Use it for a volume knob, play and pause, keyboard shortcuts for OBS or a video edito">
+<link rel="canonical" href="https://buttonboard.buildingblockrobotics.com/configuring/keyboard.html">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../style.css">
+<script>
+  // Set the theme before first paint so the page never flashes the wrong one.
+  try {
+    var t = localStorage.getItem('bbr-theme');
+    if (t) document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+</script>
+</head>
+<body class="page">
+
+<a class="skip" href="#content">Skip to content</a>
+
+<header class="topbar">
+  <button class="menu-btn" aria-label="Toggle navigation" aria-expanded="false">
+    <span class="bars"><span></span><span></span><span></span></span><span class="menu-label">Docs</span>
+  </button>
+  <a class="brand" href="../index.html">
+    <span class="brand-name">BBR Button Board</span>
+    <span class="brand-tagline">Documentation</span>
+  </a>
+  <div class="search" role="search">
+    <input type="search" id="search-input" placeholder="Search"
+           autocomplete="off" spellcheck="false" aria-label="Search the documentation">
+    <kbd class="search-key">/</kbd>
+    <div id="search-results" class="search-results" hidden></div>
+  </div>
+  <button class="theme-btn" aria-label="Toggle dark mode" title="Toggle dark mode">
+    <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <circle cx="12" cy="12" r="4.5"/>
+      <g class="rays"><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.4 4.4l2.1 2.1M17.5 17.5l2.1 2.1M19.6 4.4l-2.1 2.1M6.5 17.5l-2.1 2.1"/></g>
+    </svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/>
+    </svg>
+  </button>
+</header>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <nav aria-label="Documentation">
+      <ul class="nav-list">
+<li><a href="../index.html">BBR Button Board</a></li>
+</ul>
+<p class="nav-group">Getting started</p>
+<ul class="nav-list">
+<li><a href="../getting-started/hardware.html">What you have</a></li>
+<li><a href="../getting-started/tiles.html">The tiles</a></li>
+<li><a href="../getting-started/layout.html">Plan your panel</a></li>
+<li><a href="../getting-started/opengrid-board.html">The openGrid board</a></li>
+<li><a href="../getting-started/cases.html">Printing the cases</a></li>
+<li><a href="../getting-started/back-plate.html">Back plate for the leads</a></li>
+<li><a href="../getting-started/wiring.html">Plugging it together</a></li>
+<li><a href="../getting-started/first-run.html">First run</a></li>
+<li><a href="../getting-started/firmware.html">Updating the firmware</a></li>
+</ul>
+<p class="nav-group">Configuring</p>
+<ul class="nav-list">
+<li><a href="../configuring/config-app.html">The config app</a></li>
+<li><a href="../configuring/binding.html">Binding buttons</a></li>
+<li><a href="../configuring/leds.html">LED colours</a></li>
+<li><a href="../configuring/encoders.html">Rotary encoders</a></li>
+<li><a href="../configuring/screen-keys.html">Display tiles and legends</a></li>
+<li><a href="../configuring/usb-modes.html">USB modes</a></li>
+<li><a href="../configuring/keyboard.html" class="active">Keyboard and media keys</a></li>
+<li><a href="../configuring/midi.html">MIDI</a></li>
+<li><a href="../configuring/sim.html">Flight and driving sims</a></li>
+</ul>
+<p class="nav-group">On the robot</p>
+<ul class="nav-list">
+<li><a href="../on-the-robot/legends.html">Changing legends in a match</a></li>
+</ul>
+<p class="nav-group">Driver Station app</p>
+<ul class="nav-list">
+<li><a href="../driver-station/install.html">Install the library</a></li>
+<li><a href="../driver-station/first-script.html">Your first script</a></li>
+<li><a href="../driver-station/drawing.html">Drawing on a display</a></li>
+<li><a href="../driver-station/api.html">Python API summary</a></li>
+</ul>
+<p class="nav-group">Reference</p>
+<ul class="nav-list">
+<li><a href="../reference/commands.html">Serial command reference</a></li>
+<li><a href="../reference/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+    </nav>
+  </aside>
+
+  <main id="content" class="content">
+    <article class="prose">
+      <h1 id="keyboard-and-media-keys">Keyboard and media keys<a class="headerlink" href="#keyboard-and-media-keys" title="Permanent link">#</a></h1>
+<p>In <code>desk</code> mode the board is a keyboard, a set of media keys and a mouse. Use it for a volume knob, play and pause, keyboard shortcuts for OBS or a video editor, or a scroll wheel. It needs no driver.</p>
+<div class="hint hint-info">
+<p>So far <code>desk</code> has been tried on macOS, where media keys and scrolling work. It is a standard USB keyboard, so Windows, Linux, ChromeOS, iPad and Android should take it the same way; check yours before relying on it.</p>
+</div>
+<p>To turn it on, see <a href="usb-modes.html">USB modes</a>: pick <strong>Keyboard &amp; media</strong>, Save, unplug and plug back in.</p>
+<h2 id="choosing-what-a-key-sends">Choosing what a key sends<a class="headerlink" href="#choosing-what-a-key-sends" title="Permanent link">#</a></h2>
+<p>Go to <strong>Configure</strong>, select a key, and use the <strong>Sends</strong> section of the inspector. Pick any of:</p>
+<ul>
+<li><strong>A media key:</strong> volume up and down, mute, play/pause, next and previous track, screen brightness.</li>
+<li><strong>F13 to F24.</strong> No real keyboard has these keys, so apps such as OBS, Discord or a video editor can use them as shortcuts that clash with nothing.</li>
+<li><strong>A mouse action:</strong> left, right or middle click, or one step of the scroll wheel.</li>
+<li><strong>A shortcut.</strong> Click the modifiers (Ctrl, Shift, Alt, Cmd/Win) and choose the key from the list. This is how to set shortcuts the computer keeps for itself, such as Cmd+Tab or Ctrl+W.</li>
+<li><strong>Record a shortcut</strong> from the laptop&rsquo;s keyboard, or type one in the box: <code>ctrl+shift+m</code>, <code>gui+l</code>, <code>f13</code>.</li>
+</ul>
+<p>A key that has no button number gets a spare one by itself, so you never have to pick a number.</p>
+<p>The key&rsquo;s action is held for as long as the key is held, as on a real keyboard. Holding a key with a modifier on it (Shift, say) changes what another key sends, exactly as on a keyboard.</p>
+<div class="hint hint-info">
+<p><strong>Keys are positions, not letters.</strong> The board sends the key at that place on a US keyboard, which is what every USB keyboard does. On a French layout, <code>a</code> types <code>q</code>. Shortcuts behave the same as on the computer&rsquo;s own keyboard.</p>
+</div>
+<p>One key sends one shortcut. Typing a word, or a sequence of several shortcuts, is not supported.</p>
+<h2 id="knobs">Knobs<a class="headerlink" href="#knobs" title="Permanent link">#</a></h2>
+<p>In <code>desk</code> mode each click of an encoder is one press of a button. Select the knob and choose a preset under <strong>Knob</strong>:</p>
+<ul>
+<li><strong>Volume knob</strong></li>
+<li><strong>Scroll wheel</strong></li>
+<li><strong>Brightness</strong></li>
+<li><strong>Next / previous track</strong></li>
+</ul>
+<p>Each preset sets both directions at once. To send something else, set the knob&rsquo;s two <strong>Direction buttons</strong> and give each button an action.</p>
+<h2 id="showing-the-volume-on-a-display">Showing the volume on a display<a class="headerlink" href="#showing-the-volume-on-a-display" title="Permanent link">#</a></h2>
+<p>The knob and mute key work with nothing running on the computer. To also see the volume, run <a href="https://github.com/BuildingBlockRobotics/BBRButtonBoard/blob/main/examples/ds_volume.py"><code>ds_volume.py</code></a> on the laptop. It draws the computer&rsquo;s volume as a bar on a <code>disp2</code> and follows it as the knob turns. While the sound is muted it shows <strong>MUTED</strong> and lights the mute key red.</p>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>bbr-buttonboard
+python<span class="w"> </span>ds_volume.py
+</code></pre></div>
+
+<p>It reads the volume from the computer itself, so the bar also follows the keyboard&rsquo;s own volume keys. macOS and Linux work as they are; Windows needs <code>pip install pycaw</code> as well. Close the config app first: only one program can talk to the board at a time.</p>
+<h2 id="safety">Safety<a class="headerlink" href="#safety" title="Permanent link">#</a></h2>
+<ul>
+<li>A key held for more than <strong>60 seconds</strong> is released, and stays released until it is let go. A stuck key never types forever. The board&rsquo;s fault event says <code>stuck</code> when this happens.</li>
+<li>Binding a key, or any change to the configuration, releases every key first, so nothing is left held down.</li>
+<li>A tile that is unplugged or stops answering releases its keys at once.</li>
+<li>The <strong>Test</strong> patterns on <strong>Diagnose</strong> are refused in <code>desk</code>, as they would press every shortcut at once.</li>
+</ul>
+<h2 id="lock-lights">Lock lights<a class="headerlink" href="#lock-lights" title="Permanent link">#</a></h2>
+<p>The board reports the computer&rsquo;s Caps Lock, Num Lock and Scroll Lock state on the config channel as a <code>lock</code> event. See <a href="../reference/commands.html#events">Serial command reference</a>.</p>
+    </article>
+    <nav class="pager-row"><a class="pager prev" href="../configuring/usb-modes.html"><span class="pager-label">Previous</span><span class="pager-title">USB modes</span></a><a class="pager next" href="../configuring/midi.html"><span class="pager-label">Next</span><span class="pager-title">MIDI</span></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/LearnWeaver/BBRControlBoard/edit/main/docs/gitbook/configuring/keyboard.md" rel="noopener">Edit this page on GitHub</a>
+    </footer>
+  </main>
+
+  <aside class="onpage" aria-label="On this page">
+    <p class="toc-title">On this page</p>
+<ul class="toc-list">
+<li><a href="#choosing-what-a-key-sends">Choosing what a key sends</a>
+</li>
+<li><a href="#knobs">Knobs</a>
+</li>
+<li><a href="#showing-the-volume-on-a-display">Showing the volume on a display</a>
+</li>
+<li><a href="#safety">Safety</a>
+</li>
+<li><a href="#lock-lights">Lock lights</a>
+</li>
+</ul>
+  </aside>
+</div>
+
+<div class="scrim" hidden></div>
+<script src="../app.js" defer></script>
+</body>
+</html>

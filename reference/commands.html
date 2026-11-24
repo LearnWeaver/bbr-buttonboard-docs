@@ -72,6 +72,10 @@
 <li><a href="../configuring/leds.html">LED colours</a></li>
 <li><a href="../configuring/encoders.html">Rotary encoders</a></li>
 <li><a href="../configuring/screen-keys.html">Display tiles and legends</a></li>
+<li><a href="../configuring/usb-modes.html">USB modes</a></li>
+<li><a href="../configuring/keyboard.html">Keyboard and media keys</a></li>
+<li><a href="../configuring/midi.html">MIDI</a></li>
+<li><a href="../configuring/sim.html">Flight and driving sims</a></li>
 </ul>
 <p class="nav-group">On the robot</p>
 <ul class="nav-list">
@@ -117,7 +121,7 @@
 <tbody>
 <tr>
 <td><code>hello</code></td>
-<td>Identify the board: firmware, serial, tile count, USB personality</td>
+<td>Identify the board: firmware, serial, tile count, USB mode (<code>usb</code> now, <code>usbSaved</code> after the next replug)</td>
 </tr>
 <tr>
 <td><code>tiles</code></td>
@@ -128,8 +132,8 @@
 <td>Uptime, poll cycle time, fault state, power budget</td>
 </tr>
 <tr>
-<td><code>usb frc</code> | <code>usb xinput</code></td>
-<td>Set the USB personality, applied at the next reset</td>
+<td><code>usb frc</code> | <code>xinput</code> | <code>desk</code> | <code>midi</code> | <code>sim</code></td>
+<td>Set the USB mode, applied at the next reset once saved. <code>desk</code>, <code>midi</code> and <code>sim</code> need firmware 0.4.0; an older board answers <code>args</code>. See <a href="../configuring/usb-modes.html">USB modes</a></td>
 </tr>
 <tr>
 <td><code>pixel on</code> | <code>pixel off</code></td>
@@ -157,7 +161,7 @@
 </tr>
 <tr>
 <td><code>bind axis &lt;n&gt;</code></td>
-<td>Bind axis 1–4 to the next encoder turned</td>
+<td>Bind axis 1–8 to the next encoder turned. <code>frc</code> reports axes 1–4; 5–8 move only in <code>sim</code></td>
 </tr>
 <tr>
 <td><code>unbind axis &lt;n&gt;</code></td>
@@ -215,6 +219,17 @@
 <td><code>test off</code></td>
 <td>Stop</td>
 </tr>
+</tbody>
+</table>
+<p>The <code>test</code> patterns are refused in <code>desk</code> and <code>midi</code> (<code>{"ok":false,"err":"usb"}</code>), as they would press every shortcut or play every note at once. <code>test off</code> always works.</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
 <tr>
 <td><code>disp &lt;addr&gt; …</code></td>
 <td>Write text, a bar or a picture to a display tile</td>
@@ -269,7 +284,7 @@
 </tr>
 <tr>
 <td><code>fault</code></td>
-<td>The fault indicator changed, with the reason</td>
+<td>The fault indicator changed, with the reason. In <code>desk</code>, <code>stuck</code> means a key held for over 60 s was released</td>
 </tr>
 <tr>
 <td><code>key</code></td>
@@ -290,6 +305,14 @@
 <tr>
 <td><code>rumble</code></td>
 <td>A rumble packet arrived, with the legend code it decodes to — FTC mode only</td>
+</tr>
+<tr>
+<td><code>lock</code></td>
+<td>The computer changed its Caps, Num or Scroll Lock light: <code>{"ev":"lock","num":false,"caps":true,"scroll":false}</code> — <code>desk</code> only</td>
+</tr>
+<tr>
+<td><code>midi</code></td>
+<td>The computer sent the board a MIDI message, in hex: <code>{"ev":"midi","data":"903C7F"}</code> — <code>midi</code> only</td>
 </tr>
 </tbody>
 </table>

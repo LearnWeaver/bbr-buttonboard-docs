@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>USB modes · BBR Button Board</title>
+<meta name="description" content="USB modes The board can show up on USB as five different devices. The tiles, bindings, LED colours and display tiles are the same in all of them. What changes is what the computer ">
+<link rel="canonical" href="https://buttonboard.buildingblockrobotics.com/configuring/usb-modes.html">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../style.css">
+<script>
+  // Set the theme before first paint so the page never flashes the wrong one.
+  try {
+    var t = localStorage.getItem('bbr-theme');
+    if (t) document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+</script>
+</head>
+<body class="page">
+
+<a class="skip" href="#content">Skip to content</a>
+
+<header class="topbar">
+  <button class="menu-btn" aria-label="Toggle navigation" aria-expanded="false">
+    <span class="bars"><span></span><span></span><span></span></span><span class="menu-label">Docs</span>
+  </button>
+  <a class="brand" href="../index.html">
+    <span class="brand-name">BBR Button Board</span>
+    <span class="brand-tagline">Documentation</span>
+  </a>
+  <div class="search" role="search">
+    <input type="search" id="search-input" placeholder="Search"
+           autocomplete="off" spellcheck="false" aria-label="Search the documentation">
+    <kbd class="search-key">/</kbd>
+    <div id="search-results" class="search-results" hidden></div>
+  </div>
+  <button class="theme-btn" aria-label="Toggle dark mode" title="Toggle dark mode">
+    <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <circle cx="12" cy="12" r="4.5"/>
+      <g class="rays"><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.4 4.4l2.1 2.1M17.5 17.5l2.1 2.1M19.6 4.4l-2.1 2.1M6.5 17.5l-2.1 2.1"/></g>
+    </svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/>
+    </svg>
+  </button>
+</header>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <nav aria-label="Documentation">
+      <ul class="nav-list">
+<li><a href="../index.html">BBR Button Board</a></li>
+</ul>
+<p class="nav-group">Getting started</p>
+<ul class="nav-list">
+<li><a href="../getting-started/hardware.html">What you have</a></li>
+<li><a href="../getting-started/tiles.html">The tiles</a></li>
+<li><a href="../getting-started/layout.html">Plan your panel</a></li>
+<li><a href="../getting-started/opengrid-board.html">The openGrid board</a></li>
+<li><a href="../getting-started/cases.html">Printing the cases</a></li>
+<li><a href="../getting-started/back-plate.html">Back plate for the leads</a></li>
+<li><a href="../getting-started/wiring.html">Plugging it together</a></li>
+<li><a href="../getting-started/first-run.html">First run</a></li>
+<li><a href="../getting-started/firmware.html">Updating the firmware</a></li>
+</ul>
+<p class="nav-group">Configuring</p>
+<ul class="nav-list">
+<li><a href="../configuring/config-app.html">The config app</a></li>
+<li><a href="../configuring/binding.html">Binding buttons</a></li>
+<li><a href="../configuring/leds.html">LED colours</a></li>
+<li><a href="../configuring/encoders.html">Rotary encoders</a></li>
+<li><a href="../configuring/screen-keys.html">Display tiles and legends</a></li>
+<li><a href="../configuring/usb-modes.html" class="active">USB modes</a></li>
+<li><a href="../configuring/keyboard.html">Keyboard and media keys</a></li>
+<li><a href="../configuring/midi.html">MIDI</a></li>
+<li><a href="../configuring/sim.html">Flight and driving sims</a></li>
+</ul>
+<p class="nav-group">On the robot</p>
+<ul class="nav-list">
+<li><a href="../on-the-robot/legends.html">Changing legends in a match</a></li>
+</ul>
+<p class="nav-group">Driver Station app</p>
+<ul class="nav-list">
+<li><a href="../driver-station/install.html">Install the library</a></li>
+<li><a href="../driver-station/first-script.html">Your first script</a></li>
+<li><a href="../driver-station/drawing.html">Drawing on a display</a></li>
+<li><a href="../driver-station/api.html">Python API summary</a></li>
+</ul>
+<p class="nav-group">Reference</p>
+<ul class="nav-list">
+<li><a href="../reference/commands.html">Serial command reference</a></li>
+<li><a href="../reference/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+    </nav>
+  </aside>
+
+  <main id="content" class="content">
+    <article class="prose">
+      <h1 id="usb-modes">USB modes<a class="headerlink" href="#usb-modes" title="Permanent link">#</a></h1>
+<p>The board can show up on USB as five different devices. The tiles, bindings, LED colours and display tiles are the same in all of them. What changes is what the computer sees when a key is pressed.</p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>In the config app</th>
+<th>The computer sees</th>
+<th>For</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>frc</code></td>
+<td>FRC gamepad</td>
+<td>A joystick with 32 buttons and 4 axes</td>
+<td>The FRC Driver Station. The default</td>
+</tr>
+<tr>
+<td><code>xinput</code></td>
+<td>FTC (Xbox pad)</td>
+<td>An Xbox 360 pad</td>
+<td>The FTC Driver Station</td>
+</tr>
+<tr>
+<td><code>desk</code></td>
+<td>Keyboard &amp; media</td>
+<td>A keyboard, media keys and a mouse</td>
+<td>Volume knobs, media keys, shortcuts, macro pads. See <a href="keyboard.html">Keyboard and media keys</a></td>
+</tr>
+<tr>
+<td><code>midi</code></td>
+<td>MIDI</td>
+<td>A USB MIDI controller</td>
+<td>Music programs, lighting desks, stream tools. See <a href="midi.html">MIDI</a></td>
+</tr>
+<tr>
+<td><code>sim</code></td>
+<td>Sim (128 buttons)</td>
+<td>A joystick with 128 buttons, 8 axes and a hat</td>
+<td>Flight and driving sims. See <a href="sim.html">Flight and driving sims</a></td>
+</tr>
+</tbody>
+</table>
+<p><code>desk</code>, <code>midi</code> and <code>sim</code> are <strong>not for competition use</strong>. Neither Driver Station reads them as a controller.</p>
+<div class="hint hint-info">
+<p><code>desk</code>, <code>midi</code> and <code>sim</code> need main module firmware <strong>0.4.0</strong> or newer. An older board refuses them; update it on the <strong>Firmware</strong> screen first. See <a href="../getting-started/firmware.html">Updating the firmware</a>.</p>
+</div>
+<h2 id="switching-modes">Switching modes<a class="headerlink" href="#switching-modes" title="Permanent link">#</a></h2>
+<ol>
+<li>Pick the mode under <strong>Mode</strong> at the top of the <strong>Configure</strong> inspector, or on the <strong>Connect</strong> screen.</li>
+<li>Press <strong>Save</strong>.</li>
+<li>Unplug the board and plug it back in.</li>
+</ol>
+<p>The board only changes what it is when it is replugged. Until then the app shows <em>The board still reports as <code>frc</code></em>, and the keys keep doing what they did before.</p>
+<p>No drivers are needed in any mode, on Windows, macOS, Linux or ChromeOS.</p>
+<h2 id="what-carries-over">What carries over<a class="headerlink" href="#what-carries-over" title="Permanent link">#</a></h2>
+<p>Each mode keeps its own settings in the same saved configuration, so switching back and forth loses nothing. A key can be button 5 in <code>frc</code>, Ctrl+Shift+M in <code>desk</code> and note 60 in <code>midi</code> all at once. Only the setting for the current mode is used.</p>
+<p>The inspector shows only the current mode&rsquo;s options. Switch the mode and it shows the other mode&rsquo;s options instead.</p>
+<h2 id="the-config-app-in-each-mode">The config app in each mode<a class="headerlink" href="#the-config-app-in-each-mode" title="Permanent link">#</a></h2>
+<p><code>frc</code>, <code>desk</code>, <code>midi</code> and <code>sim</code> all keep the config channel, so the app connects to the board as usual.</p>
+<p><code>xinput</code> has no config channel. To change anything on a board in <code>xinput</code>, hold the <strong>CFG</strong> button on the main module while plugging it in. That starts it in a mode the app can reach, whatever is stored.</p>
+<h2 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">#</a></h2>
+<p>The <strong>Test</strong> card on <strong>Diagnose</strong> is refused in <code>desk</code> and <code>midi</code>. Its patterns press every button at once, and in those modes that would mean every shortcut or every note together. Press the keys themselves instead; <strong>Pressed now</strong> shows them arriving.</p>
+    </article>
+    <nav class="pager-row"><a class="pager prev" href="../configuring/screen-keys.html"><span class="pager-label">Previous</span><span class="pager-title">Display tiles and legends</span></a><a class="pager next" href="../configuring/keyboard.html"><span class="pager-label">Next</span><span class="pager-title">Keyboard and media keys</span></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/LearnWeaver/BBRControlBoard/edit/main/docs/gitbook/configuring/usb-modes.md" rel="noopener">Edit this page on GitHub</a>
+    </footer>
+  </main>
+
+  <aside class="onpage" aria-label="On this page">
+    <p class="toc-title">On this page</p>
+<ul class="toc-list">
+<li><a href="#switching-modes">Switching modes</a>
+</li>
+<li><a href="#what-carries-over">What carries over</a>
+</li>
+<li><a href="#the-config-app-in-each-mode">The config app in each mode</a>
+</li>
+<li><a href="#testing">Testing</a>
+</li>
+</ul>
+  </aside>
+</div>
+
+<div class="scrim" hidden></div>
+<script src="../app.js" defer></script>
+</body>
+</html>

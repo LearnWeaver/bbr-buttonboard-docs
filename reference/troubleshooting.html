@@ -72,6 +72,10 @@
 <li><a href="../configuring/leds.html">LED colours</a></li>
 <li><a href="../configuring/encoders.html">Rotary encoders</a></li>
 <li><a href="../configuring/screen-keys.html">Display tiles and legends</a></li>
+<li><a href="../configuring/usb-modes.html">USB modes</a></li>
+<li><a href="../configuring/keyboard.html">Keyboard and media keys</a></li>
+<li><a href="../configuring/midi.html">MIDI</a></li>
+<li><a href="../configuring/sim.html">Flight and driving sims</a></li>
 </ul>
 <p class="nav-group">On the robot</p>
 <ul class="nav-list">
@@ -143,11 +147,17 @@
 </ul>
 <h2 id="the-driver-station-sees-the-wrong-thing">The Driver Station sees the wrong thing<a class="headerlink" href="#the-driver-station-sees-the-wrong-thing" title="Permanent link">#</a></h2>
 <ul>
-<li><strong>FRC expects <code>frc</code>; FTC expects <code>xinput</code>.</strong> Check on the <strong>Connect</strong> screen.</li>
-<li>A personality change only takes effect at a USB reset. Unplug and plug back in.</li>
+<li><strong>FRC expects <code>frc</code>; FTC expects <code>xinput</code>.</strong> Check on the <strong>Connect</strong> screen. <code>desk</code>, <code>midi</code> and <code>sim</code> are not for the Driver Station.</li>
+<li>A mode change only takes effect once saved and the board is replugged. Until then <strong>Configure</strong> says <em>The board still reports as …</em>. Save, unplug and plug back in.</li>
 <li>Under FTC, bind the pad with Start+A or Start+B as usual. A key bound as a Start+A or Start+B combo does it in one press (see <a href="../configuring/binding.html">Binding buttons</a>).</li>
 </ul>
 <p>Use <strong>Diagnose → Test</strong> to settle where the problem is: it makes the board report presses with no tile involved. If the Driver Station sees those, everything from the board to the laptop is fine and the problem is on the bus or in the bindings.</p>
+<h2 id="a-key-does-nothing-in-keyboard-midi-or-sim-mode">A key does nothing in keyboard, MIDI or sim mode<a class="headerlink" href="#a-key-does-nothing-in-keyboard-midi-or-sim-mode" title="Permanent link">#</a></h2>
+<ul>
+<li><strong>The mode has not changed yet.</strong> The board keeps doing what it did until it is saved and replugged. A key set to Mute that does nothing usually means the board is still a gamepad.</li>
+<li><strong>The key has no action for this mode.</strong> Each mode has its own setting per key. Select the key on <strong>Configure</strong> with the right <strong>Mode</strong> chosen and check what it sends.</li>
+<li><strong>In <code>sim</code>, the game shows a different button number</strong> from the one you expected: check the number in the key&rsquo;s inspector. Numbers run tile by tile in address order, so a tile at a lower address than you thought shifts them.</li>
+</ul>
 <h2 id="leds-are-dimmer-than-i-set-them">LEDs are dimmer than I set them<a class="headerlink" href="#leds-are-dimmer-than-i-set-them" title="Permanent link">#</a></h2>
 <p>The power budget is limiting them. The board lowers global brightness until the panel fits the current it can draw from USB. <strong>Diagnose → Power</strong> shows the budget, the worst case and the brightness in use. Raise the budget if the port genuinely supplies more.</p>
 <p>If the panel cannot fit even at minimum brightness, the LEDs are held off and a fault is raised — the same view says so.</p>
@@ -180,6 +190,8 @@
 <li><a href="#is-a-tile-running">Is a tile running?</a>
 </li>
 <li><a href="#the-driver-station-sees-the-wrong-thing">The Driver Station sees the wrong thing</a>
+</li>
+<li><a href="#a-key-does-nothing-in-keyboard-midi-or-sim-mode">A key does nothing in keyboard, MIDI or sim mode</a>
 </li>
 <li><a href="#leds-are-dimmer-than-i-set-them">LEDs are dimmer than I set them</a>
 </li>

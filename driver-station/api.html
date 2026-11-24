@@ -72,6 +72,10 @@
 <li><a href="../configuring/leds.html">LED colours</a></li>
 <li><a href="../configuring/encoders.html">Rotary encoders</a></li>
 <li><a href="../configuring/screen-keys.html">Display tiles and legends</a></li>
+<li><a href="../configuring/usb-modes.html">USB modes</a></li>
+<li><a href="../configuring/keyboard.html">Keyboard and media keys</a></li>
+<li><a href="../configuring/midi.html">MIDI</a></li>
+<li><a href="../configuring/sim.html">Flight and driving sims</a></li>
 </ul>
 <p class="nav-group">On the robot</p>
 <ul class="nav-list">
@@ -256,7 +260,7 @@
 <tbody>
 <tr>
 <td><code>board.bind_axis(n)</code></td>
-<td>Bind axis 1–4 to the next encoder turned</td>
+<td>Bind axis 1–8 to the next encoder turned. <code>frc</code> reports 1–4; 5–8 move only in <code>sim</code></td>
 </tr>
 <tr>
 <td><code>board.unbind_axis(n)</code></td>
@@ -400,8 +404,8 @@
 </thead>
 <tbody>
 <tr>
-<td><code>board.usb("frc")</code> / <code>board.usb("xinput")</code></td>
-<td>Set the USB personality; takes effect at the next reset</td>
+<td><code>board.usb(mode)</code></td>
+<td>Set the USB mode: <code>"frc"</code>, <code>"xinput"</code>, <code>"desk"</code>, <code>"midi"</code> or <code>"sim"</code>. Takes effect once saved and replugged. See <a href="../configuring/usb-modes.html">USB modes</a></td>
 </tr>
 <tr>
 <td><code>board.power_budget(mA)</code></td>
@@ -425,7 +429,7 @@
 <span class="n">unsubscribe</span> <span class="o">=</span> <span class="n">board</span><span class="o">.</span><span class="n">on</span><span class="p">(</span><span class="s2">"tile"</span><span class="p">,</span> <span class="n">on_tile</span><span class="p">)</span>
 </code></pre></div>
 
-<p>Names are <code>tile</code>, <code>fault</code>, <code>key</code>, <code>enc</code>, <code>progress</code> and <code>player</code>; <code>"*"</code> receives all of them.</p>
+<p>Names are <code>tile</code>, <code>fault</code>, <code>key</code>, <code>enc</code>, <code>stick</code>, <code>progress</code>, <code>player</code> and <code>rumble</code>, plus <code>lock</code> in <code>desk</code> mode and <code>midi</code> in <code>midi</code> mode; <code>"*"</code> receives all of them.</p>
 <div class="hint hint-warning">
 <p>Callbacks run on the library&rsquo;s reader thread. Do not call <code>board</code> methods from inside one: the call blocks until it times out. Put the event on a queue and handle it in your loop.</p>
 </div>

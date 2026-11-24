@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flight and driving sims · BBR Button Board</title>
+<meta name="description" content="Flight and driving sims In sim mode the board is a large joystick: 128 buttons, 8 axes and a hat switch. That is the most a single joystick can report on Windows, and every flight ">
+<link rel="canonical" href="https://buttonboard.buildingblockrobotics.com/configuring/sim.html">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../style.css">
+<script>
+  // Set the theme before first paint so the page never flashes the wrong one.
+  try {
+    var t = localStorage.getItem('bbr-theme');
+    if (t) document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+</script>
+</head>
+<body class="page">
+
+<a class="skip" href="#content">Skip to content</a>
+
+<header class="topbar">
+  <button class="menu-btn" aria-label="Toggle navigation" aria-expanded="false">
+    <span class="bars"><span></span><span></span><span></span></span><span class="menu-label">Docs</span>
+  </button>
+  <a class="brand" href="../index.html">
+    <span class="brand-name">BBR Button Board</span>
+    <span class="brand-tagline">Documentation</span>
+  </a>
+  <div class="search" role="search">
+    <input type="search" id="search-input" placeholder="Search"
+           autocomplete="off" spellcheck="false" aria-label="Search the documentation">
+    <kbd class="search-key">/</kbd>
+    <div id="search-results" class="search-results" hidden></div>
+  </div>
+  <button class="theme-btn" aria-label="Toggle dark mode" title="Toggle dark mode">
+    <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <circle cx="12" cy="12" r="4.5"/>
+      <g class="rays"><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.4 4.4l2.1 2.1M17.5 17.5l2.1 2.1M19.6 4.4l-2.1 2.1M6.5 17.5l-2.1 2.1"/></g>
+    </svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/>
+    </svg>
+  </button>
+</header>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <nav aria-label="Documentation">
+      <ul class="nav-list">
+<li><a href="../index.html">BBR Button Board</a></li>
+</ul>
+<p class="nav-group">Getting started</p>
+<ul class="nav-list">
+<li><a href="../getting-started/hardware.html">What you have</a></li>
+<li><a href="../getting-started/tiles.html">The tiles</a></li>
+<li><a href="../getting-started/layout.html">Plan your panel</a></li>
+<li><a href="../getting-started/opengrid-board.html">The openGrid board</a></li>
+<li><a href="../getting-started/cases.html">Printing the cases</a></li>
+<li><a href="../getting-started/back-plate.html">Back plate for the leads</a></li>
+<li><a href="../getting-started/wiring.html">Plugging it together</a></li>
+<li><a href="../getting-started/first-run.html">First run</a></li>
+<li><a href="../getting-started/firmware.html">Updating the firmware</a></li>
+</ul>
+<p class="nav-group">Configuring</p>
+<ul class="nav-list">
+<li><a href="../configuring/config-app.html">The config app</a></li>
+<li><a href="../configuring/binding.html">Binding buttons</a></li>
+<li><a href="../configuring/leds.html">LED colours</a></li>
+<li><a href="../configuring/encoders.html">Rotary encoders</a></li>
+<li><a href="../configuring/screen-keys.html">Display tiles and legends</a></li>
+<li><a href="../configuring/usb-modes.html">USB modes</a></li>
+<li><a href="../configuring/keyboard.html">Keyboard and media keys</a></li>
+<li><a href="../configuring/midi.html">MIDI</a></li>
+<li><a href="../configuring/sim.html" class="active">Flight and driving sims</a></li>
+</ul>
+<p class="nav-group">On the robot</p>
+<ul class="nav-list">
+<li><a href="../on-the-robot/legends.html">Changing legends in a match</a></li>
+</ul>
+<p class="nav-group">Driver Station app</p>
+<ul class="nav-list">
+<li><a href="../driver-station/install.html">Install the library</a></li>
+<li><a href="../driver-station/first-script.html">Your first script</a></li>
+<li><a href="../driver-station/drawing.html">Drawing on a display</a></li>
+<li><a href="../driver-station/api.html">Python API summary</a></li>
+</ul>
+<p class="nav-group">Reference</p>
+<ul class="nav-list">
+<li><a href="../reference/commands.html">Serial command reference</a></li>
+<li><a href="../reference/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+    </nav>
+  </aside>
+
+  <main id="content" class="content">
+    <article class="prose">
+      <h1 id="flight-and-driving-sims">Flight and driving sims<a class="headerlink" href="#flight-and-driving-sims" title="Permanent link">#</a></h1>
+<p>In <code>sim</code> mode the board is a large joystick: <strong>128 buttons, 8 axes and a hat switch</strong>. That is the most a single joystick can report on Windows, and every flight and driving sim reads it. Use it for a button box, a cockpit panel, or a set of switches.</p>
+<p>To turn it on, see <a href="usb-modes.html">USB modes</a>: pick <strong>Sim (128 buttons)</strong>, Save, unplug and plug back in.</p>
+<div class="hint hint-warning">
+<p>Sim mode has not yet been tested in a game. Check it in your sim&rsquo;s controls screen before relying on it.</p>
+</div>
+<h2 id="button-numbers">Button numbers<a class="headerlink" href="#button-numbers" title="Permanent link">#</a></h2>
+<p>Sims bind every control themselves, in the game&rsquo;s own settings. So in <code>sim</code> mode you do not choose button numbers. <strong>Every key is its own button, numbered automatically.</strong> Select a key in <strong>Configure</strong> to see its number, then bind it in the game.</p>
+<p>The numbers run tile by tile, in address order:</p>
+<ul>
+<li>each tile&rsquo;s keys, in key order;</li>
+<li>then two buttons for each encoder: one for clockwise, one for anticlockwise.</li>
+</ul>
+<p>For example, an <code>mx9</code> at address 1, an <code>arc4</code> at 2 and an <code>enc1</code> at 3 give buttons 1–9, 10–13, 14 (the knob&rsquo;s push) and 15 and 16 (its turns).</p>
+<div class="hint hint-info">
+<p><strong>Unplugging a tile does not move anyone&rsquo;s numbers.</strong> The board remembers the tile and keeps its place, so your game&rsquo;s bindings survive. Add new tiles at the end of the chain. To swap a failed tile, use <strong>replace</strong> (see <a href="binding.html#swapping-and-replacing-tiles">Swapping and replacing tiles</a>) so the new one takes the old one&rsquo;s address.</p>
+</div>
+<p>Keys past button 128 send nothing.</p>
+<p>The 32 button numbers, groups and combos from the other modes do not apply in <code>sim</code>. LED colours, display tiles and debounce do.</p>
+<h2 id="toggles">Toggles<a class="headerlink" href="#toggles" title="Permanent link">#</a></h2>
+<p>Tick <strong>Toggle</strong> in the key&rsquo;s inspector and the key latches: each press switches the button on or off, and letting go does nothing. Use it for landing gear, lights or a master arm on an ordinary key. Toggles are all off when the board starts and after any change to the configuration. Up to 32 keys can be toggles.</p>
+<h2 id="the-hat-switch">The hat switch<a class="headerlink" href="#the-hat-switch" title="Permanent link">#</a></h2>
+<p>Four keys can make a hat switch, which flight sims use to look around. Select a key and choose <strong>Up</strong>, <strong>Right</strong>, <strong>Down</strong> or <strong>Left</strong> under <strong>Hat</strong>.</p>
+<ul>
+<li>One key pressed points the hat that way. Two neighbouring keys pressed together give a diagonal.</li>
+<li>Opposite keys cancel each other out.</li>
+<li>A key on the hat stops being a button.</li>
+</ul>
+<p>The hat can be built one key at a time.</p>
+<h2 id="knobs-and-axes">Knobs and axes<a class="headerlink" href="#knobs-and-axes" title="Permanent link">#</a></h2>
+<p>Each click of an encoder is a short press of one of its two buttons, clockwise or anticlockwise. Games bind a rotary control, such as radio tuning or trim, as two buttons.</p>
+<p>To use a knob as an <strong>axis</strong> instead, bind it to an axis in its inspector. In <code>sim</code> there are <strong>eight</strong> axes: X, Y, Z, Rx, Ry, Rz, Slider and Dial. A knob on an axis keeps its two button numbers, but never presses them. Thumbsticks on a <code>stick1</code> tile can use all eight axes too.</p>
+<p><code>frc</code> reports only the first four axes, so a knob on axis 5 to 8 moves only in <code>sim</code>.</p>
+    </article>
+    <nav class="pager-row"><a class="pager prev" href="../configuring/midi.html"><span class="pager-label">Previous</span><span class="pager-title">MIDI</span></a><a class="pager next" href="../on-the-robot/legends.html"><span class="pager-label">Next</span><span class="pager-title">Changing legends in a match</span></a></nav>
+    <footer class="page-footer">
+      <a href="https://github.com/LearnWeaver/BBRControlBoard/edit/main/docs/gitbook/configuring/sim.md" rel="noopener">Edit this page on GitHub</a>
+    </footer>
+  </main>
+
+  <aside class="onpage" aria-label="On this page">
+    <p class="toc-title">On this page</p>
+<ul class="toc-list">
+<li><a href="#button-numbers">Button numbers</a>
+</li>
+<li><a href="#toggles">Toggles</a>
+</li>
+<li><a href="#the-hat-switch">The hat switch</a>
+</li>
+<li><a href="#knobs-and-axes">Knobs and axes</a>
+</li>
+</ul>
+  </aside>
+</div>
+
+<div class="scrim" hidden></div>
+<script src="../app.js" defer></script>
+</body>
+</html>
